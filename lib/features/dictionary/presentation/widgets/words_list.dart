@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
-import 'package:pro_dictant/features/dictionary/presentation/words_bloc/words_bloc.dart';
-import 'package:pro_dictant/features/dictionary/presentation/words_bloc/words_state.dart';
 
 class WordsList extends StatefulWidget {
   const WordsList({super.key});
@@ -22,13 +22,14 @@ class _WordsListState extends State<WordsList> {
             child: Text(
               "Пока слов нет ˙◠˙",
               style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
             ),
           ),
         );
       } else if (state is WordsLoading) {
         return _loadingIndicator();
       } else if (state is WordsLoaded) {
-        return buildWordsList(state.words);
+        return buildWordsList(state.words.reversed.toList());
       } else if (state is WordsError) {
         return Text(
           state.message,
@@ -58,22 +59,24 @@ class _WordsListState extends State<WordsList> {
           itemCount: words.length,
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: () {
+              onTap: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
-                final returnedWord = Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (ctx) => WordsDetails(word: words[index])))
-                    as WordEntity;
-                if (returnedWord != words[index]) {
-                  if (returnedWord.id == words[index].id) {
-                    words[index].source = returnedWord.source;
-                    words[index].pos = returnedWord.pos;
-                    words[index].transcription = returnedWord.transcription;
-                    words[index].translations = returnedWord.translations;
-                  } else {
-                    words.add(returnedWord);
-                  }
+                final returnedWord = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (ctx) => WordsDetails(word: words[index])));
+                // if (returnedWord == null) {
+                //   words.removeAt(index);
+                //   setState(() {});
+                if (words.contains(returnedWord)) {
+                  setState(() {});
                 }
+                // } else if (words.contains(returnedWord)) {
+                //   setState(() {});
+                // } else {
+                //   setState(() {
+                //     words.add(returnedWord);
+                //   });
+                // }
               },
               child: Column(
                 children: [

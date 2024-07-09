@@ -5,13 +5,8 @@ import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart
 abstract class WordRepository {
   Future<Either<Failure, List<WordEntity>>> getAllWordsInDict();
 
-  Future<Either<Failure, List<WordEntity>>> filterWords(String query);
-
-  Future<Either<Failure, List<WordEntity>>> getNewWords();
-
-  Future<Either<Failure, List<WordEntity>>> getLearningWords();
-
-  Future<Either<Failure, List<WordEntity>>> getLearntWords();
+  Future<Either<Failure, List<WordEntity>>> filterWords(
+      String query, bool isNew, bool isLearning, bool isLearnt);
 
   Future<Either<Failure, void>> updateWord(WordEntity word);
 

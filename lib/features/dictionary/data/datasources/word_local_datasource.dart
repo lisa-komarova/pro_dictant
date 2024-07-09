@@ -1,12 +1,18 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:path/path.dart' as p;
 import 'package:pro_dictant/core/error/exception.dart';
+import 'package:pro_dictant/features/dictionary/data/models/set_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as p;
 
 abstract class WordLocalDatasource {
-  Future<WordModel> readWord(String query);
+  Future<WordModel> fetchWordBySource(String query);
 
-  Future<List<WordModel>> readWordsInDict();
+  Future<List<WordModel>> fetchWordsInDict();
+
+  Future<List<SetModel>> fetchSets();
 
   Future<void> updateWord(WordModel word);
 
@@ -45,16 +51,16 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = p.join(dbPath, filePath);
-    //await deleteDatabase(path);
-    //ByteData data = await rootBundle.load("assets/words.db");
-    //List<int> bytes =
-    //    data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    //await File(path).writeAsBytes(bytes);
+    await deleteDatabase(path);
+    ByteData data = await rootBundle.load("assets/words.db");
+    List<int> bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    await File(path).writeAsBytes(bytes);
     return await openDatabase(path, version: 1);
   }
 
   ///gets taro card by id
-  Future<WordModel> readWord(String query) async {
+  Future<WordModel> fetchWordBySource(String query) async {
     final db = await instance.database;
     final maps = await db!.query(
       tableWords,
@@ -69,7 +75,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
-  Future<List<WordModel>> readWordsInDict() async {
+  Future<List<WordModel>> fetchWordsInDict() async {
     final db = await instance.database;
     List<WordModel> words = [];
     final maps = await db!.query(
@@ -83,6 +89,23 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       return words;
     } else if (maps.isEmpty) {
       return words;
+    } else {
+      throw ServerException();
+    }
+  }
+
+  Future<List<SetModel>> fetchSets() async {
+    final db = await instance.database;
+    List<SetModel> sets = [];
+    final maps = await db!.query(
+      tableSets,
+      columns: SetFields.values,
+    );
+    if (maps.isNotEmpty) {
+      sets = maps.map((map) => SetModel.fromJson(map)).toList();
+      return sets;
+    } else if (maps.isEmpty) {
+      return sets;
     } else {
       throw ServerException();
     }

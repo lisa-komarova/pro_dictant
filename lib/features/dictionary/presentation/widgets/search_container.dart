@@ -39,10 +39,7 @@ class _SearchContainerState extends State<SearchContainer> {
               child: Container(
                   height: MediaQuery.of(context).size.height / 10.5,
                   padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    top: 10,
-                  ),
+                      left: 20, right: 20, top: 10, bottom: 10),
                   child: Container(
                       child: TextField(
                           controller: widget.controller,

@@ -17,7 +17,7 @@ class WordRepositoryImpl extends WordRepository {
   @override
   Future<Either<Failure, List<WordEntity>>> getAllWordsInDict() async {
     try {
-      final wordsInDict = await localDataSource.readWordsInDict();
+      final wordsInDict = await localDataSource.fetchWordsInDict();
       return Right(wordsInDict);
     } on ServerException {
       return Left(ServerFailure());
@@ -25,9 +25,21 @@ class WordRepositoryImpl extends WordRepository {
   }
 
   @override
-  Future<Either<Failure, List<WordEntity>>> filterWords(String query) async {
+  Future<Either<Failure, List<WordEntity>>> filterWords(
+      String query, bool isNew, bool isLearning, bool isLearnt) async {
+    List<WordEntity> wordsInDict = [];
     try {
-      final wordsInDict = await localDataSource.filterWordsInDict(query);
+      if (query.isNotEmpty) {
+        wordsInDict = await localDataSource.filterWordsInDict(query);
+      } else if (isNew) {
+        wordsInDict = await localDataSource.getNewWords();
+      } else if (isLearning) {
+        wordsInDict = await localDataSource.getLearningWords();
+      } else if (isLearnt) {
+        wordsInDict = await localDataSource.getLearntWords();
+      } else if (query.isEmpty && !isNew && !isLearning && !isLearnt) {
+        wordsInDict = await localDataSource.fetchWordsInDict();
+      }
       return Right(wordsInDict);
     } on ServerException {
       return Left(ServerFailure());
@@ -50,36 +62,6 @@ class WordRepositoryImpl extends WordRepository {
     try {
       await localDataSource.deleteWord(wordId);
       return const Right(Future<void>);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<WordEntity>>> getLearningWords() async {
-    try {
-      final wordsInDict = await localDataSource.getLearningWords();
-      return Right(wordsInDict);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<WordEntity>>> getLearntWords() async {
-    try {
-      final wordsInDict = await localDataSource.getLearntWords();
-      return Right(wordsInDict);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<WordEntity>>> getNewWords() async {
-    try {
-      final wordsInDict = await localDataSource.getNewWords();
-      return Right(wordsInDict);
     } on ServerException {
       return Left(ServerFailure());
     }

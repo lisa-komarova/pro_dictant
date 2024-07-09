@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pro_dictant/features/dictionary/presentation/words_bloc/words_event.dart';
-
-import '../words_bloc/words_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 
 class DictionaryFilterButtons extends StatefulWidget {
   const DictionaryFilterButtons({
@@ -58,7 +57,8 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
             if (isNewSelected == false) {
               BlocProvider.of<WordsBloc>(context).add(LoadWords());
             } else {
-              BlocProvider.of<WordsBloc>(context).add(GetNewWords());
+              BlocProvider.of<WordsBloc>(context)
+                  .add(FilterWords('', true, false, false));
             }
           } else if (title == titleLearning) {
             isNewSelected = false;
@@ -67,7 +67,8 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
             if (isLearningSelected == false) {
               BlocProvider.of<WordsBloc>(context).add(LoadWords());
             } else {
-              BlocProvider.of<WordsBloc>(context).add(GetLearningWords());
+              BlocProvider.of<WordsBloc>(context)
+                  .add(FilterWords('', false, true, false));
             }
           } else if (title == titleLearnt) {
             isNewSelected = false;
@@ -76,7 +77,8 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
             if (isLearntSelected == false) {
               BlocProvider.of<WordsBloc>(context).add(LoadWords());
             } else {
-              BlocProvider.of<WordsBloc>(context).add(GetLearntWords());
+              BlocProvider.of<WordsBloc>(context)
+                  .add(FilterWords('', false, false, true));
             }
           }
         });

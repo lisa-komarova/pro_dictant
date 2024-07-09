@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pro_dictant/features/dictionary/presentation/pages/dictionary_page.dart';
 import 'package:pro_dictant/features/profile/presentation/pages/profile_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page.dart';
+
+import 'features/dictionary/presentation/pages/dictionary_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

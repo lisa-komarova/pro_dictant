@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-///tarot card model
 class WordEntity extends Equatable {
   final String id;
   String source;

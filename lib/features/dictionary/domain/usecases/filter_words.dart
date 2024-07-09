@@ -9,7 +9,8 @@ class FilterWords {
   FilterWords({required this.wordRepository});
 
   //TODO is this the right way to use call
-  Future<Either<Failure, List<WordEntity>>> call(String query) async {
-    return await wordRepository.filterWords(query);
+  Future<Either<Failure, List<WordEntity>>> call(
+      String query, bool isNew, bool isLearning, bool isLearnt) async {
+    return await wordRepository.filterWords(query, isNew, isLearning, isLearnt);
   }
 }

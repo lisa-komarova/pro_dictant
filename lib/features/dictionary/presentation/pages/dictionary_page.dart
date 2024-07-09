@@ -1,90 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
-import 'package:pro_dictant/features/dictionary/presentation/widgets/dictionary_filter_buttons.dart';
-import 'package:pro_dictant/features/dictionary/presentation/widgets/words_list.dart';
-import 'package:pro_dictant/features/dictionary/presentation/words_bloc/words_bloc.dart';
-import 'package:pro_dictant/features/dictionary/presentation/widgets/search_container.dart';
-import 'package:pro_dictant/features/dictionary/presentation/words_bloc/words_event.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_event.dart';
+import 'package:pro_dictant/features/dictionary/presentation/pages/user_dictionary_page.dart';
+import 'package:pro_dictant/features/dictionary/presentation/pages/user_set_page.dart';
 
-import 'package:uuid/uuid.dart';
-
-import '../widgets/word_form.dart';
-
-class DictionaryPage extends StatefulWidget {
-  DictionaryPage({super.key});
-
-  @override
-  State<DictionaryPage> createState() => _DictionaryPageState();
-}
-
-class _DictionaryPageState extends State<DictionaryPage> {
-  TextEditingController editingController = TextEditingController();
-
-  @override
-  void dispose() {
-    editingController.dispose();
-    super.dispose();
-  }
+class DictionaryPage extends StatelessWidget {
+  const DictionaryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Мой словарь",
-          style: GoogleFonts.hachiMaruPop(),
-        ),
-        centerTitle: true,
-        //leading: IconButton(
-        //    onPressed: () {} , icon: Image.asset('assets/icons/cancel.png')),
-      ),
-      body: Column(
+    return Container(
+      color: Color(0xFFF7F2ED),
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SearchContainer(
-            controller: editingController,
-            searchHandler: (String searchText) {
-              BlocProvider.of<WordsBloc>(context).add(FilterWords(searchText));
-              //_searchWords(searchText);
-            },
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (ctx) => UserDictionaryPage()));
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                    color: Color(0xFFD9C3AC),
+                    borderRadius: BorderRadius.circular(16)),
+                child: Text(
+                  'мой словарь',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
           ),
-          DictionaryFilterButtons(),
-          const WordsList(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              onTap: () {
+                BlocProvider.of<SetBloc>(context).add(LoadSets());
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (ctx) => UserSetPage()));
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                    color: Color(0xFFD9C3AC),
+                    borderRadius: BorderRadius.circular(16)),
+                child: Text(
+                  'наборы слов',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+          )
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _showNewDialog(context);
-        },
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        label: const Text(
-          'новое\nслово',
-          style: TextStyle(fontSize: 12),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showNewDialog(BuildContext context) {
-    //TODO add mapper and replace wordmodel
-    final word = WordModel(
-        id: const Uuid().v4(),
-        source: '',
-        pos: '',
-        transcription: '',
-        translations: '');
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: WordForm(
-            word: word,
-            isNew: true,
-          ),
-        );
-      },
     );
   }
 }

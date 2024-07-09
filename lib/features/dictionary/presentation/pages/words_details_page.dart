@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
-import 'package:pro_dictant/features/dictionary/presentation/words_bloc/words_bloc.dart';
-import 'package:pro_dictant/features/dictionary/presentation/words_bloc/words_event.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 
 import '../widgets/word_form.dart';
 
@@ -27,12 +27,12 @@ class _WordsDetailsState extends State<WordsDetails> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
+      canPop: false,
       onPopInvoked: (didPop) {
-        Navigator.of(context).pop(widget.word);
         if (didPop) {
           return;
         }
+        Navigator.of(context).pop(widget.word);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -307,6 +307,7 @@ Future<void> _showDialog(BuildContext context, WordEntity word) {
                   .add(DeleteWordFromDictionary(word));
               Navigator.of(context).pop();
               Navigator.of(context).pop();
+              //TODO resfresh list
             },
           ),
           TextButton(
