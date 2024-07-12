@@ -14,11 +14,14 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/update_word.dart
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 
+import '../../../domain/usecases/fetch_word_by_source.dart' as usecase5;
+
 const SERVER_FAILURE_MESSAGE = 'Server Failure';
 
 // BLoC 8.0.0
 class WordsBloc extends Bloc<WordsEvent, WordsState> {
   final LoadAllWordsInDict loadWords;
+  final usecase5.FetchWordBySource fetchWordBySource;
   final usecase1.FilterWords filterWords;
   final usecase2.DeleteWordFromDictionary deleteWordFromDictionary;
   final usecase3.UpdateWord updateWord;
@@ -26,6 +29,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
   WordsBloc(
       {required this.loadWords,
+      required this.fetchWordBySource,
       required this.filterWords,
       required this.deleteWordFromDictionary,
       required this.updateWord,
@@ -36,6 +40,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     on<DeleteWordFromDictionary>(_onDeleteWordFromDictionaryEvent);
     on<UpdateWord>(_onUpdateWordEvent);
     on<AddWord>(_onAddWordEvent);
+    on<FetchWordBySource>(_onFetchWordBySourceEvent);
   }
 
   FutureOr<void> _onLoadWordsEvent(
@@ -66,6 +71,29 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
     final failureOrWord = await filterWords(
         event.wordQuery, event.isNew, event.isLearning, event.isLearnt);
+//TODO: smth shady here
+    failureOrWord
+        .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
+            (words) async {
+      if (words.isEmpty) {
+        emit(WordsEmpty());
+        add(FetchWordBySource(event.wordQuery));
+      } else {
+        emit(WordsLoaded(
+          words: words,
+        ));
+      }
+    });
+  }
+
+  FutureOr<void> _onFetchWordBySourceEvent(
+      FetchWordBySource event, Emitter<WordsState> emit) async {
+    //TODO check what it's for
+    //if (state is WordsLoading) return;
+
+    emit(WordsLoading());
+
+    final failureOrWord = await fetchWordBySource(event.source);
 
     failureOrWord
         .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),

@@ -26,184 +26,188 @@ class _WordsDetailsState extends State<WordsDetails> {
   //Color _color = Color(0xFF243120);
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        if (didPop) {
-          return;
-        }
-        Navigator.of(context).pop(widget.word);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                return Navigator.of(context).pop();
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Flexible(
-                flex: 7,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: SingleChildScrollView(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * 0.6,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          width: 2,
-                          color: Color(0xFFd9c3ac),
-                        ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              return Navigator.of(context).pop();
+            },
+            icon: Image.asset('assets/icons/cancel.png')),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Flexible(
+              flex: 7,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        width: 2,
+                        color: Color(0xFFd9c3ac),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Flexible(
-                            flex: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: buildWordsProgressImage(widget.word),
-                                ),
-                              ],
-                            ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildWordsProgressImage(widget.word),
+                              ),
+                            ],
                           ),
-                          Flexible(
-                            flex: 2,
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _color = Color(0xFF243120);
-                                });
-                                speak(widget.word.source);
-                              },
-                              child: AnimatedContainer(
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.fastOutSlowIn,
-                                child: Image.asset(
-                                  'assets/icons/pronounce.png',
-                                  width: 80,
-                                  height: 80,
-                                  color: _color,
-                                ),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _color = Color(0xFF243120);
+                              });
+                              speak(widget.word.source);
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.fastOutSlowIn,
+                              child: Image.asset(
+                                'assets/icons/pronounce.png',
+                                width: 80,
+                                height: 80,
+                                color: _color,
                               ),
                             ),
                           ),
-                          Flexible(
-                            flex: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    widget.word.source,
+                        ),
+                        Flexible(
+                          flex: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  widget.word.source,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  widget.word.pos,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              widget.word.transcription,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 2),
+                            child: Scrollbar(
+                              controller: ScrollController(),
+                              thumbVisibility: true,
+                              radius: const Radius.circular(2),
+                              child: SingleChildScrollView(
+                                child: Text(widget.word.translations,
+                                    textAlign: TextAlign.center,
                                     style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    widget.word.pos,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                widget.word.transcription,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal,
-                                    ),
+                                        Theme.of(context).textTheme.titleLarge),
                               ),
                             ),
                           ),
-                          Flexible(
-                            flex: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 2),
-                              child: Scrollbar(
-                                thumbVisibility: true,
-                                radius: const Radius.circular(2),
-                                child: SingleChildScrollView(
-                                  child: Text(widget.word.translations,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      _showDialog(context, widget.word, true),
+                                  child: Image.asset(
+                                    'assets/icons/delete.png',
+                                    width: 35,
+                                    height: 35,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
+                              if (widget.word.isInDictionary == 0) Spacer(),
+                              if (widget.word.isInDictionary == 0)
                                 Padding(
                                   padding: const EdgeInsets.only(
                                       left: 8, right: 8, bottom: 8, top: 8),
                                   child: GestureDetector(
-                                    onTap: () =>
-                                        _showDialog(context, widget.word),
+                                    onTap: () => _showDialog(
+                                        context, widget.word, false),
                                     child: Image.asset(
-                                      'assets/icons/delete.png',
+                                      'assets/icons/add.png',
                                       width: 35,
                                       height: 35,
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                )),
-
-            Flexible(
-              flex: 2,
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Row(
-                  children: [
-                    _buildAWordButton(
-                        title: "На\nизучение", color: Color(0xFFB70E0E)),
-                    _buildAWordButton(
-                        title: "Уже знаю", color: Color(0xFF85977f)),
-                    _buildAWordButton(
-                        title: "Изменить", color: Color(0xFFd9c3ac)),
-                  ],
                 ),
+              )),
+
+          Flexible(
+            flex: 2,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                children: [
+                  _buildAWordButton(
+                      title: "На\nизучение", color: Color(0xFFB70E0E)),
+                  _buildAWordButton(
+                      title: "Уже знаю", color: Color(0xFF85977f)),
+                  _buildAWordButton(
+                      title: "Изменить", color: Color(0xFFd9c3ac)),
+                ],
               ),
             ),
-            // SizedBox(
-            //   height: 300,
-            // )
-          ],
-        ),
+          ),
+          // SizedBox(
+          //   height: 300,
+          // )
+        ],
       ),
     );
   }
@@ -286,13 +290,15 @@ class _WordsDetailsState extends State<WordsDetails> {
   }
 }
 
-Future<void> _showDialog(BuildContext context, WordEntity word) {
+Future<void> _showDialog(BuildContext context, WordEntity word, bool toDelete) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        content: const Text(
-          'Хотите удалить это слово из своего словаря?',
+        content: Text(
+          toDelete
+              ? 'Хотите удалить это слово из своего словаря?'
+              : 'Хотите добавить это слово в свой словарь?',
         ),
         actions: <Widget>[
           TextButton(
@@ -300,14 +306,20 @@ Future<void> _showDialog(BuildContext context, WordEntity word) {
               textStyle: Theme.of(context).textTheme.labelLarge,
               foregroundColor: Color(0xFFB70E0E),
             ),
-            child: const Text('удалить'),
+            child: Text(toDelete ? 'удалить' : 'добавить'),
             onPressed: () {
-              word.isInDictionary = 0;
-              BlocProvider.of<WordsBloc>(context)
-                  .add(DeleteWordFromDictionary(word));
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-              //TODO resfresh list
+              if (toDelete) {
+                word.isInDictionary = 0;
+                BlocProvider.of<WordsBloc>(context).add(UpdateWord(word));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                //TODO resfresh list
+              } else {
+                word.isInDictionary = 1;
+                BlocProvider.of<WordsBloc>(context).add(UpdateWord(word));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }
             },
           ),
           TextButton(
@@ -341,6 +353,7 @@ Future<void> _showSendToLearntDialog(BuildContext context, WordEntity word) {
             ),
             child: const Text('да'),
             onPressed: () {
+              word.isInDictionary = 1;
               word.isTW = 1;
               word.isWT = 1;
               word.isMatching = 1;
@@ -383,6 +396,7 @@ Future<void> _showSendToLearningDialog(BuildContext context, WordEntity word) {
             ),
             child: const Text('да'),
             onPressed: () {
+              word.isInDictionary = 1;
               word.isTW = 0;
               word.isWT = 0;
               word.isMatching = 0;

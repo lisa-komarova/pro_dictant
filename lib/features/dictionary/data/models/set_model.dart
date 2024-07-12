@@ -15,8 +15,8 @@ class SetFields {
 ///tarot card model
 class SetModel extends SetEntity {
   SetModel({
-    required id,
-    required name,
+    required int id,
+    required String name,
   }) : super(
           id: id,
           name: name,
@@ -30,20 +30,13 @@ class SetModel extends SetEntity {
   static SetModel fromJson(Map<String, Object?> json) => SetModel(
         id: json[SetFields.setId] as int,
         name: json[SetFields.setName] as String,
-      );
-
-  SetModel copy({
-    int? id,
-    String? name,
-  }) =>
-      SetModel(
-        id: id ?? this.id,
-        name: name ?? this.name,
+        //wordsInSet: [] as List<WordEntity>,
       );
 
   @override
   List<Object?> get props => [
         id,
         name,
+        wordsInSet,
       ];
 }

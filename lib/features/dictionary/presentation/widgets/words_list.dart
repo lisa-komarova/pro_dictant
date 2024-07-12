@@ -16,6 +16,7 @@ class _WordsListState extends State<WordsList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WordsBloc, WordsState>(builder: (context, state) {
+      //TODO redo this
       if (state is WordsEmpty) {
         return Expanded(
           child: Center(
@@ -58,6 +59,7 @@ class _WordsListState extends State<WordsList> {
           shrinkWrap: true,
           itemCount: words.length,
           itemBuilder: (context, index) {
+            bool isInDictionary = (words[index].isInDictionary == 1);
             return GestureDetector(
               onTap: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
@@ -78,17 +80,34 @@ class _WordsListState extends State<WordsList> {
                 //   });
                 // }
               },
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ListTile(
-                    title: Text(
-                        "${words[index].source} - ${words[index].translations}"),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                              "${words[index].source} - ${words[index].translations}"),
+                        ),
+                        Image.asset(
+                          'assets/icons/divider.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                      ],
+                    ),
                   ),
-                  Image.asset(
-                    'assets/icons/divider.png',
-                    width: 15,
-                    height: 15,
-                  ),
+                  isInDictionary
+                      ? SizedBox()
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            'assets/icons/add.png',
+                            width: 24,
+                            height: 24,
+                          ),
+                        ),
                 ],
               ),
             );

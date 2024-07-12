@@ -86,4 +86,15 @@ class WordRepositoryImpl extends WordRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<WordModel>>> fetchWordBySource(
+      String source) async {
+    try {
+      List<WordModel> word = await localDataSource.fetchWordBySource(source);
+      return Right(word);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

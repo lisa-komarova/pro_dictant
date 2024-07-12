@@ -93,35 +93,6 @@ class WordModel extends WordEntity {
         isRepeated: json[WordsFields.isRepeated] as int,
       );
 
-  WordModel copy({
-    String? id,
-    String? source,
-    String? pos,
-    String? transcription,
-    String? translations,
-    int? isInDictionary,
-    int? isTW,
-    int? isWT,
-    int? isMatching,
-    int? isCards,
-    int? isDictant,
-    int? isRepeated,
-  }) =>
-      WordModel(
-        id: id ?? this.id,
-        source: source ?? this.source,
-        pos: pos ?? this.pos,
-        transcription: transcription ?? this.transcription,
-        translations: translations ?? this.translations,
-        isInDictionary: isInDictionary ?? this.isInDictionary,
-        isTW: isTW ?? this.isTW,
-        isWT: isWT ?? this.isWT,
-        isMatching: isMatching ?? this.isMatching,
-        isCards: isCards ?? this.isCards,
-        isDictant: isDictant ?? this.isDictant,
-        isRepeated: isRepeated ?? this.isRepeated,
-      );
-
   @override
   List<Object?> get props => [
         id,

@@ -80,8 +80,8 @@ class _SetListState extends State<SetList> {
                           style: Theme.of(context).textTheme.titleLarge,
                           textAlign: TextAlign.center,
                         ),
-                        const Text(
-                          "100\nслов ",
+                        Text(
+                          "${sets[index].wordsInSet.length}\nслов ",
                           textAlign: TextAlign.center,
                         ),
                       ],

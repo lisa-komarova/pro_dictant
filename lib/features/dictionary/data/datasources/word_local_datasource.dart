@@ -8,7 +8,7 @@ import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class WordLocalDatasource {
-  Future<WordModel> fetchWordBySource(String query);
+  Future<List<WordModel>> fetchWordBySource(String query);
 
   Future<List<WordModel>> fetchWordsInDict();
 
@@ -40,7 +40,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   WordsLocalDatasourceImpl._init();
 
-  ///gets an instance of a datebase
+  ///gets an instance of a database
   Future<Database?> get database async {
     if (_database != null) return _database!;
     _database = await _initDB("words.db");
@@ -60,16 +60,20 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   }
 
   ///gets taro card by id
-  Future<WordModel> fetchWordBySource(String query) async {
+  Future<List<WordModel>> fetchWordBySource(String query) async {
     final db = await instance.database;
+    List<WordModel> words = [];
     final maps = await db!.query(
       tableWords,
       columns: WordsFields.values,
-      where: '${WordsFields.source} = ?',
-      whereArgs: [query],
+      where: '${WordsFields.source} LIKE ?',
+      whereArgs: ['%$query%'],
     );
     if (maps.isNotEmpty) {
-      return WordModel.fromJson(maps.first);
+      words = maps.map((map) => WordModel.fromJson(map)).toList();
+      return words;
+    } else if (maps.isEmpty) {
+      return words;
     } else {
       throw ServerException();
     }
@@ -97,12 +101,22 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   Future<List<SetModel>> fetchSets() async {
     final db = await instance.database;
     List<SetModel> sets = [];
+    List<WordModel> words = [];
     final maps = await db!.query(
       tableSets,
       columns: SetFields.values,
     );
+
     if (maps.isNotEmpty) {
       sets = maps.map((map) => SetModel.fromJson(map)).toList();
+      sets.forEach((element) async {
+        final wordsInSet = await db!.rawQuery(
+            'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = ${element.id};');
+        if (wordsInSet.isNotEmpty) {
+          words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
+        }
+        element.wordsInSet.addAll(words);
+      });
       return sets;
     } else if (maps.isEmpty) {
       return sets;

@@ -21,6 +21,12 @@ class LoadWords extends WordsEvent {
   const LoadWords();
 }
 
+class FetchWordBySource extends WordsEvent {
+  final String source;
+
+  const FetchWordBySource(this.source);
+}
+
 class DeleteWordFromDictionary extends WordsEvent {
   final WordEntity word;
 

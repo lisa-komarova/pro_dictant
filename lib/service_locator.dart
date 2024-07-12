@@ -9,6 +9,7 @@ import 'package:pro_dictant/features/dictionary/data/repositories/word_repositor
 import 'package:pro_dictant/features/dictionary/domain/repositories/set_repository.dart';
 import 'package:pro_dictant/features/dictionary/domain/repositories/word_repository.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/delete_word_from_dictionary.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_word_by_source.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/load_all_words_in_dict.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/load_sets.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/update_word.dart';
@@ -29,7 +30,8 @@ Future<void> init() async {
         filterWords: sl(),
         deleteWordFromDictionary: sl(),
         updateWord: sl(),
-        addWord: sl()),
+        addWord: sl(),
+        fetchWordBySource: sl()),
   );
   sl.registerFactory(() => SetBloc(
         loadSets: sl(),
@@ -37,6 +39,9 @@ Future<void> init() async {
 
   // UseCases
   sl.registerLazySingleton(() => LoadAllWordsInDict(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchWordBySource(
         wordRepository: sl(),
       ));
   sl.registerLazySingleton(() => LoadSets(
