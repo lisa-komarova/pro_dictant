@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
-import 'package:pro_dictant/features/dictionary/presentation/widgets/sets_words.dart';
+import 'package:pro_dictant/features/dictionary/presentation/pages/sets_words_page.dart';
 
 class SetList extends StatefulWidget {
   const SetList({super.key});
@@ -53,51 +53,62 @@ class _SetListState extends State<SetList> {
 
   Expanded buildSetsList(List<SetEntity> sets) {
     return Expanded(
-      child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: sets.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () async {
-                await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => SetsWords(set: sets)));
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                    height: 100,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "${sets[index].name.toUpperCase()} ",
-                          style: Theme.of(context).textTheme.titleLarge,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 100,
+          ),
+          GridView.builder(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200,
+              childAspectRatio: 1,
+              crossAxisSpacing: 5,
+              mainAxisSpacing: 5,
+            ),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: sets.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () async {
+                  await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => SetsWordsPage(set: sets[index])));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Container(
+                      height: 100,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(
+                          color: const Color(0xFFD9C3AC),
+                        ),
+                        color: Color(0xFFFFFFFF),
+                      ),
+                      child: Center(
+                        child: Text(
+                          overflow: TextOverflow.fade,
+                          "${sets[index].name.toUpperCase()}  ",
+                          style: Theme.of(context).textTheme.displaySmall,
                           textAlign: TextAlign.center,
                         ),
-                        Text(
-                          "${sets[index].wordsInSet.length}\nслов ",
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    )
-                    // Column(
-                    //   children: [
-                    //
-                    //     // ListTile(
-                    //     //   title: Text("${sets[index].name} "),
-                    //     // ),
-                    //   ],
-                    // ),
-                    ),
-              ),
-            );
-          }),
+                      )
+                      // Column(
+                      //   children: [
+                      //
+                      //     // ListTile(
+                      //     //   title: Text("${sets[index].name} "),
+                      //     // ),
+                      //   ],
+                      // ),
+                      ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

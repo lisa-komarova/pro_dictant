@@ -152,18 +152,19 @@ class _WordsDetailsState extends State<WordsDetails> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      _showDialog(context, widget.word, true),
-                                  child: Image.asset(
-                                    'assets/icons/delete.png',
-                                    width: 35,
-                                    height: 35,
+                              if (widget.word.isInDictionary == 1)
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: GestureDetector(
+                                    onTap: () =>
+                                        _showDialog(context, widget.word, true),
+                                    child: Image.asset(
+                                      'assets/icons/delete.png',
+                                      width: 35,
+                                      height: 35,
+                                    ),
                                   ),
                                 ),
-                              ),
                               if (widget.word.isInDictionary == 0) Spacer(),
                               if (widget.word.isInDictionary == 0)
                                 Padding(

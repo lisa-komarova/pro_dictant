@@ -109,17 +109,35 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
     if (maps.isNotEmpty) {
       sets = maps.map((map) => SetModel.fromJson(map)).toList();
+      //TODO remove this
       sets.forEach((element) async {
-        final wordsInSet = await db!.rawQuery(
-            'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = ${element.id};');
-        if (wordsInSet.isNotEmpty) {
-          words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
-        }
+        // final wordsInSet = await db!.rawQuery(
+        //     'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = ${element.id};');
+        // if (wordsInSet.isNotEmpty) {
+        //   words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
+        // }
+        words = await fetchWordsInSet(element.id);
         element.wordsInSet.addAll(words);
       });
+
       return sets;
     } else if (maps.isEmpty) {
       return sets;
+    } else {
+      throw ServerException();
+    }
+  }
+
+  Future<List<WordModel>> fetchWordsInSet(int index) async {
+    final db = await database;
+    List<WordModel> words = [];
+    final wordsInSet = await db!.rawQuery(
+        'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = ${index};');
+    if (wordsInSet.isNotEmpty) {
+      words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
+      return words;
+    } else if (wordsInSet.isEmpty) {
+      return words;
     } else {
       throw ServerException();
     }
