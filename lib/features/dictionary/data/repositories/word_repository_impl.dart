@@ -97,4 +97,15 @@ class WordRepositoryImpl extends WordRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<WordEntity>>> searchWordForASet(
+      String query) async {
+    try {
+      final words = await localDataSource.searchWordForASet(query);
+      return Right(words);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/widgets/set_list.dart';
 
 class UserSetPage extends StatefulWidget {
@@ -32,7 +33,8 @@ class _UserSetPageState extends State<UserSetPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          //   _showNewDialog(context);
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (ctx) => const NewSetPage()));
         },
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -43,25 +45,4 @@ class _UserSetPageState extends State<UserSetPage> {
       ),
     );
   }
-
-// Future<void> _showNewDialog(BuildContext context) {
-//   //TODO add mapper and replace wordmodel
-//   final word = WordModel(
-//       id: const Uuid().v4(),
-//       source: '',
-//       pos: '',
-//       transcription: '',
-//       translations: '');
-//   return showDialog<void>(
-//     context: context,
-//     builder: (BuildContext context) {
-//       return AlertDialog(
-//         content: WordForm(
-//           word: word,
-//           isNew: true,
-//         ),
-//       );
-//     },
-//   );
-// }
 }

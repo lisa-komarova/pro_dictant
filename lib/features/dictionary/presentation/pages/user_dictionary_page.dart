@@ -49,7 +49,6 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
             searchHandler: (String searchText) {
               BlocProvider.of<WordsBloc>(context)
                   .add(FilterWords(searchText, false, false, false));
-              //_searchWords(searchText);
             },
           ),
           DictionaryFilterButtons(),

@@ -28,3 +28,25 @@ class WordsError extends WordsState {
   @override
   List<Object> get props => [message];
 }
+
+class SearchedWordsEmpty extends WordsState {}
+
+class SearchedWordsLoading extends WordsState {}
+
+class SearchedWordsLoaded extends WordsState {
+  final List<WordEntity> words;
+
+  const SearchedWordsLoaded({required this.words});
+
+  @override
+  List<Object> get props => [words];
+}
+
+class SearchedWordsError extends WordsState {
+  final String message;
+
+  const SearchedWordsError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

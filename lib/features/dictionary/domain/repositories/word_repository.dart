@@ -10,6 +10,8 @@ abstract class WordRepository {
   Future<Either<Failure, List<WordEntity>>> filterWords(
       String query, bool isNew, bool isLearning, bool isLearnt);
 
+  Future<Either<Failure, List<WordEntity>>> searchWordForASet(String query);
+
   Future<Either<Failure, void>> updateWord(WordEntity word);
 
   Future<Either<Failure, void>> addWord(WordEntity word);

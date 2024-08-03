@@ -18,7 +18,11 @@ abstract class WordLocalDatasource {
 
   Future<void> addWord(WordModel word);
 
+  Future<void> addSet(SetModel set);
+
   Future<List<WordModel>> filterWordsInDict(String query);
+
+  Future<List<WordModel>> searchWordForASet(String query);
 
   Future<void> deleteWordFromDictionary(WordModel word);
 
@@ -128,11 +132,11 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
-  Future<List<WordModel>> fetchWordsInSet(int index) async {
+  Future<List<WordModel>> fetchWordsInSet(String id) async {
     final db = await database;
     List<WordModel> words = [];
     final wordsInSet = await db!.rawQuery(
-        'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = ${index};');
+        'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = \"${id}\"');
     if (wordsInSet.isNotEmpty) {
       words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
       return words;
@@ -163,6 +167,35 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       tableWords,
       word.toJson(),
     );
+  }
+
+  Future<void> addSet(SetModel set) async {
+// Get a reference to the database.
+    final db = await database;
+// Update the given word.
+    await db!.insert(
+      tableSets,
+      set.toJson(),
+    );
+    List<WordModel> wordsInASetModels = [];
+    for (var i = 0; i < set.wordsInSet.length; i++) {
+      wordsInASetModels.add(WordModel(
+          id: set.wordsInSet[i].id,
+          source: set.wordsInSet[i].source,
+          pos: set.wordsInSet[i].pos,
+          transcription: set.wordsInSet[i].transcription,
+          translations: set.wordsInSet[i].translations));
+    }
+    await addWordsInASet(wordsInASetModels, set.id);
+  }
+
+  Future<void> addWordsInASet(List<WordModel> wordsInASet, String setId) async {
+    final db = await database;
+    for (WordModel word in wordsInASet) {
+      await db!.rawQuery('''INSERT INTO "main"."word_set"
+            ("word_id", "set_id")
+          VALUES ('${word.id}', '$setId');''');
+    }
   }
 
   Future<void> deleteWordFromDictionary(WordModel word) async {
@@ -282,6 +315,29 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     );
     if (maps.isNotEmpty) {
       words = maps.map((map) => WordModel.fromJson(map)).toList();
+      return words;
+    } else if (maps.isEmpty) {
+      return words;
+    } else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<WordModel>> searchWordForASet(String query) async {
+    final db = await instance.database;
+    List<WordModel> words = [];
+    final maps = await db!.query(
+      tableWords,
+      columns: WordsFields.values,
+      where: ' ${WordsFields.source} LIKE ?',
+      whereArgs: ['%$query%'],
+    );
+    if (maps.isNotEmpty) {
+      words = maps.map((map) => WordModel.fromJson(map)).toList();
+      // if (words.length >= 3) {
+      //   words = words.getRange(0, 3).toList();
+      // }
       return words;
     } else if (maps.isEmpty) {
       return words;

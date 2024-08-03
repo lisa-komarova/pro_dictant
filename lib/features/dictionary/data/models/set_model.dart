@@ -1,5 +1,7 @@
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 
+import '../../domain/entities/word_entity.dart';
+
 const String tableSets = 'set';
 
 class SetFields {
@@ -14,8 +16,10 @@ class SetFields {
 
 ///tarot card model
 class SetModel extends SetEntity {
+  late final List<WordEntity> wordsInSet = [];
+
   SetModel({
-    required int id,
+    required String id,
     required String name,
   }) : super(
           id: id,
@@ -28,7 +32,7 @@ class SetModel extends SetEntity {
       };
 
   static SetModel fromJson(Map<String, Object?> json) => SetModel(
-        id: json[SetFields.setId] as int,
+        id: json[SetFields.setId] as String,
         name: json[SetFields.setName] as String,
         //wordsInSet: [] as List<WordEntity>,
       );

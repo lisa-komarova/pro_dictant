@@ -35,43 +35,48 @@ class _SearchContainerState extends State<SearchContainer> {
         color: Colors.transparent,
         child: Stack(fit: StackFit.loose, children: <Widget>[
           Align(
-              alignment: const Alignment(0.0, 1.25),
-              child: Container(
-                  height: MediaQuery.of(context).size.height / 10.5,
-                  padding: const EdgeInsets.only(
-                      left: 20, right: 20, top: 10, bottom: 10),
-                  child: Container(
-                      child: TextField(
-                          controller: widget.controller,
-                          style: GoogleFonts.hachiMaruPop(),
-                          cursorHeight: 0,
-                          cursorWidth: 0,
-                          focusNode: myFocusNode,
-                          onChanged: (searchText) {
-                            widget.searchHandler(searchText);
-                          },
-                          onTap: () => myFocusNode.requestFocus(),
-                          decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              suffixIcon: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  'assets/icons/search.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
-                              ),
-                              contentPadding:
-                                  const EdgeInsets.only(left: 30, bottom: 50),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Color(0xFFd9c3ac), width: 2),
-                                  borderRadius: BorderRadius.circular(35)),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Color(0xFFd9c3ac), width: 2),
-                                  borderRadius: BorderRadius.circular(35))))))),
+            alignment: const Alignment(0.0, 1.25),
+            child: Container(
+                height: MediaQuery.of(context).size.height / 10.5,
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 10, bottom: 10),
+                child: Container(
+                  child: TextField(
+                    controller: widget.controller,
+                    style: GoogleFonts.hachiMaruPop(),
+                    cursorHeight: 0,
+                    cursorWidth: 0,
+                    focusNode: myFocusNode,
+                    onChanged: (searchText) {
+                      widget.searchHandler(searchText);
+                    },
+                    onTap: () => myFocusNode.requestFocus(),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          'assets/icons/search.png',
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.only(left: 30, bottom: 50),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color(0xFFd9c3ac), width: 2),
+                          borderRadius: BorderRadius.circular(35)),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: Color(0xFFd9c3ac), width: 2),
+                        borderRadius: BorderRadius.circular(35),
+                      ),
+                    ),
+                  ),
+                )),
+          ),
         ]));
   }
 }

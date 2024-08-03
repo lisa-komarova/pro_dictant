@@ -4,4 +4,6 @@ import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart'
 
 abstract class SetRepository {
   Future<Either<Failure, List<SetEntity>>> loadSets();
+
+  Future<Either<Failure, void>> addSet(SetEntity set);
 }

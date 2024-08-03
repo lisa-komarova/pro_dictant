@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:pro_dictant/core/error/failure.dart';
 import 'package:pro_dictant/features/dictionary/data/datasources/word_local_datasource.dart';
+import 'package:pro_dictant/features/dictionary/data/models/set_model.dart';
 import 'package:pro_dictant/features/dictionary/domain/repositories/set_repository.dart';
 
 import '../../../../core/error/exception.dart';
@@ -16,6 +17,18 @@ class SetRepositoryImpl extends SetRepository {
     try {
       final sets = await localDataSource.fetchSets();
       return Right(sets);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> addSet(SetEntity set) async {
+    try {
+      SetModel setModel = SetModel(id: set.id, name: set.name);
+      setModel.wordsInSet.addAll(set.wordsInSet);
+      await localDataSource.addSet(setModel);
+      return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
     }

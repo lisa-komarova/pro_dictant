@@ -8,10 +8,12 @@ import 'package:pro_dictant/features/dictionary/data/repositories/set_repository
 import 'package:pro_dictant/features/dictionary/data/repositories/word_repository_impl.dart';
 import 'package:pro_dictant/features/dictionary/domain/repositories/set_repository.dart';
 import 'package:pro_dictant/features/dictionary/domain/repositories/word_repository.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/add_set.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/delete_word_from_dictionary.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_word_by_source.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/load_all_words_in_dict.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/load_sets.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/searchWordsForASet.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/update_word.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 
@@ -31,10 +33,12 @@ Future<void> init() async {
         deleteWordFromDictionary: sl(),
         updateWord: sl(),
         addWord: sl(),
-        fetchWordBySource: sl()),
+        fetchWordBySource: sl(),
+        searchWordsForASet: sl()),
   );
   sl.registerFactory(() => SetBloc(
         loadSets: sl(),
+        addSet: sl(),
       ));
 
   // UseCases
@@ -58,6 +62,12 @@ Future<void> init() async {
       ));
   sl.registerLazySingleton(() => AddWord(
         wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => SearchWordsForASet(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => AddSet(
+        setRepository: sl(),
       ));
   // Repository
   sl.registerLazySingleton<WordRepository>(

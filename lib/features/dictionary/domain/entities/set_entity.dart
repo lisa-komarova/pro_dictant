@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 
 class SetEntity extends Equatable {
-  final int id;
+  final String id;
   final String name;
   late final List<WordEntity> wordsInSet = [];
 
@@ -14,7 +14,7 @@ class SetEntity extends Equatable {
   });
 
   SetEntity copy({
-    int? id,
+    String? id,
     String? name,
     List<WordEntity>? wordsInSet,
   }) =>

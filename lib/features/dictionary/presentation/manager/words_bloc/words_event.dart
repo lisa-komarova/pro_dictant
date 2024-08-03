@@ -44,3 +44,9 @@ class AddWord extends WordsEvent {
 
   const AddWord(this.word);
 }
+
+class SearchWordsForASet extends WordsEvent {
+  final String wordQuery;
+
+  const SearchWordsForASet(this.wordQuery);
+}
