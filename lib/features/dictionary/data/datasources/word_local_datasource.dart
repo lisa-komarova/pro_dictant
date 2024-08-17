@@ -105,46 +105,36 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   Future<List<SetModel>> fetchSets() async {
     final db = await instance.database;
     List<SetModel> sets = [];
-    List<WordModel> words = [];
-    final maps = await db!.query(
-      tableSets,
-      columns: SetFields.values,
-    );
-
-    if (maps.isNotEmpty) {
-      sets = maps.map((map) => SetModel.fromJson(map)).toList();
-      //TODO remove this
-      sets.forEach((element) async {
-        // final wordsInSet = await db!.rawQuery(
-        //     'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = ${element.id};');
-        // if (wordsInSet.isNotEmpty) {
-        //   words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
-        // }
-        words = await fetchWordsInSet(element.id);
-        element.wordsInSet.addAll(words);
-      });
-
-      return sets;
-    } else if (maps.isEmpty) {
-      return sets;
-    } else {
+    try {
+      final maps = await db!.query(
+        tableSets,
+        columns: SetFields.values,
+      );
+      if (maps.isNotEmpty) {
+        sets = maps.map((map) => SetModel.fromJson(map)).toList();
+        addWordsToSet(sets, db);
+        return sets;
+      } else {
+        throw ServerException();
+      }
+    } on Exception catch (_) {
       throw ServerException();
     }
   }
 
-  Future<List<WordModel>> fetchWordsInSet(String id) async {
-    final db = await database;
+  void addWordsToSet(List<SetModel> sets, Database db) async {
     List<WordModel> words = [];
-    final wordsInSet = await db!.rawQuery(
-        'SELECT word.id, source, pos, transcription, translations, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated from word INNER join word_set on word.id == word_set.word_id WHERE word_set.set_id = \"${id}\"');
-    if (wordsInSet.isNotEmpty) {
+    sets.forEach((element) async {
+      final wordsInSet =
+          await db!.rawQuery('''SELECT word.id, source, pos, transcription,
+              translations, isInDictionary, isTW, isWT,
+               isMatching, isCards, isDictant, isRepeated
+               from word INNER join word_set on word.id 
+               == word_set.word_id WHERE word_set.set_id = \"${element.id}\"''');
       words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
-      return words;
-    } else if (wordsInSet.isEmpty) {
-      return words;
-    } else {
-      throw ServerException();
-    }
+      element.wordsInSet.addAll(words);
+      await null;
+    });
   }
 
   Future<void> updateWord(WordModel word) async {

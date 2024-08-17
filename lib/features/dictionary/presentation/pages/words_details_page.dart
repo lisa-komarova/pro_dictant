@@ -26,6 +26,7 @@ class _WordsDetailsState extends State<WordsDetails> {
   //Color _color = Color(0xFF243120);
   @override
   Widget build(BuildContext context) {
+    final scrollController = ScrollController();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -42,6 +43,7 @@ class _WordsDetailsState extends State<WordsDetails> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: SingleChildScrollView(
+                  controller: scrollController,
                   child: Container(
                     height: MediaQuery.of(context).size.height * 0.6,
                     decoration: BoxDecoration(
@@ -135,7 +137,7 @@ class _WordsDetailsState extends State<WordsDetails> {
                           child: Padding(
                             padding: const EdgeInsets.only(right: 2),
                             child: Scrollbar(
-                              controller: ScrollController(),
+                              controller: scrollController,
                               thumbVisibility: true,
                               radius: const Radius.circular(2),
                               child: SingleChildScrollView(

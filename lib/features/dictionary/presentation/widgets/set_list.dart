@@ -89,7 +89,7 @@ class _SetListState extends State<SetList> {
                       child: Center(
                         child: Text(
                           overflow: TextOverflow.fade,
-                          "${sets[index].name.toUpperCase()}  ",
+                          "${sets[index].name.toUpperCase()}",
                           style: Theme.of(context).textTheme.displaySmall,
                           textAlign: TextAlign.center,
                         ),
