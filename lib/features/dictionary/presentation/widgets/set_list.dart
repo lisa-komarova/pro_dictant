@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/sets_words_page.dart';
 
@@ -58,19 +59,15 @@ class _SetListState extends State<SetList> {
           SizedBox(
             height: 100,
           ),
-          GridView.builder(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200,
-              childAspectRatio: 1,
-              crossAxisSpacing: 5,
-              mainAxisSpacing: 5,
-            ),
+          ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             itemCount: sets.length,
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () async {
+                  BlocProvider.of<SetBloc>(context)
+                      .add(FetchTranslationsForWordsInSets(set: sets[index]));
                   await Navigator.of(context).push(MaterialPageRoute(
                       builder: (ctx) => SetsWordsPage(set: sets[index])));
                 },
@@ -87,11 +84,23 @@ class _SetListState extends State<SetList> {
                         color: Color(0xFFFFFFFF),
                       ),
                       child: Center(
-                        child: Text(
-                          overflow: TextOverflow.fade,
-                          "${sets[index].name.toUpperCase()}",
-                          style: Theme.of(context).textTheme.displaySmall,
-                          textAlign: TextAlign.center,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                overflow: TextOverflow.fade,
+                                "${sets[index].name.toUpperCase()}",
+                                style: Theme.of(context).textTheme.displaySmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Text(
+                              overflow: TextOverflow.fade,
+                              "${sets[index].wordsInSet.length} \n слов",
+                              style: Theme.of(context).textTheme.titleLarge,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       )
                       // Column(

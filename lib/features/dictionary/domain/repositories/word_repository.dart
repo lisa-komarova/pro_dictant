@@ -1,11 +1,21 @@
 import 'package:dartz/dartz.dart';
 import 'package:pro_dictant/core/error/failure.dart';
+import 'package:pro_dictant/features/dictionary/domain/entities/translation_entity.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 
 abstract class WordRepository {
   Future<Either<Failure, List<WordEntity>>> getAllWordsInDict();
 
   Future<Either<Failure, List<WordEntity>>> fetchWordBySource(String sorce);
+
+  Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWords(
+      List<WordEntity> words);
+
+  Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWordsInSet(
+      List<WordEntity> words, String setId);
+
+  Future<Either<Failure, List<WordEntity>>>
+      fetchTranslationsForSearchedWordsInSet(List<WordEntity> words);
 
   Future<Either<Failure, List<WordEntity>>> filterWords(
       String query, bool isNew, bool isLearning, bool isLearnt);
@@ -16,7 +26,17 @@ abstract class WordRepository {
 
   Future<Either<Failure, void>> addWord(WordEntity word);
 
-  Future<Either<Failure, void>> deleteWordFromDictionary(WordEntity word);
+  Future<Either<Failure, void>> deleteWordFromDictionary(
+      TranslationEntity translationEntity);
+
+  Future<Either<Failure, void>> deleteTranslation(
+      TranslationEntity translationEntity);
+
+  Future<Either<Failure, void>> addTranslation(
+      TranslationEntity translationEntity);
 
   Future<Either<Failure, void>> deleteWord(String wordId);
+
+  Future<Either<Failure, void>> updateTranslation(
+      TranslationEntity translationEntity);
 }

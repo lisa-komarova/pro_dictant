@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:pro_dictant/features/dictionary/domain/entities/translation_entity.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 
 abstract class WordsEvent extends Equatable {
@@ -21,6 +22,18 @@ class LoadWords extends WordsEvent {
   const LoadWords();
 }
 
+class FetchTranslationsForWords extends WordsEvent {
+  final List<WordEntity> words;
+
+  const FetchTranslationsForWords(this.words);
+}
+
+class FetchTranslationsForSearchedWords extends WordsEvent {
+  final List<WordEntity> words;
+
+  const FetchTranslationsForSearchedWords(this.words);
+}
+
 class FetchWordBySource extends WordsEvent {
   final String source;
 
@@ -28,15 +41,33 @@ class FetchWordBySource extends WordsEvent {
 }
 
 class DeleteWordFromDictionary extends WordsEvent {
-  final WordEntity word;
+  final TranslationEntity translationEntity;
 
-  const DeleteWordFromDictionary(this.word);
+  const DeleteWordFromDictionary(this.translationEntity);
 }
 
 class UpdateWord extends WordsEvent {
   final WordEntity word;
 
   const UpdateWord(this.word);
+}
+
+class UpdateTranslation extends WordsEvent {
+  final TranslationEntity translation;
+
+  const UpdateTranslation(this.translation);
+}
+
+class DeleteTranslation extends WordsEvent {
+  final TranslationEntity translation;
+
+  const DeleteTranslation(this.translation);
+}
+
+class AddTranslation extends WordsEvent {
+  final TranslationEntity translation;
+
+  const AddTranslation(this.translation);
 }
 
 class AddWord extends WordsEvent {

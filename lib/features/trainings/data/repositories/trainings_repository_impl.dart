@@ -1,0 +1,134 @@
+import 'package:dartz/dartz.dart';
+import 'package:pro_dictant/core/error/exception.dart';
+import 'package:pro_dictant/core/error/failure.dart';
+import 'package:pro_dictant/features/trainings/data/data_sources/trainings_datasource.dart';
+import 'package:pro_dictant/features/trainings/data/models/matching_training_model.dart';
+import 'package:pro_dictant/features/trainings/data/models/wt_training_model.dart';
+import 'package:pro_dictant/features/trainings/domain/entities/matching_training_entity.dart';
+import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
+import 'package:pro_dictant/features/trainings/domain/repositories/trainings_repository.dart';
+
+import '../../domain/entities/tw_training_entity.dart';
+import '../models/tw_training_model.dart';
+
+class TrainingsRepositoryImpl extends TrainingsRepository {
+  final TrainingsDatasource trainingsDataSource;
+
+  TrainingsRepositoryImpl({required this.trainingsDataSource});
+
+  @override
+  Future<Either<Failure, List<WTTrainingEntity>>>
+      fetchWordsForWTTraining() async {
+    try {
+      final wtWords = await trainingsDataSource.fetchWordsForWTTraining();
+      return Right(wtWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<WTTrainingEntity>>>
+      addSuggestedTranslationsToWordsInWT(List<WTTrainingEntity> words) async {
+    try {
+      List<WTTraningModel> wordsModel = [];
+      words.forEach((element) {
+        WTTraningModel newModel = WTTraningModel(
+            id: element.id,
+            source: element.source,
+            translation: element.translation);
+        wordsModel.add(newModel);
+      });
+
+      final modifiedWords = await trainingsDataSource
+          .addSuggestedTranslationsToWordsInWT(wordsModel);
+      return Right(modifiedWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateWordsForWTTraining(
+      List<String> toUpdate) async {
+    try {
+      await trainingsDataSource.updateWordsForWTTraining(toUpdate);
+      return Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateWordsForTWTraining(
+      List<String> toUpdate) async {
+    try {
+      await trainingsDataSource.updateWordsForTWTraining(toUpdate);
+      return Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<TWTrainingEntity>>>
+      fetchWordsForTWTraining() async {
+    try {
+      final twWords = await trainingsDataSource.fetchWordsForTWTraining();
+      return Right(twWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<TWTrainingEntity>>>
+      addSuggestedSourcesToWordsInTW(List<TWTrainingEntity> words) async {
+    try {
+      List<TWTraningModel> wordsModel = [];
+      words.forEach((element) {
+        TWTraningModel newModel = TWTraningModel(
+            id: element.id,
+            source: element.source,
+            translation: element.translation);
+        wordsModel.add(newModel);
+      });
+
+      final modifiedWords =
+          await trainingsDataSource.addSuggestedSourcesToWordsInTW(wordsModel);
+      return Right(modifiedWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MatchingTrainingEntity>>>
+      fetchWordsForMatchingTraining() async {
+    try {
+      final twWords = await trainingsDataSource.fetchWordsForMatchingTraining();
+      return Right(twWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateWordsForMatchingTraining(
+      List<MatchingTrainingEntity> toUpdate) async {
+    List<MatchingTrainingModel> toUpdateModels = [];
+    toUpdate.forEach((element) {
+      MatchingTrainingModel model = MatchingTrainingModel(
+          id: element.id,
+          source: element.source,
+          translation: element.translation);
+      toUpdateModels.add(model);
+    });
+    try {
+      await trainingsDataSource.updateWordsForMatchingTraining(toUpdateModels);
+      return Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+}

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 
+import '../manager/sets_bloc/set_bloc.dart';
+import '../manager/sets_bloc/set_event.dart';
 import '../widgets/set_words_list.dart';
 
 class SetsWordsPage extends StatefulWidget {
@@ -16,22 +19,26 @@ class SetsWordsPage extends StatefulWidget {
 class _SetsWordsPageState extends State<SetsWordsPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.set.name.toUpperCase(),
-          style: GoogleFonts.hachiMaruPop(),
+    return PopScope(
+      onPopInvoked: (didPope) {
+        BlocProvider.of<SetBloc>(context).add(LoadSets());
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.set.name.toUpperCase(),
+            style: GoogleFonts.hachiMaruPop(),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: () {
+              BlocProvider.of<SetBloc>(context).add(LoadSets());
+              Navigator.of(context).pop();
+            },
+            icon: Image.asset('assets/icons/cancel.png'),
+          ),
         ),
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Image.asset('assets/icons/cancel.png'),
-        ),
-      ),
-      body: SetWordsList(
-        wordInSet: widget.set.wordsInSet,
+        body: SetWordsList(),
       ),
     );
   }

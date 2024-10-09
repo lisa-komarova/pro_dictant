@@ -9,6 +9,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.11.0"
+  auto_size_text:
+    dependency: "direct main"
+    description:
+      name: auto_size_text
+      sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.0"
   bloc:
     dependency: transitive
     description:
@@ -341,6 +349,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.5.3"
+  sqlite_bm25:
+    dependency: "direct main"
+    description:
+      name: sqlite_bm25
+      sha256: "66bdb4193988ec2030bc47be91736ec02661664786124bb45c1b74da25314130"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.0"
   stack_trace:
     dependency: transitive
     description:

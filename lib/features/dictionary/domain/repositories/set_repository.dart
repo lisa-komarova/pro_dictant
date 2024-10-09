@@ -6,4 +6,7 @@ abstract class SetRepository {
   Future<Either<Failure, List<SetEntity>>> loadSets();
 
   Future<Either<Failure, void>> addSet(SetEntity set);
+
+  Future<Either<Failure, List<SetEntity>>> fetchWordsForSets(
+      List<SetEntity> sets);
 }

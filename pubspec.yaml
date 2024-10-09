@@ -45,6 +45,8 @@ dependencies:
   google_fonts: 6.1.0
   flutter_tts: ^4.0.2
   uuid: ^4.4.0
+  sqlite_bm25: ^0.3.0
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

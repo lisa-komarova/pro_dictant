@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
+import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
+
+import 'matching_in_process_page.dart';
 
 class TrainingsPage extends StatelessWidget {
   const TrainingsPage({super.key});
@@ -18,18 +25,42 @@ class TrainingsPage extends StatelessWidget {
               mainAxisSpacing: 20,
               crossAxisCount: 2,
               childAspectRatio: 0.95,
-              children: const <Widget>[
-                TrainingCard(
-                  training_name: 'слово-перевод',
-                  image_name: 'word-t',
+              children: <Widget>[
+                GestureDetector(
+                  child: TrainingCard(
+                    training_name: 'слово-перевод',
+                    image_name: 'word-t',
+                  ),
+                  onTap: () {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchWordsForWtTRainings());
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (ctx) => WTInProcessPage()));
+                  },
                 ),
-                TrainingCard(
-                  training_name: 'перевод-слово',
-                  image_name: 't-word',
+                GestureDetector(
+                  child: TrainingCard(
+                    training_name: 'перевод-слово',
+                    image_name: 't-word',
+                  ),
+                  onTap: () {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchWordsForTwTRainings());
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (ctx) => TWInProcessPage()));
+                  },
                 ),
-                TrainingCard(
-                  training_name: 'соответствие',
-                  image_name: 'word_matching',
+                GestureDetector(
+                  child: TrainingCard(
+                    training_name: 'соответствие',
+                    image_name: 'word_matching',
+                  ),
+                  onTap: () {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchWordsForMatchingTRainings());
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => MatchingInProcessPage()));
+                  },
                 ),
                 TrainingCard(
                   training_name: 'карточки',

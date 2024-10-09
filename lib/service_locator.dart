@@ -9,17 +9,36 @@ import 'package:pro_dictant/features/dictionary/data/repositories/word_repositor
 import 'package:pro_dictant/features/dictionary/domain/repositories/set_repository.dart';
 import 'package:pro_dictant/features/dictionary/domain/repositories/word_repository.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/add_set.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/add_translation.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/delete_translation.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/delete_word_from_dictionary.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_all_words_in_dict.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_sets.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_translations_for_searched_words_in_set.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_translations_for_words_in_set.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_word_by_source.dart';
-import 'package:pro_dictant/features/dictionary/domain/usecases/load_all_words_in_dict.dart';
-import 'package:pro_dictant/features/dictionary/domain/usecases/load_sets.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_words_for_sets.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/searchWordsForASet.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/update_translation.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/update_word.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
+import 'package:pro_dictant/features/trainings/data/data_sources/trainings_datasource.dart';
+import 'package:pro_dictant/features/trainings/data/repositories/trainings_repository_impl.dart';
+import 'package:pro_dictant/features/trainings/domain/repositories/trainings_repository.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/add_suggested_sources_to_words_in_tw.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/add_suggested_translations_to_words_in_wt.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_matching_training.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_wt_training.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_tw_trainings.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_wt_trainings.dart';
 
 import 'features/dictionary/domain/usecases/add_word.dart';
+import 'features/dictionary/domain/usecases/fetch_translations_for_words.dart';
 import 'features/dictionary/domain/usecases/filter_words.dart';
 import 'features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
+import 'features/trainings/domain/use_cases/fetch_words_for_tw_training.dart';
+import 'features/trainings/domain/use_cases/update_words_for_matching_training.dart';
+import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -28,27 +47,44 @@ Future<void> init() async {
 
   sl.registerFactory(
     () => WordsBloc(
-        loadWords: sl(),
-        filterWords: sl(),
-        deleteWordFromDictionary: sl(),
-        updateWord: sl(),
-        addWord: sl(),
-        fetchWordBySource: sl(),
-        searchWordsForASet: sl()),
+      loadWords: sl(),
+      filterWords: sl(),
+      deleteWordFromDictionary: sl(),
+      updateWord: sl(),
+      addWord: sl(),
+      fetchWordBySource: sl(),
+      searchWordsForASet: sl(),
+      updateTranslation: sl(),
+      fetchTranslationsForWords: sl(),
+      fetchTranslationsForSearchedWordsInSet: sl(),
+      deleteTranslation: sl(),
+      addTranslation: sl(),
+    ),
   );
   sl.registerFactory(() => SetBloc(
         loadSets: sl(),
         addSet: sl(),
+        fetchWordsForSets: sl(),
+        fetchTranslationsForWordsInSet: sl(),
       ));
-
+  sl.registerFactory(() => TrainingsBloc(
+        loadWords: sl(),
+        fetchWordsForTwTRainings: sl(),
+        fetchWordsForMatchingTRaining: sl(),
+        addSuggestedTranslationsToWordsInWT: sl(),
+        addSuggestedSourcesToWordsInTW: sl(),
+        updateWordsForWTTraining: sl(),
+        updateWordsForTWTraining: sl(),
+        updateWordsForMatchingTraining: sl(),
+      ));
   // UseCases
-  sl.registerLazySingleton(() => LoadAllWordsInDict(
+  sl.registerLazySingleton(() => FetchAllWordsInDict(
         wordRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchWordBySource(
         wordRepository: sl(),
       ));
-  sl.registerLazySingleton(() => LoadSets(
+  sl.registerLazySingleton(() => FetchSets(
         setRepository: sl(),
       ));
   sl.registerLazySingleton(() => FilterWords(
@@ -69,6 +105,51 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddSet(
         setRepository: sl(),
       ));
+  sl.registerLazySingleton(() => UpdateTranslation(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchWordsForWTTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => AddSuggestedTranslationsToWordsInWT(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchWordsForSets(
+        setRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchTranslationsForWords(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => DeleteTranslation(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => AddTranslation(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateWordsForWTTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => AddSuggestedSourcesToWordsInTW(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchWordsForTWTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchWordsForMatchingTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateWordsForTWTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateWordsForMatchingTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchTranslationsForWordsInSet(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchTranslationsForSearchedWordsInSet(
+        wordRepository: sl(),
+      ));
   // Repository
   sl.registerLazySingleton<WordRepository>(
     () => WordRepositoryImpl(
@@ -81,7 +162,11 @@ Future<void> init() async {
       localDataSource: sl(),
     ),
   );
-
+  sl.registerLazySingleton<TrainingsRepository>(
+    () => TrainingsRepositoryImpl(
+      trainingsDataSource: sl(),
+    ),
+  );
   sl.registerLazySingleton<WordRemoteDatasource>(
     () => WordRemoteDatasourceImpl(
       client: sl(),
@@ -91,7 +176,9 @@ Future<void> init() async {
   sl.registerLazySingleton<WordLocalDatasource>(
     () => WordsLocalDatasourceImpl(),
   );
-
+  sl.registerLazySingleton<TrainingsDatasource>(
+    () => TrainingsDatasourceImpl(),
+  );
   // Core
   sl.registerLazySingleton<NetworkInfo>(
     () => NetworkInfoImp(sl()),

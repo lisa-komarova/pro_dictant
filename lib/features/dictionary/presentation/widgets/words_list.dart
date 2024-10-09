@@ -30,7 +30,7 @@ class _WordsListState extends State<WordsList> {
       } else if (state is WordsLoading) {
         return _loadingIndicator();
       } else if (state is WordsLoaded) {
-        return buildWordsList(state.words.reversed.toList());
+        return buildWordsList(state.words.reversed.toSet().toList());
       } else if (state is WordsError) {
         return Text(
           state.message,
@@ -59,7 +59,21 @@ class _WordsListState extends State<WordsList> {
           shrinkWrap: true,
           itemCount: words.length,
           itemBuilder: (context, index) {
-            bool isInDictionary = (words[index].isInDictionary == 1);
+            //bool isInDictionary = (words[index].isInDictionary == 1);
+            final isInDictionary = words[index]
+                .translationList
+                .where((element) => element.isInDictionary == 1)
+                .toList()
+                .length;
+            final translation = isInDictionary > 0
+                ? words[index]
+                    .translationList
+                    .where((element) => element.isInDictionary == 1)
+                    .toList()
+                    .first
+                    .translation
+                : words[index].translationList.first.translation;
+
             return GestureDetector(
               onTap: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
@@ -87,8 +101,8 @@ class _WordsListState extends State<WordsList> {
                     child: Column(
                       children: [
                         ListTile(
-                          title: Text(
-                              "${words[index].source} - ${words[index].translations}"),
+                          title:
+                              Text("${words[index].source} - ${translation}"),
                         ),
                         Image.asset(
                           'assets/icons/divider.png',
@@ -98,7 +112,7 @@ class _WordsListState extends State<WordsList> {
                       ],
                     ),
                   ),
-                  isInDictionary
+                  /*isInDictionary
                       ? SizedBox()
                       : Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -107,7 +121,7 @@ class _WordsListState extends State<WordsList> {
                             width: 24,
                             height: 24,
                           ),
-                        ),
+                        ),*/
                 ],
               ),
             );

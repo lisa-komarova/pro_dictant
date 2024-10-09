@@ -47,43 +47,43 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
 
   _buildAButton(
       {required String title, required Color color, required bool isSelected}) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (title == titleNew) {
-            isNewSelected = !isNewSelected;
-            isLearningSelected = false;
-            isLearntSelected = false;
-            if (isNewSelected == false) {
-              BlocProvider.of<WordsBloc>(context).add(LoadWords());
-            } else {
-              BlocProvider.of<WordsBloc>(context)
-                  .add(FilterWords('', true, false, false));
+    return Flexible(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            if (title == titleNew) {
+              isNewSelected = !isNewSelected;
+              isLearningSelected = false;
+              isLearntSelected = false;
+              if (isNewSelected == false) {
+                BlocProvider.of<WordsBloc>(context).add(LoadWords());
+              } else {
+                BlocProvider.of<WordsBloc>(context)
+                    .add(FilterWords('', true, false, false));
+              }
+            } else if (title == titleLearning) {
+              isNewSelected = false;
+              isLearningSelected = !isLearningSelected;
+              isLearntSelected = false;
+              if (isLearningSelected == false) {
+                BlocProvider.of<WordsBloc>(context).add(LoadWords());
+              } else {
+                BlocProvider.of<WordsBloc>(context)
+                    .add(FilterWords('', false, true, false));
+              }
+            } else if (title == titleLearnt) {
+              isNewSelected = false;
+              isLearningSelected = false;
+              isLearntSelected = !isLearntSelected;
+              if (isLearntSelected == false) {
+                BlocProvider.of<WordsBloc>(context).add(LoadWords());
+              } else {
+                BlocProvider.of<WordsBloc>(context)
+                    .add(FilterWords('', false, false, true));
+              }
             }
-          } else if (title == titleLearning) {
-            isNewSelected = false;
-            isLearningSelected = !isLearningSelected;
-            isLearntSelected = false;
-            if (isLearningSelected == false) {
-              BlocProvider.of<WordsBloc>(context).add(LoadWords());
-            } else {
-              BlocProvider.of<WordsBloc>(context)
-                  .add(FilterWords('', false, true, false));
-            }
-          } else if (title == titleLearnt) {
-            isNewSelected = false;
-            isLearningSelected = false;
-            isLearntSelected = !isLearntSelected;
-            if (isLearntSelected == false) {
-              BlocProvider.of<WordsBloc>(context).add(LoadWords());
-            } else {
-              BlocProvider.of<WordsBloc>(context)
-                  .add(FilterWords('', false, false, true));
-            }
-          }
-        });
-      },
-      child: Flexible(
+          });
+        },
         child: Padding(
           padding: const EdgeInsets.all(5.0),
           child: AnimatedContainer(

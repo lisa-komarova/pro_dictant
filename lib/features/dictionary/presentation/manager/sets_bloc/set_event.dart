@@ -17,3 +17,21 @@ class AddSet extends SetsEvent {
 
   const AddSet({required this.set});
 }
+
+class FetchWordsForSets extends SetsEvent {
+  final List<SetEntity> sets;
+
+  const FetchWordsForSets({required this.sets});
+}
+
+class FetchTranslationsForWordsInSets extends SetsEvent {
+  final SetEntity set;
+
+  const FetchTranslationsForWordsInSets({required this.set});
+}
+
+class FetchTranslationsForSearchedWordsInSets extends SetsEvent {
+  final SetEntity set;
+
+  const FetchTranslationsForSearchedWordsInSets({required this.set});
+}

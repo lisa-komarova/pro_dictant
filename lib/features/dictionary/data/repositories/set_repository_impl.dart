@@ -33,4 +33,19 @@ class SetRepositoryImpl extends SetRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<SetEntity>>> fetchWordsForSets(
+      List<SetEntity> sets) async {
+    try {
+      List<SetModel> setModels = [];
+      sets.forEach((element) {
+        setModels.add(SetModel(id: element.id, name: element.name));
+      });
+      final setWithWords = await localDataSource.fetchWordsForSets(setModels);
+      return Right(setWithWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

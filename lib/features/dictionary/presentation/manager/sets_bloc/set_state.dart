@@ -21,6 +21,17 @@ class SetsLoaded extends SetsState {
   List<Object> get props => [sets];
 }
 
+class SetLoading extends SetsState {}
+
+class SetLoaded extends SetsState {
+  final SetEntity set;
+
+  const SetLoaded({required this.set});
+
+  @override
+  List<Object> get props => [set];
+}
+
 class SetsError extends SetsState {
   final String message;
 

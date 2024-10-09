@@ -9,7 +9,7 @@ import 'package:pro_dictant/features/dictionary/presentation/widgets/search_cont
 import 'package:pro_dictant/features/dictionary/presentation/widgets/words_list.dart';
 import 'package:uuid/uuid.dart';
 
-import '../widgets/word_form.dart';
+import 'word_form_page.dart';
 
 class UserDictionaryPage extends StatefulWidget {
   UserDictionaryPage({super.key});
@@ -57,7 +57,14 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          _showNewDialog(context);
+          final word = WordModel(
+            id: const Uuid().v4(),
+            source: '',
+            pos: '',
+            transcription: '',
+          );
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (ctx) => WordForm(word: word, isNew: true)));
         },
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -66,27 +73,6 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
           style: TextStyle(fontSize: 12),
         ),
       ),
-    );
-  }
-
-  Future<void> _showNewDialog(BuildContext context) {
-    //TODO add mapper and replace wordmodel
-    final word = WordModel(
-        id: const Uuid().v4(),
-        source: '',
-        pos: '',
-        transcription: '',
-        translations: '');
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: WordForm(
-            word: word,
-            isNew: true,
-          ),
-        );
-      },
     );
   }
 }

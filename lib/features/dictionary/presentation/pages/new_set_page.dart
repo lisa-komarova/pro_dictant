@@ -29,6 +29,7 @@ class _NewSetPageState extends State<NewSetPage> {
     _nameController.dispose();
     _searchController.dispose();
     myFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -173,7 +174,7 @@ class _NewSetPageState extends State<NewSetPage> {
                                           child: Align(
                                             alignment: Alignment.centerLeft,
                                             child: Text(
-                                              '${state.words[index].source} - ${state.words[index].translations}',
+                                              '${state.words[index].source} - ${state.words[index].translationList.first.translation}',
                                               textAlign: TextAlign.start,
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
@@ -277,7 +278,7 @@ class _NewSetPageState extends State<NewSetPage> {
                       children: [
                         ListTile(
                           title: Text(
-                            "${wordsInSet[index].source} - ${wordsInSet[index].translations}",
+                            "${wordsInSet[index].source} - ${wordsInSet[index].translationList.first.translation}",
                           ),
                         ),
                         Image.asset(

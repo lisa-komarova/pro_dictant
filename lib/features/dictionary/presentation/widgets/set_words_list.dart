@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 
 class SetWordsList extends StatelessWidget {
-  final List<WordEntity> wordInSet;
-
-  const SetWordsList({super.key, required this.wordInSet});
+  const SetWordsList({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +40,28 @@ class SetWordsList extends StatelessWidget {
             ),
           ),
         ),
-        buildWordsList(wordInSet),
+        BlocBuilder<SetBloc, SetsState>(builder: (context, state) {
+          if (state is SetLoading) {
+            return _loadingIndicator();
+          } else if (state is SetLoaded) {
+            return buildWordsList(state.set.wordsInSet);
+          }
+          return SizedBox();
+        }),
       ],
     );
   }
+}
+
+Widget _loadingIndicator() {
+  return const Expanded(
+    child: Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    ),
+  );
 }
 
 Expanded buildWordsList(List<WordEntity> words) {
@@ -50,13 +71,12 @@ Expanded buildWordsList(List<WordEntity> words) {
         shrinkWrap: true,
         itemCount: words.length,
         itemBuilder: (context, index) {
-          bool isInDictionary = (words[index].isInDictionary == 1);
+          //bool isInDictionary = (words[index].isInDictionary == 1);
           return GestureDetector(
             onTap: () async {
               FocusManager.instance.primaryFocus?.unfocus();
-              final returnedWord = await Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (ctx) => WordsDetails(word: words[index])));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (ctx) => WordsDetails(word: words[index])));
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -66,7 +86,7 @@ Expanded buildWordsList(List<WordEntity> words) {
                     children: [
                       ListTile(
                         title: Text(
-                            "${words[index].source} - ${words[index].translations}"),
+                            "${words[index].source} - ${words[index].translationList.first.translation}"),
                       ),
                       Image.asset(
                         'assets/icons/divider.png',
@@ -76,7 +96,7 @@ Expanded buildWordsList(List<WordEntity> words) {
                     ],
                   ),
                 ),
-                isInDictionary
+                /*isInDictionary
                     ? const SizedBox()
                     : Padding(
                         padding: const EdgeInsets.only(right: 8.0),
@@ -85,7 +105,7 @@ Expanded buildWordsList(List<WordEntity> words) {
                           width: 24,
                           height: 24,
                         ),
-                      ),
+                      ),*/
               ],
             ),
           );
