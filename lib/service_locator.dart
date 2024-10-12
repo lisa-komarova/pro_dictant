@@ -27,6 +27,7 @@ import 'package:pro_dictant/features/trainings/data/repositories/trainings_repos
 import 'package:pro_dictant/features/trainings/domain/repositories/trainings_repository.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/add_suggested_sources_to_words_in_tw.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/add_suggested_translations_to_words_in_wt.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_dictant_training.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_matching_training.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_wt_training.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_tw_trainings.dart';
@@ -37,6 +38,7 @@ import 'features/dictionary/domain/usecases/fetch_translations_for_words.dart';
 import 'features/dictionary/domain/usecases/filter_words.dart';
 import 'features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_tw_training.dart';
+import 'features/trainings/domain/use_cases/update_words_for_dictant_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_matching_training.dart';
 import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 
@@ -68,14 +70,16 @@ Future<void> init() async {
         fetchTranslationsForWordsInSet: sl(),
       ));
   sl.registerFactory(() => TrainingsBloc(
-        loadWords: sl(),
+        fetchWordsForWtTraining: sl(),
         fetchWordsForTwTRainings: sl(),
         fetchWordsForMatchingTRaining: sl(),
+        fetchWordsForDictantTraining: sl(),
         addSuggestedTranslationsToWordsInWT: sl(),
         addSuggestedSourcesToWordsInTW: sl(),
         updateWordsForWTTraining: sl(),
         updateWordsForTWTraining: sl(),
         updateWordsForMatchingTraining: sl(),
+        updateWordsForDictantTraining: sl(),
       ));
   // UseCases
   sl.registerLazySingleton(() => FetchAllWordsInDict(
@@ -141,7 +145,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateWordsForTWTraining(
         trainingsRepository: sl(),
       ));
+  sl.registerLazySingleton(() => FetchWordsForDictantTraining(
+        trainingsRepository: sl(),
+      ));
   sl.registerLazySingleton(() => UpdateWordsForMatchingTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateWordsForDictantTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchTranslationsForWordsInSet(
@@ -150,6 +160,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchTranslationsForSearchedWordsInSet(
         wordRepository: sl(),
       ));
+
   // Repository
   sl.registerLazySingleton<WordRepository>(
     () => WordRepositoryImpl(

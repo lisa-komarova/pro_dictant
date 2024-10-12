@@ -8,7 +8,9 @@ import 'package:pro_dictant/features/trainings/domain/entities/matching_training
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/repositories/trainings_repository.dart';
 
+import '../../domain/entities/dictant_training_entity.dart';
 import '../../domain/entities/tw_training_entity.dart';
+import '../models/dictant_training_model.dart';
 import '../models/tw_training_model.dart';
 
 class TrainingsRepositoryImpl extends TrainingsRepository {
@@ -127,6 +129,37 @@ class TrainingsRepositoryImpl extends TrainingsRepository {
     try {
       await trainingsDataSource.updateWordsForMatchingTraining(toUpdateModels);
       return Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateWordsForDictantTraining(
+      List<DictantTrainingEntity> toUpdate) async {
+    List<DictantTrainingModel> toUpdateModels = [];
+    toUpdate.forEach((element) {
+      DictantTrainingModel model = DictantTrainingModel(
+          id: element.id,
+          source: element.source,
+          translation: element.translation);
+      toUpdateModels.add(model);
+    });
+    try {
+      await trainingsDataSource.updateWordsForDictantTraining(toUpdateModels);
+      return Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<DictantTrainingEntity>>>
+      fetchWordsForDictantTraining() async {
+    try {
+      final dictantWords =
+          await trainingsDataSource.fetchWordsForDictantTraining();
+      return Right(dictantWords);
     } on ServerException {
       return Left(ServerFailure());
     }

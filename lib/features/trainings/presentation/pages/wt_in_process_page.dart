@@ -45,17 +45,6 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
             } else if (state is TrainingLoading) {
               return _loadingIndicator();
             } else if (state is WTTrainingLoaded) {
-              if (state.words.length < 10) {
-                return Expanded(
-                  child: Center(
-                    child: Text(
-                      "Пока недостаточно слов для тренировки ˙◠˙",
-                      style: Theme.of(context).textTheme.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-              }
               return _buildWordCard(state.words);
             } else
               return SizedBox();

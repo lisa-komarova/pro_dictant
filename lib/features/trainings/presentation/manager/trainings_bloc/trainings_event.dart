@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/matching_training_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 
+import '../../../domain/entities/dictant_training_entity.dart';
 import '../../../domain/entities/tw_training_entity.dart';
 
 abstract class TrainingsEvent extends Equatable {
@@ -23,6 +24,10 @@ class FetchWordsForTwTRainings extends TrainingsEvent {
   const FetchWordsForTwTRainings();
 }
 
+class FetchWordsForDictantTRainings extends TrainingsEvent {
+  const FetchWordsForDictantTRainings();
+}
+
 class UpdateWordsForWtTRainings extends TrainingsEvent {
   final List<String> toUpdate;
 
@@ -39,6 +44,12 @@ class UpdateWordsForMatchingTRainings extends TrainingsEvent {
   final List<MatchingTrainingEntity> toUpdate;
 
   const UpdateWordsForMatchingTRainings(this.toUpdate);
+}
+
+class UpdateWordsForDictantTRainings extends TrainingsEvent {
+  final List<DictantTrainingEntity> toUpdate;
+
+  const UpdateWordsForDictantTRainings(this.toUpdate);
 }
 
 class AddSuggestedTranslationsToWordsInWT extends TrainingsEvent {

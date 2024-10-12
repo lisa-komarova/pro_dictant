@@ -6,6 +6,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
 
+import 'dictant_in_process_page.dart';
 import 'matching_in_process_page.dart';
 
 class TrainingsPage extends StatelessWidget {
@@ -66,9 +67,17 @@ class TrainingsPage extends StatelessWidget {
                   training_name: 'карточки',
                   image_name: 'sprint',
                 ),
-                TrainingCard(
-                  training_name: 'диктант',
-                  image_name: 'dictant',
+                GestureDetector(
+                  child: TrainingCard(
+                    training_name: 'диктант',
+                    image_name: 'dictant',
+                  ),
+                  onTap: () {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchWordsForDictantTRainings());
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => DictantInProcessPage()));
+                  },
                 ),
                 TrainingCard(
                   training_name: 'повторение',

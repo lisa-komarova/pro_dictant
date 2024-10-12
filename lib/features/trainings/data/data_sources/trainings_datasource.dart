@@ -10,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../../dictionary/data/models/word_model.dart';
 import '../../../dictionary/domain/entities/word_entity.dart';
+import '../models/dictant_training_model.dart';
 import '../models/matching_training_model.dart';
 import '../models/tw_training_model.dart';
 
@@ -19,6 +20,8 @@ abstract class TrainingsDatasource {
   Future<List<TWTraningModel>> fetchWordsForTWTraining();
 
   Future<List<MatchingTrainingModel>> fetchWordsForMatchingTraining();
+
+  Future<List<DictantTrainingModel>> fetchWordsForDictantTraining();
 
   Future<List<WTTraningModel>> addSuggestedTranslationsToWordsInWT(
       List<WTTraningModel> words);
@@ -32,6 +35,9 @@ abstract class TrainingsDatasource {
 
   Future<void> updateWordsForMatchingTraining(
       List<MatchingTrainingModel> toUpdate);
+
+  Future<void> updateWordsForDictantTraining(
+      List<DictantTrainingModel> toUpdate);
 }
 
 class TrainingsDatasourceImpl extends TrainingsDatasource {
@@ -209,6 +215,35 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
             '''update words_translations set isMatching = 1 where id = \'${toUpdate[i].id}\'''');
+      }
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<DictantTrainingModel>> fetchWordsForDictantTraining() async {
+    final db = await database;
+    List<DictantTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isDictant =0 ORDER by random() limit 10''');
+
+      words = maps.map((map) => DictantTrainingModel.fromJson(map)).toList();
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> updateWordsForDictantTraining(
+      List<DictantTrainingModel> toUpdate) async {
+    final db = await database;
+    try {
+      for (int i = 0; i < toUpdate.length; i++) {
+        await db!.rawQuery(
+            '''update words_translations set isDictant = 1 where id = \'${toUpdate[i].id}\'''');
       }
     } on Exception catch (_) {
       throw ServerException();
