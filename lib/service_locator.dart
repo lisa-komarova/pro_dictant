@@ -37,7 +37,9 @@ import 'features/dictionary/domain/usecases/add_word.dart';
 import 'features/dictionary/domain/usecases/fetch_translations_for_words.dart';
 import 'features/dictionary/domain/usecases/filter_words.dart';
 import 'features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
+import 'features/trainings/domain/use_cases/fetch_words_for_cards_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_tw_training.dart';
+import 'features/trainings/domain/use_cases/update_words_for_cards_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_dictant_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_matching_training.dart';
 import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
@@ -80,6 +82,8 @@ Future<void> init() async {
         updateWordsForTWTraining: sl(),
         updateWordsForMatchingTraining: sl(),
         updateWordsForDictantTraining: sl(),
+        updateWordsForCardsTraining: sl(),
+        fetchWordsForCardsTraining: sl(),
       ));
   // UseCases
   sl.registerLazySingleton(() => FetchAllWordsInDict(
@@ -148,10 +152,16 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchWordsForDictantTraining(
         trainingsRepository: sl(),
       ));
+  sl.registerLazySingleton(() => FetchWordsForCardsTraining(
+        trainingsRepository: sl(),
+      ));
   sl.registerLazySingleton(() => UpdateWordsForMatchingTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => UpdateWordsForDictantTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateWordsForCardsTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchTranslationsForWordsInSet(

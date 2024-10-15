@@ -40,6 +40,31 @@ class SetWordsList extends StatelessWidget {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () {},
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Color(0xFFB70E0E),
+              ),
+              height: 50,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: FittedBox(
+                    child: Text(
+                      'Добавить в словарь',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.hachiMaruPop(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
         BlocBuilder<SetBloc, SetsState>(builder: (context, state) {
           if (state is SetLoading) {
             return _loadingIndicator();

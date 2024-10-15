@@ -14,12 +14,6 @@ class DictantTrainingModel extends DictantTrainingEntity {
           translation: translation,
         );
 
-  Map<String, Object?> toJson() => {
-        TranslationFields.id: id,
-        WordsFields.source: source,
-        TranslationFields.translation: translation,
-      };
-
   static DictantTrainingModel fromJson(Map<String, Object?> json) =>
       DictantTrainingModel(
         id: json[TranslationFields.id] as String,

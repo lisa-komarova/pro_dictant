@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:pro_dictant/core/error/failure.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 
+import '../entities/cards_training_entity.dart';
 import '../entities/dictant_training_entity.dart';
 import '../entities/matching_training_entity.dart';
 import '../entities/tw_training_entity.dart';
@@ -18,6 +19,9 @@ abstract class TrainingsRepository {
   Future<Either<Failure, void>> updateWordsForDictantTraining(
       List<DictantTrainingEntity> toUpdate);
 
+  Future<Either<Failure, void>> updateWordsForCardsTraining(
+      List<CardsTrainingEntity> toUpdate);
+
   Future<Either<Failure, List<WTTrainingEntity>>>
       addSuggestedTranslationsToWordsInWT(List<WTTrainingEntity> words);
 
@@ -29,6 +33,9 @@ abstract class TrainingsRepository {
 
   Future<Either<Failure, List<DictantTrainingEntity>>>
       fetchWordsForDictantTraining();
+
+  Future<Either<Failure, List<CardsTrainingEntity>>>
+      fetchWordsForCardsTraining();
 
   Future<Either<Failure, void>> updateWordsForMatchingTraining(
       List<MatchingTrainingEntity> toUpdate);

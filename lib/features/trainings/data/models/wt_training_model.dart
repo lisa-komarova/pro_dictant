@@ -18,12 +18,6 @@ class WTTraningModel extends WTTrainingEntity {
           translation: translation,
         );
 
-  Map<String, Object?> toJson() => {
-        TranslationFields.id: id,
-        WordsFields.source: source,
-        TranslationFields.translation: translation,
-      };
-
   static WTTraningModel fromJson(Map<String, Object?> json) => WTTraningModel(
         id: json[TranslationFields.id] as String,
         source: json[WordsFields.source] as String,

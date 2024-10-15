@@ -10,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../../dictionary/data/models/word_model.dart';
 import '../../../dictionary/domain/entities/word_entity.dart';
+import '../models/cards_translation_model.dart';
 import '../models/dictant_training_model.dart';
 import '../models/matching_training_model.dart';
 import '../models/tw_training_model.dart';
@@ -22,6 +23,8 @@ abstract class TrainingsDatasource {
   Future<List<MatchingTrainingModel>> fetchWordsForMatchingTraining();
 
   Future<List<DictantTrainingModel>> fetchWordsForDictantTraining();
+
+  Future<List<CardsTrainingModel>> fetchWordsForCardsTraining();
 
   Future<List<WTTraningModel>> addSuggestedTranslationsToWordsInWT(
       List<WTTraningModel> words);
@@ -38,6 +41,8 @@ abstract class TrainingsDatasource {
 
   Future<void> updateWordsForDictantTraining(
       List<DictantTrainingModel> toUpdate);
+
+  Future<void> updateWordsForCardsTraining(List<CardsTrainingModel> toUpdate);
 }
 
 class TrainingsDatasourceImpl extends TrainingsDatasource {
@@ -244,6 +249,35 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
             '''update words_translations set isDictant = 1 where id = \'${toUpdate[i].id}\'''');
+      }
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<CardsTrainingModel>> fetchWordsForCardsTraining() async {
+    final db = await database;
+    List<CardsTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation where words_translations.isInDictionary =1 and words_translations.isCards =0 and table2.isInDictionary =1 order by random() limit 500 ''');
+
+      words = maps.map((map) => CardsTrainingModel.fromJson(map)).toList();
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> updateWordsForCardsTraining(
+      List<CardsTrainingModel> toUpdate) async {
+    final db = await database;
+    try {
+      for (int i = 0; i < toUpdate.length; i++) {
+        await db!.rawQuery(
+            '''update words_translations set isCards = 1 where id = \'${toUpdate[i].id}\'''');
       }
     } on Exception catch (_) {
       throw ServerException();

@@ -14,12 +14,6 @@ class MatchingTrainingModel extends MatchingTrainingEntity {
           translation: translation,
         );
 
-  Map<String, Object?> toJson() => {
-        TranslationFields.id: id,
-        WordsFields.source: source,
-        TranslationFields.translation: translation,
-      };
-
   static MatchingTrainingModel fromJson(Map<String, Object?> json) =>
       MatchingTrainingModel(
         id: json[TranslationFields.id] as String,

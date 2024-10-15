@@ -21,7 +21,9 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 
+import '../../../domain/use_cases/fetch_words_for_cards_training.dart';
 import '../../../domain/use_cases/fetch_words_for_dictant_training.dart';
+import '../../../domain/use_cases/update_words_for_cards_training.dart';
 import '../../../domain/use_cases/update_words_for_dictant_training.dart';
 
 const SERVER_FAILURE_MESSAGE = 'Server Failure';
@@ -39,6 +41,8 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   final usecase8.UpdateWordsForMatchingTraining updateWordsForMatchingTraining;
   final FetchWordsForDictantTraining fetchWordsForDictantTraining;
   final UpdateWordsForDictantTraining updateWordsForDictantTraining;
+  final FetchWordsForCardsTraining fetchWordsForCardsTraining;
+  final UpdateWordsForCardsTraining updateWordsForCardsTraining;
 
   TrainingsBloc({
     required this.fetchWordsForWtTraining,
@@ -51,11 +55,14 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     required this.updateWordsForMatchingTraining,
     required this.fetchWordsForDictantTraining,
     required this.updateWordsForDictantTraining,
+    required this.fetchWordsForCardsTraining,
+    required this.updateWordsForCardsTraining,
   }) : super(TrainingLoading()) {
     on<FetchWordsForWtTRainings>(_onFetchWordsForWtTRainingsEvent);
     on<FetchWordsForTwTRainings>(_onFetchWordsForTwTRainingsEvent);
     on<FetchWordsForMatchingTRainings>(_onFetchWordsForMatchingTRainingsEvent);
     on<FetchWordsForDictantTRainings>(_onFetchWordsForDictantTRainingsEvent);
+    on<FetchWordsForCardsTRainings>(_onFetchWordsForCardsTRainingsEvent);
     on<AddSuggestedTranslationsToWordsInWT>(
         _onAddSuggestedTranslationsToWordsInWTEvent);
     on<AddSuggestedSourcesToWordsInTW>(_onAddSuggestedSourcesToWordsInTWEvent);
@@ -64,6 +71,7 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     on<UpdateWordsForMatchingTRainings>(
         _onUpdateWordsForMatchingTRainingsEvent);
     on<UpdateWordsForDictantTRainings>(_onUpdateWordsForDictantTRainingsEvent);
+    on<UpdateWordsForCardsTRainings>(_onUpdateWordsForCardsTRainingsEvent);
   }
 
   FutureOr<void> _onFetchWordsForWtTRainingsEvent(
@@ -82,6 +90,26 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
         emit(TrainingEmpty());
       } else {
         add(AddSuggestedTranslationsToWordsInWT(words));
+      }
+    });
+  }
+
+  FutureOr<void> _onFetchWordsForCardsTRainingsEvent(
+      FetchWordsForCardsTRainings event, Emitter<TrainingsState> emit) async {
+    //TODO check what it's for
+    //if (state is WordsLoading) return;
+
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchWordsForCardsTraining();
+
+    failureOrWords.fold(
+        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+        (words) {
+      if (words.isEmpty) {
+        emit(TrainingEmpty());
+      } else {
+        emit(CardsTrainingLoaded(words: words));
       }
     });
   }
@@ -175,6 +203,13 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     //TODO check what it's for
     //if (state is WordsLoading) return;
     await updateWordsForDictantTraining(event.toUpdate);
+  }
+
+  FutureOr<void> _onUpdateWordsForCardsTRainingsEvent(
+      UpdateWordsForCardsTRainings event, Emitter<TrainingsState> emit) async {
+    //TODO check what it's for
+    //if (state is WordsLoading) return;
+    await updateWordsForCardsTraining(event.toUpdate);
   }
 
   FutureOr<void> _onAddSuggestedTranslationsToWordsInWTEvent(

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
-import 'package:pro_dictant/features/trainings/presentation/pages/matching_in_process_page.dart';
 
-import '../../domain/entities/matching_training_entity.dart';
+import '../../domain/entities/cards_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
+import 'cards_in_process_page.dart';
 
-class MatchingResultPage extends StatelessWidget {
-  final List<MatchingTrainingEntity> correctAnswers;
-  final List<MatchingTrainingEntity> mistakes;
+class CardsResultPage extends StatelessWidget {
+  final List<CardsTrainingEntity> correctAnswers;
+  final List<CardsTrainingEntity> mistakes;
 
-  const MatchingResultPage(
+  const CardsResultPage(
       {required this.correctAnswers, required this.mistakes, super.key});
 
   @override
@@ -60,8 +60,8 @@ class MatchingResultPage extends StatelessWidget {
                                     return Column(
                                       children: [
                                         Text(
-                                          correctAnswers[index].source,
-                                          style: TextStyle(
+                                          '${correctAnswers[index].source} - ${correctAnswers[index].translation}',
+                                          style: const TextStyle(
                                               color: Color(0xFF85977f)),
                                         ),
                                         Image.asset(
@@ -94,8 +94,8 @@ class MatchingResultPage extends StatelessWidget {
                                     return Column(
                                       children: [
                                         Text(
-                                          mistakes[index].source,
-                                          style: TextStyle(
+                                          '${mistakes[index].source} - ${mistakes[index].translation}',
+                                          style: const TextStyle(
                                               color: Color(0xFFB70E0E)),
                                         ),
                                         Image.asset(
@@ -122,15 +122,15 @@ class MatchingResultPage extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   BlocProvider.of<TrainingsBloc>(context)
-                      .add(FetchWordsForMatchingTRainings());
+                      .add(const FetchWordsForCardsTRainings());
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => MatchingInProcessPage()));
+                      builder: (ctx) => const CardsInProcessPage()));
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                      color: Color(0xFFD9C3AC),
+                      color: const Color(0xFFD9C3AC),
                       borderRadius: BorderRadius.circular(16)),
                   child: Text(
                     'продолжить тренировку',

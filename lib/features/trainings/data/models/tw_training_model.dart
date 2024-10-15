@@ -18,12 +18,6 @@ class TWTraningModel extends TWTrainingEntity {
           translation: translation,
         );
 
-  Map<String, Object?> toJson() => {
-        TranslationFields.id: id,
-        WordsFields.source: source,
-        TranslationFields.translation: translation,
-      };
-
   static TWTraningModel fromJson(Map<String, Object?> json) => TWTraningModel(
         id: json[TranslationFields.id] as String,
         source: json[WordsFields.source] as String,
