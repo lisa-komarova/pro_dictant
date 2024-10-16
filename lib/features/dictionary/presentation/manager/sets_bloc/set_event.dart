@@ -18,6 +18,12 @@ class AddSet extends SetsEvent {
   const AddSet({required this.set});
 }
 
+class DeleteSet extends SetsEvent {
+  final String setId;
+
+  const DeleteSet({required this.setId});
+}
+
 class FetchWordsForSets extends SetsEvent {
   final List<SetEntity> sets;
 

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 
 class WordsList extends StatefulWidget {
-  const WordsList({super.key});
+  TextEditingController editingController;
+
+  WordsList(this.editingController, {super.key});
 
   @override
   State<WordsList> createState() => _WordsListState();
@@ -77,6 +80,8 @@ class _WordsListState extends State<WordsList> {
             return GestureDetector(
               onTap: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
+                widget.editingController.text = '';
+                BlocProvider.of<WordsBloc>(context).add(LoadWords());
                 final returnedWord = await Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (ctx) => WordsDetails(word: words[index])));

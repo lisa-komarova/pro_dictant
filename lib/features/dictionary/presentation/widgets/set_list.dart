@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
@@ -18,13 +19,11 @@ class _SetListState extends State<SetList> {
   Widget build(BuildContext context) {
     return BlocBuilder<SetBloc, SetsState>(builder: (context, state) {
       if (state is SetsEmpty) {
-        return Expanded(
-          child: Center(
-            child: Text(
-              "Пока наборов слов нет ˙◠˙",
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
+        return Center(
+          child: Text(
+            "Пока наборов слов нет ˙◠˙",
+            style: Theme.of(context).textTheme.titleLarge,
+            textAlign: TextAlign.center,
           ),
         );
       } else if (state is SetsLoading) {
@@ -52,72 +51,86 @@ class _SetListState extends State<SetList> {
     );
   }
 
-  Expanded buildSetsList(List<SetEntity> sets) {
-    return Expanded(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 100,
-          ),
-          ListView.builder(
+  Widget buildSetsList(List<SetEntity> sets) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 100,
+        ),
+        Expanded(
+          child: ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             itemCount: sets.length,
             itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () async {
-                  BlocProvider.of<SetBloc>(context)
-                      .add(FetchTranslationsForWordsInSets(set: sets[index]));
-                  await Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => SetsWordsPage(set: sets[index])));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                      height: 100,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(
-                          color: const Color(0xFFD9C3AC),
-                        ),
-                        color: Color(0xFFFFFFFF),
+              return Dismissible(
+                direction: DismissDirection.endToStart,
+                key: ValueKey(sets[index]),
+                background: Row(
+                  children: [
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/icons/delete.png',
+                        width: 35,
+                        height: 35,
+                        color: Color(0xFFB70E0E),
                       ),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
+                    ),
+                  ],
+                ),
+                onDismissed: (DismissDirection direction) {
+                  BlocProvider.of<SetBloc>(context)
+                      .add(DeleteSet(setId: sets[index].id));
+                },
+                child: GestureDetector(
+                  onTap: () async {
+                    BlocProvider.of<SetBloc>(context)
+                        .add(FetchTranslationsForWordsInSets(set: sets[index]));
+                    await Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => SetsWordsPage(set: sets[index])));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                        height: 100,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: const Color(0xFFD9C3AC),
+                          ),
+                          color: Color(0xFFFFFFFF),
+                        ),
+                        child: Center(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: AutoSizeText(
+                                  overflow: TextOverflow.fade,
+                                  "${sets[index].name.toUpperCase()}",
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Text(
                                 overflow: TextOverflow.fade,
-                                "${sets[index].name.toUpperCase()}",
-                                style: Theme.of(context).textTheme.displaySmall,
+                                "${sets[index].wordsInSet.length} \n слов",
+                                style: Theme.of(context).textTheme.titleLarge,
                                 textAlign: TextAlign.center,
                               ),
-                            ),
-                            Text(
-                              overflow: TextOverflow.fade,
-                              "${sets[index].wordsInSet.length} \n слов",
-                              style: Theme.of(context).textTheme.titleLarge,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                      // Column(
-                      //   children: [
-                      //
-                      //     // ListTile(
-                      //     //   title: Text("${sets[index].name} "),
-                      //     // ),
-                      //   ],
-                      // ),
-                      ),
+                            ],
+                          ),
+                        )),
+                  ),
                 ),
               );
             },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

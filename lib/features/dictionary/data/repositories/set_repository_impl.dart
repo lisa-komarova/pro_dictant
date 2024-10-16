@@ -35,6 +35,16 @@ class SetRepositoryImpl extends SetRepository {
   }
 
   @override
+  Future<Either<Failure, void>> deleteSet(String setId) async {
+    try {
+      await localDataSource.deleteSet(setId);
+      return const Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, List<SetEntity>>> fetchWordsForSets(
       List<SetEntity> sets) async {
     try {

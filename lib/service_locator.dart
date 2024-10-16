@@ -10,6 +10,7 @@ import 'package:pro_dictant/features/dictionary/domain/repositories/set_reposito
 import 'package:pro_dictant/features/dictionary/domain/repositories/word_repository.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/add_set.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/add_translation.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/add_words_from_set_to_dictionary.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/delete_translation.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/delete_word_from_dictionary.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_all_words_in_dict.dart';
@@ -34,6 +35,7 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_wt_trainings.dart';
 
 import 'features/dictionary/domain/usecases/add_word.dart';
+import 'features/dictionary/domain/usecases/delete_set.dart';
 import 'features/dictionary/domain/usecases/fetch_translations_for_words.dart';
 import 'features/dictionary/domain/usecases/filter_words.dart';
 import 'features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
@@ -63,6 +65,7 @@ Future<void> init() async {
       fetchTranslationsForSearchedWordsInSet: sl(),
       deleteTranslation: sl(),
       addTranslation: sl(),
+      addWordsFromSetToDictionary: sl(),
     ),
   );
   sl.registerFactory(() => SetBloc(
@@ -70,6 +73,7 @@ Future<void> init() async {
         addSet: sl(),
         fetchWordsForSets: sl(),
         fetchTranslationsForWordsInSet: sl(),
+        deleteSet: sl(),
       ));
   sl.registerFactory(() => TrainingsBloc(
         fetchWordsForWtTraining: sl(),
@@ -107,10 +111,16 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddWord(
         wordRepository: sl(),
       ));
+  sl.registerLazySingleton(() => AddWordsFromSetToDictionary(
+        wordRepository: sl(),
+      ));
   sl.registerLazySingleton(() => SearchWordsForASet(
         wordRepository: sl(),
       ));
   sl.registerLazySingleton(() => AddSet(
+        setRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => DeleteSet(
         setRepository: sl(),
       ));
   sl.registerLazySingleton(() => UpdateTranslation(

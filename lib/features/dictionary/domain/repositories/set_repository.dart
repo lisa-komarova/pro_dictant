@@ -7,6 +7,8 @@ abstract class SetRepository {
 
   Future<Either<Failure, void>> addSet(SetEntity set);
 
+  Future<Either<Failure, void>> deleteSet(String setId);
+
   Future<Either<Failure, List<SetEntity>>> fetchWordsForSets(
       List<SetEntity> sets);
 }

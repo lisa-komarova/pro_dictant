@@ -28,7 +28,7 @@ class _UserSetPageState extends State<UserSetPage> {
       ),
       body: const Column(
         children: [
-          SetList(),
+          Expanded(child: SetList()),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

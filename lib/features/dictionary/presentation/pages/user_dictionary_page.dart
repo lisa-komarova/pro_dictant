@@ -52,7 +52,7 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
             },
           ),
           DictionaryFilterButtons(),
-          const WordsList(),
+          WordsList(editingController),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

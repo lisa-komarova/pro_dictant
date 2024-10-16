@@ -22,6 +22,8 @@ abstract class WordLocalDatasource {
 
   Future<void> addWord(WordModel word);
 
+  Future<void> addWordsFromSetToDictionary(List<TranslationModel> words);
+
   Future<void> addSet(SetModel set);
 
   Future<void> addTranslation(TranslationModel translation);
@@ -45,6 +47,8 @@ abstract class WordLocalDatasource {
   Future<void> deleteTranslation(TranslationModel translation);
 
   Future<void> deleteWord(String id);
+
+  Future<void> deleteSet(String setId);
 
   Future<List<WordModel>> getNewWords();
 
@@ -159,25 +163,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       where: 'id = ?',
       whereArgs: [word.id],
     );
-    // List<TranslationModel> trl = word.translationList
-    //     .map((e) => TranslationModel(
-    //           id: e.id,
-    //           wordId: e.wordId,
-    //           translation: e.translation,
-    //           notes: e.notes,
-    //           isInDictionary: e.isInDictionary,
-    //           isWT: e.isWT,
-    //           isTW: e.isTW,
-    //           isMatching: e.isMatching,
-    //           isCards: e.isCards,
-    //           isDictant: e.isDictant,
-    //           isRepeated: e.isRepeated,
-    //         ))
-    //     .toList();
-    // for (var tr in trl) {
-    //   await db!.rawQuery(
-    //       'insert or replace into words_translations (id, word_id, translation, notes, isInDictionary, isTW, isWT, isMatching, isCards, isDictant, isRepeated) values(\'${tr.id}\' , \'${tr.wordId}\', \'${tr.translation}\',\'${tr.notes}\', \'${tr.isInDictionary}\', \'${tr.isTW}\', \'${tr.isWT}\', \'${tr.isMatching}\',\'${tr.isCards}\',\'${tr.isDictant}\',\'${tr.isRepeated}\');');
-    // }
   }
 
   Future<void> addWord(WordModel word) async {
@@ -200,6 +185,22 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       await db.insert(
         tableTranslations,
         tr.toJson(),
+      );
+    }
+  }
+
+  Future<void> addWordsFromSetToDictionary(List<TranslationModel> words) async {
+// Get a reference to the database.
+    final db = await database;
+// Update the given word.
+    for (int i = 0; i < words.length; i++) {
+      words[i].isInDictionary = 1;
+      words[i].dateAddedToDictionary = DateTime.now().toString();
+      await db!.update(
+        tableTranslations,
+        words[i].toJson(),
+        where: 'id = ?',
+        whereArgs: [words[i].id],
       );
     }
   }
@@ -485,5 +486,15 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       updatedWords.addAll(wordsListToAdd);
     }
     return updatedWords;
+  }
+
+  @override
+  Future<void> deleteSet(String setId) async {
+    final db = await database;
+    await db!.delete(
+      tableSets,
+      where: 'id = ?',
+      whereArgs: [setId],
+    );
   }
 }

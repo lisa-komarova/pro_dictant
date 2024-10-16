@@ -211,4 +211,23 @@ class WordRepositoryImpl extends WordRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, void>> addWordsFromSetToDictionary(
+      List<TranslationEntity> words) async {
+    List<TranslationModel> wordsModels = [];
+    words.forEach((translationEntity) {
+      wordsModels.add(TranslationModel(
+          id: translationEntity.id,
+          wordId: translationEntity.wordId,
+          translation: translationEntity.translation,
+          notes: translationEntity.notes));
+    });
+    try {
+      await localDataSource.addWordsFromSetToDictionary(wordsModels);
+      return const Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

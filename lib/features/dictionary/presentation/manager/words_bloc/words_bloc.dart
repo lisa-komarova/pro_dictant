@@ -26,6 +26,8 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/update_word.dart
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 
+import '../../../domain/usecases/add_words_from_set_to_dictionary.dart'
+    as usecase11;
 import '../../../domain/usecases/fetch_word_by_source.dart' as usecase5;
 
 const SERVER_FAILURE_MESSAGE = 'Server Failure';
@@ -45,6 +47,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
       fetchTranslationsForSearchedWordsInSet;
   final usecase8.DeleteTranslation deleteTranslation;
   final usecase9.AddTranslation addTranslation;
+  final usecase11.AddWordsFromSetToDictionary addWordsFromSetToDictionary;
 
   WordsBloc({
     required this.loadWords,
@@ -59,6 +62,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     required this.fetchTranslationsForSearchedWordsInSet,
     required this.deleteTranslation,
     required this.addTranslation,
+    required this.addWordsFromSetToDictionary,
   }) : super(WordsLoading()) {
     on<LoadWords>(_onLoadWordsEvent);
     on<FilterWords>(_onFilterWordsEvent);
@@ -73,6 +77,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
         _onFetchTranslationsForSearchedWordsEvent);
     on<DeleteTranslation>(_onDeleteTranslationEvent);
     on<AddTranslation>(_onAddTranslationEvent);
+    on<AddWordsFromSetToDictionary>(_onAddWordsFromSetToDictionaryEvent);
   }
 
   FutureOr<void> _onLoadWordsEvent(
@@ -246,6 +251,11 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     await deleteTranslation(event.translation);
 
     add(LoadWords());
+  }
+
+  FutureOr<void> _onAddWordsFromSetToDictionaryEvent(
+      AddWordsFromSetToDictionary event, Emitter<WordsState> emit) async {
+    await addWordsFromSetToDictionary(event.words);
   }
 
   String _mapFailureToMessage(Failure failure) {

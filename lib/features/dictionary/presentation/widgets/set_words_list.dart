@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pro_dictant/features/dictionary/domain/entities/translation_entity.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
+import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
+
+import '../manager/words_bloc/words_bloc.dart';
 
 class SetWordsList extends StatelessWidget {
   const SetWordsList({
@@ -13,6 +17,7 @@ class SetWordsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<TranslationEntity> words = [];
     return Column(
       children: [
         Padding(
@@ -43,7 +48,15 @@ class SetWordsList extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              BlocProvider.of<WordsBloc>(context)
+                  .add(AddWordsFromSetToDictionary(words: words));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('слова добавлены в словарь!'),
+                ),
+              );
+            },
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
@@ -69,6 +82,9 @@ class SetWordsList extends StatelessWidget {
           if (state is SetLoading) {
             return _loadingIndicator();
           } else if (state is SetLoaded) {
+            for (int i = 0; i < state.set.wordsInSet.length; i++) {
+              words.add(state.set.wordsInSet[i].translationList.first);
+            }
             return buildWordsList(state.set.wordsInSet);
           }
           return SizedBox();

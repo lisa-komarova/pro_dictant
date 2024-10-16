@@ -31,18 +31,3 @@ class _WordsDetailsState extends State<WordsDetails> {
     );
   }
 }
-
-/*Future<void> _showUpdateDialog(BuildContext context, WordEntity word) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: WordForm(
-          word: word,
-          isNew: false,
-        ),
-        scrollable: true,
-      );
-    },
-  );
-}*/
