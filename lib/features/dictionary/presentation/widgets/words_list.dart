@@ -62,7 +62,6 @@ class _WordsListState extends State<WordsList> {
           shrinkWrap: true,
           itemCount: words.length,
           itemBuilder: (context, index) {
-            //bool isInDictionary = (words[index].isInDictionary == 1);
             final isInDictionary = words[index]
                 .translationList
                 .where((element) => element.isInDictionary == 1)
@@ -117,16 +116,6 @@ class _WordsListState extends State<WordsList> {
                       ],
                     ),
                   ),
-                  /*isInDictionary
-                      ? SizedBox()
-                      : Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            'assets/icons/add.png',
-                            width: 24,
-                            height: 24,
-                          ),
-                        ),*/
                 ],
               ),
             );

@@ -208,14 +208,22 @@ class _WordFormState extends State<WordForm> {
                             var existingTranslations = [];
                             if (widget.isNew) {
                               widget.word.translationList
-                                  .addAll(_translationControllerList
-                                      .map((e) => TranslationEntity(
-                                            id: const Uuid().v4(),
-                                            wordId: widget.word.id,
-                                            translation: e.text,
-                                            notes: '',
-                                          ))
-                                      .toList());
+                                  .addAll(_translationControllerList.map((e) {
+                                TranslationEntity newTranslation =
+                                    TranslationEntity(
+                                  id: const Uuid().v4(),
+                                  wordId: widget.word.id,
+                                  translation: e.text,
+                                  notes: '',
+                                );
+                                if (_translationControllerList.indexOf(e) ==
+                                    0) {
+                                  newTranslation.isInDictionary = 1;
+                                  newTranslation.dateAddedToDictionary =
+                                      DateTime.now().toString();
+                                }
+                                return newTranslation;
+                              }).toList());
                             } else {
                               existingTranslations = widget.word.translationList
                                   .map((e) => e.translation)

@@ -29,6 +29,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
   @override
   void initState() {
     super.initState();
+    sortTranslationList(widget.word);
     _pageViewController = PageController();
   }
 
@@ -256,6 +257,19 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                           ),
                         ),
                       ),
+                    if (translation.isInDictionary == 0)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8, right: 8, bottom: 8, top: 8),
+                        child: GestureDetector(
+                          onTap: () => _showDialogDelete(context, translation),
+                          child: Image.asset(
+                            'assets/icons/delete.png',
+                            width: 35,
+                            height: 35,
+                          ),
+                        ),
+                      ),
                     if (translation.isInDictionary == 0) Spacer(),
                     if (translation.isInDictionary == 0)
                       Padding(
@@ -367,6 +381,55 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
       },
     );
   }
+
+  void sortTranslationList(WordEntity word) {
+    List<TranslationEntity> inDictList = [];
+    word.translationList.forEach((e) {
+      if (e.isInDictionary == 1) inDictList.add(e);
+    });
+    word.translationList.removeWhere((element) => element.isInDictionary == 1);
+    inDictList.forEach((element) {
+      word.translationList.insert(0, element);
+    });
+  }
+}
+
+Future<void> _showDialogDelete(
+    BuildContext context, TranslationEntity translation) {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: const Text(
+          'Хотите удалить это слово из словаря навсегда?',
+        ),
+        actions: <Widget>[
+          TextButton(
+            style: TextButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.labelLarge,
+              foregroundColor: Color(0xFFB70E0E),
+            ),
+            child: const Text('удалить'),
+            onPressed: () {
+              BlocProvider.of<WordsBloc>(context)
+                  .add(DeleteTranslation(translation));
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.labelLarge,
+            ),
+            child: const Text('отмена'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
 Future<void> _showSendToLearntDialog(
