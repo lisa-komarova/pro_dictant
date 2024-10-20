@@ -11,7 +11,9 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:uuid/uuid.dart';
 
 class NewSetPage extends StatefulWidget {
-  const NewSetPage({super.key});
+  final SetEntity? set;
+
+  const NewSetPage({this.set, super.key});
 
   @override
   State<NewSetPage> createState() => _NewSetPageState();
@@ -23,6 +25,16 @@ class _NewSetPageState extends State<NewSetPage> {
   final FocusNode myFocusNode = FocusNode();
   final List<WordEntity> wordsInSet = [];
   bool isSearchShown = false;
+
+  @override
+  void initState() {
+    if (widget.set != null) {
+      wordsInSet.addAll(widget.set!.wordsInSet);
+      _nameController.text = widget.set!.name;
+    }
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -202,14 +214,52 @@ class _NewSetPageState extends State<NewSetPage> {
           child: GestureDetector(
             onTap: () {
               if (_nameController.text == '') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Введите название набора слов')));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Введите название набора слов')));
               } else {
-                SetEntity set =
-                    SetEntity(id: Uuid().v4(), name: _nameController.text);
-                set.wordsInSet.addAll(wordsInSet);
-                BlocProvider.of<SetBloc>(context).add(AddSet(set: set));
-                Navigator.of(context).pop();
+                if (widget.set != null) {
+                  SetEntity set =
+                      SetEntity(id: widget.set!.id, name: _nameController.text);
+                  final List<WordEntity> wordsInSetToAdd = [];
+                  final List<WordEntity> wordsInSetToDelete = [];
+                  if (wordsInSet.length > widget.set!.wordsInSet.length) {
+                    for (int i = 0; i < wordsInSet.length; i++) {
+                      if (widget.set!.wordsInSet.contains(wordsInSet[i]) &&
+                          !wordsInSet.contains(wordsInSet[i])) {
+                        wordsInSetToDelete.add(wordsInSet[i]);
+                      }
+                      if (!widget.set!.wordsInSet.contains(wordsInSet[i]) &&
+                          wordsInSet.contains(wordsInSet[i])) {
+                        wordsInSetToAdd.add(wordsInSet[i]);
+                      }
+                    }
+                  } else {
+                    for (int i = 0; i < widget.set!.wordsInSet.length; i++) {
+                      if (widget.set!.wordsInSet
+                              .contains(widget.set!.wordsInSet[i]) &&
+                          !wordsInSet.contains(widget.set!.wordsInSet[i])) {
+                        wordsInSetToDelete.add(widget.set!.wordsInSet[i]);
+                      }
+                      if (!widget.set!.wordsInSet
+                              .contains(widget.set!.wordsInSet[i]) &&
+                          wordsInSet.contains(widget.set!.wordsInSet[i])) {
+                        wordsInSetToAdd.add(widget.set!.wordsInSet[i]);
+                      }
+                    }
+                  }
+                  set.wordsInSet.addAll(wordsInSet);
+                  BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                      set: set,
+                      toAdd: wordsInSetToAdd,
+                      toDelete: wordsInSetToDelete));
+                  Navigator.of(context).pop();
+                } else {
+                  SetEntity set =
+                      SetEntity(id: Uuid().v4(), name: _nameController.text);
+                  set.wordsInSet.addAll(wordsInSet);
+                  BlocProvider.of<SetBloc>(context).add(AddSet(set: set));
+                  Navigator.of(context).pop();
+                }
               }
             },
             child: Container(
@@ -224,7 +274,7 @@ class _NewSetPageState extends State<NewSetPage> {
                   padding: const EdgeInsets.all(5.0),
                   child: FittedBox(
                     child: Text(
-                      'Сохранить',
+                      widget.set != null ? 'Обновить' : 'Сохранить',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.hachiMaruPop(
                           color: _nameController.text == ''

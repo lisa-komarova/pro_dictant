@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
+import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 
 abstract class SetsEvent extends Equatable {
   const SetsEvent();
@@ -16,6 +17,15 @@ class AddSet extends SetsEvent {
   final SetEntity set;
 
   const AddSet({required this.set});
+}
+
+class UpdateSet extends SetsEvent {
+  final SetEntity set;
+  final List<WordEntity> toAdd;
+  final List<WordEntity> toDelete;
+
+  const UpdateSet(
+      {required this.set, required this.toAdd, required this.toDelete});
 }
 
 class DeleteSet extends SetsEvent {

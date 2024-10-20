@@ -57,7 +57,7 @@ class TWResultPage extends StatelessWidget {
               onTap: () {
                 BlocProvider.of<TrainingsBloc>(context)
                     .add(FetchWordsForTwTRainings());
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (ctx) => TWInProcessPage()));
               },
               child: Container(

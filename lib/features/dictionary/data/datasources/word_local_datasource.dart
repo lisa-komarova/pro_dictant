@@ -18,6 +18,9 @@ abstract class WordLocalDatasource {
 
   Future<void> updateWord(WordModel word);
 
+  Future<void> updateSet(
+      SetModel set, List<WordModel> toAdd, List<WordModel> toDelete);
+
   Future<void> updateTranslation(TranslationModel translationModel);
 
   Future<void> addWord(WordModel word);
@@ -32,7 +35,7 @@ abstract class WordLocalDatasource {
 
   Future<List<SetModel>> fetchWordsForSets(List<SetModel> sets);
 
-  Future<List<WordModel>> searchWordForASet(String query);
+  //Future<List<WordModel>> searchWordForASet(String query);
 
   Future<List<WordModel>> fetchTranslationsForWords(List<WordModel> words);
 
@@ -237,6 +240,14 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  Future<void> deleteWordsInASet(List<WordModel> toDelete) async {
+    final db = await database;
+    for (WordModel word in toDelete) {
+      await db!.delete('word_set',
+          where: 'word_id = ?', whereArgs: [word.translationList.first.id]);
+    }
+  }
+
   Future<void> deleteWordFromDictionary(TranslationModel translation) async {
 // Get a reference to the database.
     final db = await database;
@@ -366,28 +377,28 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
-  @override
-  Future<List<WordModel>> searchWordForASet(String query) async {
-    final db = await instance.database;
-    List<WordModel> words = [];
-    final maps = await db!.query(
-      tableWords,
-      columns: WordsFields.values,
-      where: ' ${WordsFields.source} LIKE ?',
-      whereArgs: ['%$query%'],
-    );
-    if (maps.isNotEmpty) {
-      words = maps.map((map) => WordModel.fromJson(map)).toList();
-      // if (words.length >= 3) {
-      //   words = words.getRange(0, 3).toList();
-      // }
-      return words;
-    } else if (maps.isEmpty) {
-      return words;
-    } else {
-      throw ServerException();
-    }
-  }
+  // @override
+  // Future<List<WordModel>> searchWordForASet(String query) async {
+  //   final db = await instance.database;
+  //   List<WordModel> words = [];
+  //   final maps = await db!.query(
+  //     tableWords,
+  //     columns: WordsFields.values,
+  //     where: ' ${WordsFields.source} LIKE ?',
+  //     whereArgs: ['%$query%'],
+  //   );
+  //   if (maps.isNotEmpty) {
+  //     words = maps.map((map) => WordModel.fromJson(map)).toList();
+  //     // if (words.length >= 3) {
+  //     //   words = words.getRange(0, 3).toList();
+  //     // }
+  //     return words;
+  //   } else if (maps.isEmpty) {
+  //     return words;
+  //   } else {
+  //     throw ServerException();
+  //   }
+  // }
 
   @override
   Future<void> updateTranslation(TranslationModel translation) async {
@@ -496,5 +507,31 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       where: 'id = ?',
       whereArgs: [setId],
     );
+  }
+
+  @override
+  Future<void> updateSet(
+      SetModel set, List<WordModel> toAdd, List<WordModel> toDelete) async {
+    final db = await database;
+    await db!.update(
+      tableSets,
+      set.toJson(),
+      where: 'id = ?',
+      whereArgs: [set.id],
+    );
+    // List<WordModel> wordsInASetModels = [];
+    // for (var i = 0; i < set.wordsInSet.length; i++) {
+    //   wordsInASetModels.add(WordModel(
+    //     id: set.wordsInSet[i].id,
+    //     source: set.wordsInSet[i].source,
+    //     pos: set.wordsInSet[i].pos,
+    //     transcription: set.wordsInSet[i].transcription,
+    //   ));
+    //   wordsInASetModels[i]
+    //       .translationList
+    //       .addAll(set.wordsInSet[i].translationList);
+    // }
+    await addWordsInASet(toAdd, set.id);
+    await deleteWordsInASet(toDelete);
   }
 }

@@ -27,59 +27,59 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
         children: [
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Flexible(
-                  flex: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(widget.source),
-                  ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: Text(' - '),
-                ),
-                Flexible(
-                  flex: 4,
-                  child: Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          toShowCorrectAnswer = !toShowCorrectAnswer;
-                        });
-                      },
-                      child: Padding(
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: toShowCorrectAnswer
-                              ? Text(widget.correctAnswer)
-                              : Text(
-                                  widget.answer,
-                                  style: TextStyle(
-                                    color: widget.answer == widget.correctAnswer
-                                        ? Color(0xFF85977f)
-                                        : Color(0xFFB70E0E),
-                                  ),
-                                )),
-                    ),
+                          child: Text(widget.source),
+                        ),
+                      ),
+                      Text(' - '),
+                      Flexible(
+                        fit: FlexFit.tight,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              toShowCorrectAnswer = !toShowCorrectAnswer;
+                            });
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: toShowCorrectAnswer
+                                  ? Text(widget.correctAnswer)
+                                  : Text(
+                                      widget.answer,
+                                      style: TextStyle(
+                                        color: widget.answer ==
+                                                widget.correctAnswer
+                                            ? Color(0xFF85977f)
+                                            : Color(0xFFB70E0E),
+                                      ),
+                                    )),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Flexible(
-                  flex: 1,
-                  child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: widget.answer != widget.correctAnswer
-                          ? Image.asset(
-                              'assets/icons/cancel.png',
-                              width: 15,
-                              height: 15,
-                            )
-                          : Image.asset(
-                              'assets/icons/add.png',
-                              width: 15,
-                              height: 15,
-                            )),
-                ),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: widget.answer != widget.correctAnswer
+                        ? Image.asset(
+                            'assets/icons/cancel.png',
+                            width: 15,
+                            height: 15,
+                          )
+                        : Image.asset(
+                            'assets/icons/add.png',
+                            width: 15,
+                            height: 15,
+                          )),
               ],
             ),
           ),

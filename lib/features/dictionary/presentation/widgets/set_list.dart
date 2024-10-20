@@ -41,12 +41,10 @@ class _SetListState extends State<SetList> {
   }
 
   Widget _loadingIndicator() {
-    return const Expanded(
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

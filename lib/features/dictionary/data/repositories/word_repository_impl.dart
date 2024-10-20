@@ -117,7 +117,7 @@ class WordRepositoryImpl extends WordRepository {
   Future<Either<Failure, List<WordEntity>>> searchWordForASet(
       String query) async {
     try {
-      final words = await localDataSource.searchWordForASet(query);
+      final words = await localDataSource.filterWordsInDict(query);
       return Right(words);
     } on ServerException {
       return Left(ServerFailure());

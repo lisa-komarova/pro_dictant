@@ -38,6 +38,7 @@ import 'features/dictionary/domain/usecases/add_word.dart';
 import 'features/dictionary/domain/usecases/delete_set.dart';
 import 'features/dictionary/domain/usecases/fetch_translations_for_words.dart';
 import 'features/dictionary/domain/usecases/filter_words.dart';
+import 'features/dictionary/domain/usecases/update_set.dart';
 import 'features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_cards_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_tw_training.dart';
@@ -74,6 +75,7 @@ Future<void> init() async {
         fetchWordsForSets: sl(),
         fetchTranslationsForWordsInSet: sl(),
         deleteSet: sl(),
+        updateSet: sl(),
       ));
   sl.registerFactory(() => TrainingsBloc(
         fetchWordsForWtTraining: sl(),
@@ -121,6 +123,9 @@ Future<void> init() async {
         setRepository: sl(),
       ));
   sl.registerLazySingleton(() => DeleteSet(
+        setRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateSet(
         setRepository: sl(),
       ));
   sl.registerLazySingleton(() => UpdateTranslation(

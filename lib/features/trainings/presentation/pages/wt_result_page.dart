@@ -57,7 +57,7 @@ class WTResultPage extends StatelessWidget {
               onTap: () {
                 BlocProvider.of<TrainingsBloc>(context)
                     .add(FetchWordsForWtTRainings());
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (ctx) => WTInProcessPage()));
               },
               child: Container(

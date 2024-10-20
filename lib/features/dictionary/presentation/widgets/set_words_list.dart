@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/translation_entity.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
+import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 
 import '../manager/words_bloc/words_bloc.dart';
@@ -18,6 +20,7 @@ class SetWordsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<TranslationEntity> words = [];
+    SetEntity setEntity = SetEntity(id: '', name: '');
     return Column(
       children: [
         Padding(
@@ -45,43 +48,88 @@ class SetWordsList extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            onTap: () {
-              BlocProvider.of<WordsBloc>(context)
-                  .add(AddWordsFromSetToDictionary(words: words));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('слова добавлены в словарь!'),
-                ),
-              );
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Color(0xFFB70E0E),
-              ),
-              height: 50,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FittedBox(
-                    child: Text(
-                      'Добавить в словарь',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.hachiMaruPop(color: Colors.white),
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    BlocProvider.of<WordsBloc>(context)
+                        .add(AddWordsFromSetToDictionary(words: words));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('слова добавлены в словарь!'),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Color(0xFFB70E0E),
+                    ),
+                    height: 50,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: FittedBox(
+                          child: Text(
+                            'Добавить в словарь',
+                            textAlign: TextAlign.center,
+                            style:
+                                GoogleFonts.hachiMaruPop(color: Colors.white),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GestureDetector(
+                onTap: () {
+                  if (setEntity.id.isNotEmpty) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => NewSetPage(
+                              set: setEntity,
+                            )));
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Color(0xFF5E6B5A),
+                  ),
+                  height: 50,
+                  width: 60,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: FittedBox(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            'assets/icons/dictant.png',
+                            width: 35,
+                            height: 35,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         BlocBuilder<SetBloc, SetsState>(builder: (context, state) {
           if (state is SetLoading) {
             return _loadingIndicator();
           } else if (state is SetLoaded) {
+            setEntity = state.set;
             for (int i = 0; i < state.set.wordsInSet.length; i++) {
               words.add(state.set.wordsInSet[i].translationList.first);
             }

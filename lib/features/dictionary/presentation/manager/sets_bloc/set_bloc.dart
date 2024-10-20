@@ -12,6 +12,8 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_translatio
     as usecase4;
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_words_for_sets.dart'
     as usecase3;
+import 'package:pro_dictant/features/dictionary/domain/usecases/update_set.dart'
+    as usecase6;
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 
@@ -24,6 +26,7 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
   final usecase3.FetchWordsForSets fetchWordsForSets;
   final usecase4.FetchTranslationsForWordsInSet fetchTranslationsForWordsInSet;
   final usecase5.DeleteSet deleteSet;
+  final usecase6.UpdateSet updateSet;
 
   SetBloc({
     required this.loadSets,
@@ -31,6 +34,7 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
     required this.fetchWordsForSets,
     required this.fetchTranslationsForWordsInSet,
     required this.deleteSet,
+    required this.updateSet,
   }) : super(SetsLoading()) {
     on<LoadSets>(_onLoadSetsEvent);
     on<AddSet>(_onAddSetEvent);
@@ -38,6 +42,7 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
     on<FetchTranslationsForWordsInSets>(
         _onFetchTranslationsForWordsInSetsEvent);
     on<DeleteSet>(_onDeleteSetEvent);
+    on<UpdateSet>(_onUpdateSetEvent);
   }
 
   FutureOr<void> _onLoadSetsEvent(
@@ -112,6 +117,15 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
         add(FetchWordsForSets(sets: sets));
       }
     });
+  }
+
+  FutureOr<void> _onUpdateSetEvent(
+      UpdateSet event, Emitter<SetsState> emit) async {
+    //TODO check what it's for
+
+    await updateSet(event.set, event.toAdd, event.toDelete);
+
+    emit(SetLoaded(set: event.set));
   }
 
   FutureOr<void> _onDeleteSetEvent(
