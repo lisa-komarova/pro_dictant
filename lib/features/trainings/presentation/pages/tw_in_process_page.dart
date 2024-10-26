@@ -109,7 +109,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   }
 
   void updateCurrentWord(List<TWTrainingEntity> words) {
-    if (currentWordIndex == 9) {
+    if (currentWordIndex + 1 >= words.length) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => TWResultPage(
                 answers: answers,

@@ -5,6 +5,7 @@ import 'package:pro_dictant/features/trainings/data/data_sources/trainings_datas
 import 'package:pro_dictant/features/trainings/data/models/matching_training_model.dart';
 import 'package:pro_dictant/features/trainings/data/models/wt_training_model.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/matching_training_entity.dart';
+import 'package:pro_dictant/features/trainings/domain/entities/repeating_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/repositories/trainings_repository.dart';
 
@@ -13,6 +14,7 @@ import '../../domain/entities/dictant_training_entity.dart';
 import '../../domain/entities/tw_training_entity.dart';
 import '../models/cards_translation_model.dart';
 import '../models/dictant_training_model.dart';
+import '../models/repeating_training_model.dart';
 import '../models/tw_training_model.dart';
 
 class TrainingsRepositoryImpl extends TrainingsRepository {
@@ -187,12 +189,54 @@ class TrainingsRepositoryImpl extends TrainingsRepository {
   }
 
   @override
+  Future<Either<Failure, void>> updateWordsForRepeatingTraining(
+    List<RepeatingTrainingEntity> mistakes,
+    List<RepeatingTrainingEntity> correctAnswers,
+  ) async {
+    List<RepeatingTrainingModel> mistakesModels = [];
+    mistakes.forEach((element) {
+      RepeatingTrainingModel model = RepeatingTrainingModel(
+        id: element.id,
+        source: element.source,
+      );
+      mistakesModels.add(model);
+    });
+    List<RepeatingTrainingModel> correctAnswersModels = [];
+    correctAnswers.forEach((element) {
+      RepeatingTrainingModel model = RepeatingTrainingModel(
+        id: element.id,
+        source: element.source,
+      );
+      correctAnswersModels.add(model);
+    });
+    try {
+      await trainingsDataSource.updateWordsForRepeatingTraining(
+          mistakesModels, correctAnswersModels);
+      return Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, List<DictantTrainingEntity>>>
       fetchWordsForDictantTraining() async {
     try {
       final dictantWords =
           await trainingsDataSource.fetchWordsForDictantTraining();
       return Right(dictantWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<RepeatingTrainingEntity>>>
+      fetchWordsForRepeatingTraining() async {
+    try {
+      final repetingWords =
+          await trainingsDataSource.fetchWordsForRepeatingTraining();
+      return Right(repetingWords);
     } on ServerException {
       return Left(ServerFailure());
     }

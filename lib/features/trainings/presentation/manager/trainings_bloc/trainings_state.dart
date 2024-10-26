@@ -5,6 +5,7 @@ import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entit
 import '../../../domain/entities/cards_training_entity.dart';
 import '../../../domain/entities/dictant_training_entity.dart';
 import '../../../domain/entities/matching_training_entity.dart';
+import '../../../domain/entities/repeating_entity.dart';
 
 abstract class TrainingsState extends Equatable {
   const TrainingsState();
@@ -30,6 +31,15 @@ class TWTrainingLoaded extends TrainingsState {
   final List<TWTrainingEntity> words;
 
   const TWTrainingLoaded({required this.words});
+
+  @override
+  List<Object> get props => [words];
+}
+
+class RepeatingTrainingLoaded extends TrainingsState {
+  final List<RepeatingTrainingEntity> words;
+
+  const RepeatingTrainingLoaded({required this.words});
 
   @override
   List<Object> get props => [words];

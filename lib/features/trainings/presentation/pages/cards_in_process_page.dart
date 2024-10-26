@@ -148,7 +148,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                     onTap: () {
-                      if (currentWordIndex > 98) {
+                      if (currentWordIndex + 1 >= words.length) {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => CardsResultPage(
                                   correctAnswers: correctAnswers,
@@ -193,7 +193,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                     onTap: () {
-                      if (currentWordIndex > 500) {
+                      if (currentWordIndex + 1 >= words.length) {
                         finishWorkout();
                       }
                       if (suggestedAnswer.last ==

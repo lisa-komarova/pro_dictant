@@ -13,6 +13,7 @@ import '../../../dictionary/domain/entities/word_entity.dart';
 import '../models/cards_translation_model.dart';
 import '../models/dictant_training_model.dart';
 import '../models/matching_training_model.dart';
+import '../models/repeating_training_model.dart';
 import '../models/tw_training_model.dart';
 
 abstract class TrainingsDatasource {
@@ -25,6 +26,8 @@ abstract class TrainingsDatasource {
   Future<List<DictantTrainingModel>> fetchWordsForDictantTraining();
 
   Future<List<CardsTrainingModel>> fetchWordsForCardsTraining();
+
+  Future<List<RepeatingTrainingModel>> fetchWordsForRepeatingTraining();
 
   Future<List<WTTraningModel>> addSuggestedTranslationsToWordsInWT(
       List<WTTraningModel> words);
@@ -43,6 +46,10 @@ abstract class TrainingsDatasource {
       List<DictantTrainingModel> toUpdate);
 
   Future<void> updateWordsForCardsTraining(List<CardsTrainingModel> toUpdate);
+
+  Future<void> updateWordsForRepeatingTraining(
+      List<RepeatingTrainingModel> mistakes,
+      List<RepeatingTrainingModel> correctAnswers);
 }
 
 class TrainingsDatasourceImpl extends TrainingsDatasource {
@@ -137,7 +144,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<TranslationEntity> translation = [];
         final translationMap = await db!.rawQuery(
-            '''select * FROM words_translations WHERE id not in (\'${words[i].id}\') ORDER by random() LIMIT 3''');
+            '''select * FROM words_translations WHERE id not in (\'${words[i].id}\') and isInDictionary = 1 ORDER by random() LIMIT 3''');
         translation =
             translationMap.map((e) => TranslationModel.fromJson(e)).toList();
         words[i].suggestedTranslationList.addAll(translation);
@@ -179,7 +186,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<WordEntity> sources = [];
         final sourcesMap = await db!.rawQuery(
-            '''select * FROM word WHERE id not in (\'${words[i].id}\') ORDER by random() LIMIT 3''');
+            '''select word.id, source, pos, transcription FROM word join words_translations on word.id = words_translations.word_id WHERE word.id not in ('9dd9850d-e127-4760-a18d-a09ef9751da6')  and words_translations.isInDictionary=1  ORDER by random() LIMIT 3''');
         sources = sourcesMap.map((e) => WordModel.fromJson(e)).toList();
         words[i].suggestedSourcesList.addAll(sources);
       }
@@ -278,6 +285,40 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
             '''update words_translations set isCards = 1 where id = \'${toUpdate[i].id}\'''');
+      }
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<RepeatingTrainingModel>> fetchWordsForRepeatingTraining() async {
+    final db = await database;
+    List<RepeatingTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isRepeated =0 and words_translations.isCards =1  and words_translations.isTW =1 and words_translations.isWT =1  and words_translations.isMatching =1  and words_translations.isDictant =1  ORDER by random()''');
+
+      words = maps.map((map) => RepeatingTrainingModel.fromJson(map)).toList();
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> updateWordsForRepeatingTraining(
+      List<RepeatingTrainingModel> mistakes,
+      List<RepeatingTrainingModel> correctAnswers) async {
+    final db = await database;
+    try {
+      for (int i = 0; i < mistakes.length; i++) {
+        await db!.rawQuery(
+            '''update words_translations set isCards = 0, isTW = 0, isWT = 0, isMatching = 0, isDictant = 0 where id = \'${mistakes[i].id}\'''');
+      }
+      for (int i = 0; i < correctAnswers.length; i++) {
+        await db!.rawQuery(
+            '''update words_translations set isRepeated = 1 where id = \'${correctAnswers[i].id}\'''');
       }
     } on Exception catch (_) {
       throw ServerException();

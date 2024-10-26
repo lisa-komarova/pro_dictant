@@ -5,6 +5,7 @@ import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entit
 import '../entities/cards_training_entity.dart';
 import '../entities/dictant_training_entity.dart';
 import '../entities/matching_training_entity.dart';
+import '../entities/repeating_entity.dart';
 import '../entities/tw_training_entity.dart';
 
 abstract class TrainingsRepository {
@@ -12,12 +13,19 @@ abstract class TrainingsRepository {
 
   Future<Either<Failure, List<TWTrainingEntity>>> fetchWordsForTWTraining();
 
+  Future<Either<Failure, List<RepeatingTrainingEntity>>>
+      fetchWordsForRepeatingTraining();
+
   Future<Either<Failure, void>> updateWordsForWTTraining(List<String> toUpdate);
 
   Future<Either<Failure, void>> updateWordsForTWTraining(List<String> toUpdate);
 
   Future<Either<Failure, void>> updateWordsForDictantTraining(
       List<DictantTrainingEntity> toUpdate);
+
+  Future<Either<Failure, void>> updateWordsForRepeatingTraining(
+      List<RepeatingTrainingEntity> mistakes,
+      List<RepeatingTrainingEntity> correctAnswers);
 
   Future<Either<Failure, void>> updateWordsForCardsTraining(
       List<CardsTrainingEntity> toUpdate);

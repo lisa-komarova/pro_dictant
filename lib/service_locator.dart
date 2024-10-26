@@ -41,10 +41,12 @@ import 'features/dictionary/domain/usecases/filter_words.dart';
 import 'features/dictionary/domain/usecases/update_set.dart';
 import 'features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_cards_training.dart';
+import 'features/trainings/domain/use_cases/fetch_words_for_repeating_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_tw_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_cards_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_dictant_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_matching_training.dart';
+import 'features/trainings/domain/use_cases/update_words_for_repeating_trainings.dart';
 import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 
 final sl = GetIt.instance;
@@ -82,6 +84,7 @@ Future<void> init() async {
         fetchWordsForTwTRainings: sl(),
         fetchWordsForMatchingTRaining: sl(),
         fetchWordsForDictantTraining: sl(),
+        fetchWordsForRepeatingTraining: sl(),
         addSuggestedTranslationsToWordsInWT: sl(),
         addSuggestedSourcesToWordsInTW: sl(),
         updateWordsForWTTraining: sl(),
@@ -89,6 +92,7 @@ Future<void> init() async {
         updateWordsForMatchingTraining: sl(),
         updateWordsForDictantTraining: sl(),
         updateWordsForCardsTraining: sl(),
+        updateWordsForRepeatingTraining: sl(),
         fetchWordsForCardsTraining: sl(),
       ));
   // UseCases
@@ -177,6 +181,12 @@ Future<void> init() async {
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => UpdateWordsForCardsTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateWordsForRepeatingTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchWordsForRepeatingTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchTranslationsForWordsInSet(

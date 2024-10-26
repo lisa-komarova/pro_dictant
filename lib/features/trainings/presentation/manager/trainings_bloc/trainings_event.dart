@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/matching_training_entity.dart';
+import 'package:pro_dictant/features/trainings/domain/entities/repeating_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 
 import '../../../domain/entities/cards_training_entity.dart';
@@ -27,6 +28,10 @@ class FetchWordsForTwTRainings extends TrainingsEvent {
 
 class FetchWordsForDictantTRainings extends TrainingsEvent {
   const FetchWordsForDictantTRainings();
+}
+
+class FetchWordsForRepeatingTRainings extends TrainingsEvent {
+  const FetchWordsForRepeatingTRainings();
 }
 
 class FetchWordsForCardsTRainings extends TrainingsEvent {
@@ -61,6 +66,13 @@ class UpdateWordsForCardsTRainings extends TrainingsEvent {
   final List<CardsTrainingEntity> toUpdate;
 
   const UpdateWordsForCardsTRainings(this.toUpdate);
+}
+
+class UpdateWordsForRepeatingTRainings extends TrainingsEvent {
+  final List<RepeatingTrainingEntity> mistakes;
+  final List<RepeatingTrainingEntity> correctAnswers;
+
+  const UpdateWordsForRepeatingTRainings(this.mistakes, this.correctAnswers);
 }
 
 class AddSuggestedTranslationsToWordsInWT extends TrainingsEvent {

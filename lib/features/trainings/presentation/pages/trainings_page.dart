@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/repeating_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
@@ -88,9 +89,17 @@ class TrainingsPage extends StatelessWidget {
                         builder: (ctx) => DictantInProcessPage()));
                   },
                 ),
-                TrainingCard(
-                  training_name: 'повторение',
-                  image_name: 'repetition',
+                GestureDetector(
+                  child: TrainingCard(
+                    training_name: 'повторение',
+                    image_name: 'repetition',
+                  ),
+                  onTap: () {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchWordsForRepeatingTRainings());
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => RepeatingInProcessPage()));
+                  },
                 ),
               ],
             ),

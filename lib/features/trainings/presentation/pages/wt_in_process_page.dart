@@ -106,7 +106,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
   }
 
   void updateCurrentWord(List<WTTrainingEntity> words) {
-    if (currentWordIndex == 9) {
+    if (currentWordIndex + 1 >= words.length) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => WTResultPage(
                 answers: answers,
