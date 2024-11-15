@@ -73,9 +73,9 @@ class WordRepositoryImpl extends WordRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteWord(String wordId) async {
+  Future<Either<Failure, void>> deleteWord(WordEntity word) async {
     try {
-      await localDataSource.deleteWord(wordId);
+      await localDataSource.deleteWord(word as WordModel);
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());

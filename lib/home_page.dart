@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/profile/presentation/pages/profile_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page.dart';
 
 import 'features/dictionary/presentation/pages/dictionary_page.dart';
+import 'features/profile/presentation/manager/profile_bloc.dart';
+import 'features/profile/presentation/manager/profile_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -72,8 +75,30 @@ class _HomePageState extends State<HomePage> {
       body: <Widget>[
         ProfilePage(),
         DictionaryPage(),
-        TrainingsPage(),
+        BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
+          if (state is ProfileLoading) {
+            return _loadingIndicator();
+          } else if (state is ProfileLoaded) {
+            return TrainingsPage(
+              goal: state.statistics.goal,
+              isTodayCompleted: state.statistics.isTodayCompleted,
+            );
+          } else {
+            return SizedBox();
+          }
+        }),
       ][currentPageIndex],
+    );
+  }
+
+  Widget _loadingIndicator() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:pro_dictant/features/dictionary/domain/entities/translation_enti
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
+import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 import 'package:uuid/uuid.dart';
 
 class WordForm extends StatefulWidget {
@@ -23,7 +24,8 @@ class _WordFormState extends State<WordForm> {
   final _posController = TextEditingController();
   final _transciptionController = TextEditingController();
   final List<TextEditingController> _translationControllerList = [];
-  int numberOfTranslations = 1;
+  final List<TranslationEntity> translations = [];
+  final List<TranslationEntity> existingTranslations = [];
   bool isTranslationDeleted = false;
   bool isTranslationAdded = false;
 
@@ -34,11 +36,12 @@ class _WordFormState extends State<WordForm> {
       _posController.text = widget.word.pos;
       //_translationController.text = widget.word.translations;
       _transciptionController.text = widget.word.transcription;
-      numberOfTranslations = widget.word.translationList.length;
       for (var w = 0; w < widget.word.translationList.length; w++) {
         _translationControllerList.add(TextEditingController());
         _translationControllerList[w].text =
             widget.word.translationList[w].translation;
+        translations.add(widget.word.translationList[w]);
+        existingTranslations.add(widget.word.translationList[w]);
       }
     } else {
       _translationControllerList.add(TextEditingController());
@@ -152,13 +155,19 @@ class _WordFormState extends State<WordForm> {
                   ),
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: buildTranslationTextFields(),
-                ),
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      buildTranslationTextFields(),
+                    ]),
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      numberOfTranslations++;
+                      translations.add(TranslationEntity(
+                          id: Uuid().v4(),
+                          wordId: widget.word.id,
+                          translation: '',
+                          notes: ''));
                       _translationControllerList.add(TextEditingController());
                       isTranslationAdded = true;
                     });
@@ -195,7 +204,8 @@ class _WordFormState extends State<WordForm> {
                             : const Text('обновить'),
                         onPressed: () {
                           Set<TranslationEntity> toDelete = {};
-                          Set<String> toAdd = {};
+                          Set<TranslationEntity> toUpdate = {};
+                          Set<TranslationEntity> toAdd = {};
                           if (_formKey.currentState!.validate()) {
                             widget.word.source = _sourceController.text;
                             widget.word.pos = _posController.text;
@@ -205,7 +215,6 @@ class _WordFormState extends State<WordForm> {
                               widget.word.transcription =
                                   _transciptionController.text;
                             }
-                            var existingTranslations = [];
                             if (widget.isNew) {
                               widget.word.translationList
                                   .addAll(_translationControllerList.map((e) {
@@ -225,77 +234,84 @@ class _WordFormState extends State<WordForm> {
                                 return newTranslation;
                               }).toList());
                             } else {
-                              existingTranslations = widget.word.translationList
-                                  .map((e) => e.translation)
-                                  .toList();
                               for (var i = 0;
                                   i < _translationControllerList.length;
                                   i++) {
-                                // if (widget.isNew) {
-                                //   widget.word.translationList[i].translation =
-                                //       _translationControllerList[i].text;
-                                // } else {
-                                if (isTranslationDeleted) {
-                                  widget.word.translationList
-                                      .forEach((element) {
-                                    if (element.translation !=
-                                        _translationControllerList[i].text) {
-                                      toDelete.add(element);
-                                    }
-                                  });
-                                  widget.word.translationList.removeWhere(
-                                      (element) => toDelete.contains(element));
+                                translations[i].translation =
+                                    _translationControllerList[i].text;
+                              }
+                              final newTranslationsIds =
+                                  translations.map((e) => e.id).toList();
+                              final oldTranslationsIds = existingTranslations
+                                  .map((e) => e.id)
+                                  .toList();
+                              for (int i = 0;
+                                  i < existingTranslations.length;
+                                  i++) {
+                                if (newTranslationsIds
+                                        .contains(existingTranslations[i].id) &&
+                                    oldTranslationsIds
+                                        .contains(existingTranslations[i].id)) {
+                                  toUpdate.add(existingTranslations[i]);
                                 }
-                                if (isTranslationAdded) {
-                                  if (!existingTranslations.contains(
-                                      _translationControllerList[i].text)) {
-                                    toAdd.add(
-                                        _translationControllerList[i].text);
+                                if (!newTranslationsIds
+                                    .contains(existingTranslations[i].id)) {
+                                  toDelete.add(existingTranslations[i]);
+                                }
+                              }
+                              for (int i = 0; i < translations.length; i++) {
+                                if (!oldTranslationsIds
+                                    .contains(translations[i].id)) {
+                                  TranslationEntity newTranslation =
+                                      TranslationEntity(
+                                    id: const Uuid().v4(),
+                                    wordId: widget.word.id,
+                                    translation: translations[i].translation,
+                                    notes: '',
+                                  );
+                                  if (translations[i].isInDictionary == 1) {
+                                    newTranslation.isInDictionary = 1;
+                                    newTranslation.dateAddedToDictionary =
+                                        translations[i].dateAddedToDictionary;
                                   }
-                                } else if (!isTranslationDeleted &&
-                                    !isTranslationAdded) {
-                                  widget.word.translationList[i].translation =
-                                      _translationControllerList[i].text;
+                                  toAdd.add(newTranslation);
                                 }
                               }
                             }
-                          }
-
-                          if (widget.isNew) {
-                            BlocProvider.of<WordsBloc>(context)
-                                .add(AddWord(widget.word));
-                            Navigator.of(context).pop(widget.word);
-                          } else {
-                            BlocProvider.of<WordsBloc>(context)
-                                .add(UpdateWord(widget.word));
-                            widget.word.translationList.forEach((element) {
+                            if (widget.isNew) {
                               BlocProvider.of<WordsBloc>(context)
-                                  .add(UpdateTranslation(element));
-                            });
-                            if (toDelete.length > 0) {
-                              for (int i = 0; i < toDelete.length; i++) {
-                                BlocProvider.of<WordsBloc>(context).add(
-                                    DeleteWordFromDictionary(
-                                        toDelete.elementAt(i)));
+                                  .add(AddWord(widget.word));
+                              Navigator.of(context).pop(widget.word);
+                            } else {
+                              BlocProvider.of<WordsBloc>(context)
+                                  .add(UpdateWord(widget.word));
+                              if (toUpdate.isNotEmpty) {
+                                for (int i = 0; i < toUpdate.length; i++) {
+                                  BlocProvider.of<WordsBloc>(context).add(
+                                      UpdateTranslation(toUpdate.elementAt(i)));
+                                }
                               }
-                            }
-                            if (toAdd.length > 0) {
-                              for (int i = 0; i < toAdd.length; i++) {
-                                TranslationEntity newTranslation =
-                                    TranslationEntity(
-                                  id: const Uuid().v4(),
-                                  wordId: widget.word.id,
-                                  translation: toAdd.elementAt(i),
-                                  notes: '',
-                                );
-                                newTranslation.isInDictionary = 1;
-                                newTranslation.dateAddedToDictionary =
-                                    DateTime.now().toString();
-                                BlocProvider.of<WordsBloc>(context)
-                                    .add(AddTranslation(newTranslation));
+                              if (toDelete.isNotEmpty) {
+                                for (int i = 0; i < toDelete.length; i++) {
+                                  BlocProvider.of<WordsBloc>(context).add(
+                                      DeleteTranslation(toDelete.elementAt(i)));
+                                }
                               }
+                              if (toAdd.isNotEmpty) {
+                                for (int i = 0; i < toAdd.length; i++) {
+                                  BlocProvider.of<WordsBloc>(context)
+                                      .add(AddTranslation(toAdd.elementAt(i)));
+                                }
+                              }
+                              widget.word.translationList.clear();
+                              widget.word.translationList.addAll(translations);
+                              Navigator.of(context)
+                                  .pushReplacement(MaterialPageRoute(
+                                      builder: (ctx) => WordsDetails(
+                                            word: widget.word,
+                                            isFromSet: false,
+                                          )));
                             }
-                            Navigator.of(context).pop();
                           }
                         },
                       ),
@@ -323,59 +339,119 @@ class _WordFormState extends State<WordForm> {
     );
   }
 
-  List<Widget> buildTranslationTextFields() {
-    List<Widget> list = [];
-    for (var i = 0; i < numberOfTranslations; i++) {
-      list.add(Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: _translationControllerList[i],
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      borderSide: BorderSide(
-                        color: Color(0xFFd9c3ac),
-                        width: 3,
-                      )),
-                  hintText: 'Введите перевод',
-                  hintStyle: TextStyle(fontSize: 10),
+  // List<Widget> buildTranslationTextFieldss() {
+  //   List<Widget> list = [];
+  //   for (var i = 0; i < numberOfTranslations; i++) {
+  //     list.add(Row(
+  //       children: [
+  //         Expanded(
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(8.0),
+  //             child: TextFormField(
+  //               controller: _translationControllerList[i],
+  //               keyboardType: TextInputType.text,
+  //               decoration: const InputDecoration(
+  //                 border: OutlineInputBorder(
+  //                     borderRadius: BorderRadius.all(Radius.circular(15)),
+  //                     borderSide: BorderSide(
+  //                       color: Color(0xFFd9c3ac),
+  //                       width: 3,
+  //                     )),
+  //                 hintText: 'Введите перевод',
+  //                 hintStyle: TextStyle(fontSize: 10),
+  //               ),
+  //               // The validator receives the text that the user has entered.
+  //               validator: (value) {
+  //                 if (value == null || value.isEmpty) {
+  //                   return 'Введите перевод';
+  //                 }
+  //                 return null;
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //         if (i >= 1)
+  //           GestureDetector(
+  //             onTap: () {
+  //               setState(() {
+  //                 numberOfTranslations--;
+  //               });
+  //               _translationControllerList[i].dispose();
+  //               _translationControllerList.removeAt(i);
+  //               isTranslationDeleted = true;
+  //             },
+  //             child: Padding(
+  //               padding: const EdgeInsets.all(8.0),
+  //               child: Image.asset(
+  //                 'assets/icons/delete.png',
+  //                 width: 35,
+  //                 height: 35,
+  //               ),
+  //             ),
+  //           ),
+  //       ],
+  //     ));
+  //   }
+  //   return list;
+  // }
+
+  buildTranslationTextFields() {
+    return Flexible(
+      child: ListView.builder(
+          itemCount: translations.length,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemBuilder: (ctx, index) {
+            return Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _translationControllerList[index],
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            borderSide: BorderSide(
+                              color: Color(0xFFd9c3ac),
+                              width: 3,
+                            )),
+                        hintText: 'Введите перевод',
+                        hintStyle: TextStyle(fontSize: 10),
+                      ),
+                      // The validator receives the text that the user has entered.
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Введите перевод';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
                 ),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Введите перевод';
-                  }
-                  return null;
-                },
-              ),
-            ),
-          ),
-          if (i >= 1)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  numberOfTranslations--;
-                });
-                _translationControllerList[i].dispose();
-                _translationControllerList.removeAt(i);
-                isTranslationDeleted = true;
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  'assets/icons/delete.png',
-                  width: 35,
-                  height: 35,
-                ),
-              ),
-            ),
-        ],
-      ));
-    }
-    return list;
+                if (index >= 1)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        translations.removeAt(index);
+                      });
+                      _translationControllerList[index].dispose();
+                      _translationControllerList.removeAt(index);
+                      isTranslationDeleted = true;
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(
+                        'assets/icons/delete.png',
+                        width: 35,
+                        height: 35,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
+    );
   }
 }

@@ -10,8 +10,10 @@ import 'package:pro_dictant/features/dictionary/presentation/pages/word_form_pag
 
 class WordTranslationCards extends StatefulWidget {
   final WordEntity word;
+  final bool isChangeable;
 
-  const WordTranslationCards({required this.word, super.key});
+  const WordTranslationCards(
+      {required this.word, required this.isChangeable, super.key});
 
   @override
   State<WordTranslationCards> createState() => _WordTranslationCardsState();
@@ -73,7 +75,9 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 _buildAWordButton(
                     title: "На\nизучение", color: Color(0xFFB70E0E)),
                 _buildAWordButton(title: "Уже знаю", color: Color(0xFF85977f)),
-                _buildAWordButton(title: "Изменить", color: Color(0xFFd9c3ac)),
+                if (!widget.isChangeable)
+                  _buildAWordButton(
+                      title: "Изменить", color: Color(0xFFd9c3ac)),
               ],
             ),
           ),
@@ -105,7 +109,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
               _showSendToLearntDialog(context, widget.word, _currentPageIndex);
             }
             if (title == "Изменить") {
-              Navigator.of(context).push(MaterialPageRoute(
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (ctx) => WordForm(
                   word: widget.word,
                   isNew: false,
@@ -262,7 +266,8 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         padding: const EdgeInsets.only(
                             left: 8, right: 8, bottom: 8, top: 8),
                         child: GestureDetector(
-                          onTap: () => _showDialogDelete(context, translation),
+                          onTap: () => _showDialogDelete(
+                              context, translation, widget.word),
                           child: Image.asset(
                             'assets/icons/delete.png',
                             width: 35,
@@ -395,7 +400,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
 }
 
 Future<void> _showDialogDelete(
-    BuildContext context, TranslationEntity translation) {
+    BuildContext context, TranslationEntity translation, WordEntity word) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -411,8 +416,12 @@ Future<void> _showDialogDelete(
             ),
             child: const Text('удалить'),
             onPressed: () {
-              BlocProvider.of<WordsBloc>(context)
-                  .add(DeleteTranslation(translation));
+              if (word.translationList.length == 1) {
+                BlocProvider.of<WordsBloc>(context).add(DeleteWord(word));
+              } else {
+                BlocProvider.of<WordsBloc>(context)
+                    .add(DeleteTranslation(translation));
+              }
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
@@ -484,7 +493,7 @@ Future<void> _showSendToLearningDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         content: const Text(
-          'Хотите сбросить прогрес этого слова?',
+          'Хотите сбросить прогресс этого слова?',
         ),
         actions: <Widget>[
           TextButton(

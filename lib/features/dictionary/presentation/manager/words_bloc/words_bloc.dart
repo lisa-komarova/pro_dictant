@@ -17,7 +17,7 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_translatio
     as usecase7;
 import 'package:pro_dictant/features/dictionary/domain/usecases/filter_words.dart'
     as usecase1;
-import 'package:pro_dictant/features/dictionary/domain/usecases/searchWordsForASet.dart'
+import 'package:pro_dictant/features/dictionary/domain/usecases/search_words_for_a_set.dart'
     as usecase5;
 import 'package:pro_dictant/features/dictionary/domain/usecases/update_translation.dart'
     as usecase6;
@@ -28,6 +28,7 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 
 import '../../../domain/usecases/add_words_from_set_to_dictionary.dart'
     as usecase11;
+import '../../../domain/usecases/delete_word.dart' as usecase12;
 import '../../../domain/usecases/fetch_word_by_source.dart' as usecase5;
 
 const SERVER_FAILURE_MESSAGE = 'Server Failure';
@@ -48,6 +49,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   final usecase8.DeleteTranslation deleteTranslation;
   final usecase9.AddTranslation addTranslation;
   final usecase11.AddWordsFromSetToDictionary addWordsFromSetToDictionary;
+  final usecase12.DeleteWord deleteWord;
 
   WordsBloc({
     required this.loadWords,
@@ -63,6 +65,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     required this.deleteTranslation,
     required this.addTranslation,
     required this.addWordsFromSetToDictionary,
+    required this.deleteWord,
   }) : super(WordsLoading()) {
     on<LoadWords>(_onLoadWordsEvent);
     on<FilterWords>(_onFilterWordsEvent);
@@ -78,6 +81,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     on<DeleteTranslation>(_onDeleteTranslationEvent);
     on<AddTranslation>(_onAddTranslationEvent);
     on<AddWordsFromSetToDictionary>(_onAddWordsFromSetToDictionaryEvent);
+    on<DeleteWord>(_onDeleteWordEvent);
   }
 
   FutureOr<void> _onLoadWordsEvent(
@@ -217,6 +221,12 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   FutureOr<void> _onDeleteWordFromDictionaryEvent(
       DeleteWordFromDictionary event, Emitter<WordsState> emit) async {
     await deleteWordFromDictionary(event.translationEntity);
+    add(LoadWords());
+  }
+
+  FutureOr<void> _onDeleteWordEvent(
+      DeleteWord event, Emitter<WordsState> emit) async {
+    await deleteWord(event.word);
     add(LoadWords());
   }
 

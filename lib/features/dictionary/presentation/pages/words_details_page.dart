@@ -4,8 +4,9 @@ import 'package:pro_dictant/features/dictionary/presentation/widgets/words_trans
 
 class WordsDetails extends StatefulWidget {
   final WordEntity word;
+  final bool isFromSet;
 
-  WordsDetails({required this.word, super.key});
+  WordsDetails({required this.word, required this.isFromSet, super.key});
 
   @override
   State<WordsDetails> createState() => _WordsDetailsState();
@@ -27,6 +28,7 @@ class _WordsDetailsState extends State<WordsDetails> {
       ),
       body: WordTranslationCards(
         word: widget.word,
+        isChangeable: widget.isFromSet,
       ),
     );
   }

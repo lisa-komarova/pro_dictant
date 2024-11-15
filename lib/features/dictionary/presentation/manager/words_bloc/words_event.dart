@@ -82,6 +82,12 @@ class AddWord extends WordsEvent {
   const AddWord(this.word);
 }
 
+class DeleteWord extends WordsEvent {
+  final WordEntity word;
+
+  const DeleteWord(this.word);
+}
+
 class SearchWordsForASet extends WordsEvent {
   final String wordQuery;
 

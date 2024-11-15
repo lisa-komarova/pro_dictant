@@ -36,7 +36,7 @@ abstract class WordRepository {
   Future<Either<Failure, void>> addTranslation(
       TranslationEntity translationEntity);
 
-  Future<Either<Failure, void>> deleteWord(String wordId);
+  Future<Either<Failure, void>> deleteWord(WordEntity wordEntity);
 
   Future<Either<Failure, void>> updateTranslation(
       TranslationEntity translationEntity);

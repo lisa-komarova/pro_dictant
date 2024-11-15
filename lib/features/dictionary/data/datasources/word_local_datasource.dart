@@ -6,6 +6,7 @@ import 'package:pro_dictant/core/error/exception.dart';
 import 'package:pro_dictant/features/dictionary/data/models/set_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/translation_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
+import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_bm25/sqlite_bm25.dart';
 
@@ -49,7 +50,7 @@ abstract class WordLocalDatasource {
 
   Future<void> deleteTranslation(TranslationModel translation);
 
-  Future<void> deleteWord(String id);
+  Future<void> deleteWord(WordModel word);
 
   Future<void> deleteSet(String setId);
 
@@ -182,7 +183,8 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
             wordId: e.wordId,
             translation: e.translation,
             notes: e.notes,
-            isInDictionary: 1))
+            isInDictionary: 1,
+            dateAddedToDictionary: e.dateAddedToDictionary))
         .toList();
     for (var tr in trl) {
       await db.insert(
@@ -197,6 +199,12 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     final db = await database;
 // Update the given word.
     for (int i = 0; i < words.length; i++) {
+      // words[i].isTW = 0;
+      // words[i].isWT = 0;
+      // words[i].isCards = 0;
+      // words[i].isMatching = 0;
+      // words[i].isDictant = 0;
+      // words[i].isRepeated = 0;
       words[i].isInDictionary = 1;
       words[i].dateAddedToDictionary = DateTime.now().toString();
       await db!.update(
@@ -262,15 +270,21 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   }
 
 //TODO check if it works
-  Future<void> deleteWord(String id) async {
+  Future<void> deleteWord(WordEntity word) async {
 // Get a reference to the database.
     final db = await database;
-
+    for (int i = 0; i < word.translationList.length; i++) {
+      await db!.delete(
+        tableTranslations,
+        where: 'id = ?',
+        whereArgs: [word.translationList[i].id],
+      );
+    }
 // Update the given word.
     await db!.delete(
       tableWords,
       where: 'id = ?',
-      whereArgs: [id],
+      whereArgs: [word.id],
     );
   }
 

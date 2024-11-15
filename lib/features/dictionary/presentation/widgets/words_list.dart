@@ -62,28 +62,33 @@ class _WordsListState extends State<WordsList> {
           shrinkWrap: true,
           itemCount: words.length,
           itemBuilder: (context, index) {
+            var translation = '';
             final isInDictionary = words[index]
                 .translationList
                 .where((element) => element.isInDictionary == 1)
                 .toList()
                 .length;
-            final translation = isInDictionary > 0
-                ? words[index]
-                    .translationList
-                    .where((element) => element.isInDictionary == 1)
-                    .toList()
-                    .first
-                    .translation
-                : words[index].translationList.first.translation;
-
+            if (words[index].translationList.isNotEmpty) {
+              translation = isInDictionary > 0
+                  ? words[index]
+                      .translationList
+                      .where((element) => element.isInDictionary == 1)
+                      .toList()
+                      .first
+                      .translation
+                  : words[index].translationList.first.translation;
+            }
             return GestureDetector(
               onTap: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
                 widget.editingController.text = '';
                 BlocProvider.of<WordsBloc>(context).add(LoadWords());
-                final returnedWord = await Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (ctx) => WordsDetails(word: words[index])));
+                final returnedWord =
+                    await Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => WordsDetails(
+                              word: words[index],
+                              isFromSet: false,
+                            )));
                 // if (returnedWord == null) {
                 //   words.removeAt(index);
                 //   setState(() {});

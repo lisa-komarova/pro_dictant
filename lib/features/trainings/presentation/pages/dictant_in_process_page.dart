@@ -162,8 +162,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
                             onTap: () {
-                              if (wordController.text ==
-                                  words[currentWordIndex].source) {
+                              if (wordController.text.replaceAll(' ', '') ==
+                                  words[currentWordIndex]
+                                      .source
+                                      .replaceAll(' ', '')) {
                                 if (!mistakes
                                     .contains(words[currentWordIndex])) {
                                   correctAnswers.add(words[currentWordIndex]);
@@ -243,7 +245,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   }
 
   Widget _loadingIndicator() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(8.0),
       child: Center(
         child: CircularProgressIndicator(),

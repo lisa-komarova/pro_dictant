@@ -165,7 +165,10 @@ Expanded buildWordsList(List<WordEntity> words) {
             onTap: () async {
               FocusManager.instance.primaryFocus?.unfocus();
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (ctx) => WordsDetails(word: words[index])));
+                  builder: (ctx) => WordsDetails(
+                        word: words[index],
+                        isFromSet: true,
+                      )));
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
