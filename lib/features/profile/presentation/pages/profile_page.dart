@@ -110,27 +110,32 @@ class _ProfilePageState extends State<ProfilePage> {
     for (int i = 0; i < statisticsEntity.dataSets.length; i++) {
       dateSets.addAll(statisticsEntity.dataSets[i]);
     }
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(35),
-        //color: const Color(0xB3D9C3AC),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: HeatMapCalendar(
-          //initDate: DateTime.now().subtract(const Duration(days: 30)),
-          colorMode: ColorMode.color,
-          showColorTip: false,
-          textColor: Colors.white,
-          weekTextColor: Colors.black,
-          monthFontSize: Theme.of(context).textTheme.titleMedium!.fontSize,
-          defaultColor: const Color(0xFFB70E0E),
-          size: 35,
-          borderRadius: 25,
-          colorsets: const {
-            1: Color(0xFF85977F),
-          },
-          datasets: dateSets,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(35),
+          color: const Color(0xB3D9C3AC),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: HeatMap(
+            startDate: DateTime.now().subtract(const Duration(days: 45)),
+            endDate: DateTime.now(),
+            scrollable: true,
+            colorMode: ColorMode.color,
+            showColorTip: false,
+            showText: true,
+            textColor: Colors.white,
+            defaultColor: const Color(0xFFB70E0E),
+            size: 35,
+            borderRadius: 25,
+            colorsets: const {
+              1: Color(0xFF85977F),
+            },
+            datasets: dateSets,
+          ),
         ),
       ),
     );
