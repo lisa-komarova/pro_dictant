@@ -39,8 +39,6 @@ class WordRepositoryImpl extends WordRepository {
         wordsInDict = await localDataSource.getLearningWords();
       } else if (isLearnt) {
         wordsInDict = await localDataSource.getLearntWords();
-      } else if (query.isEmpty && !isNew && !isLearning && !isLearnt) {
-        wordsInDict = await localDataSource.fetchWordsInDict();
       }
       return Right(wordsInDict);
     } on ServerException {

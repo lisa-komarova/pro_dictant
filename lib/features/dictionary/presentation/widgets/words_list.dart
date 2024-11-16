@@ -57,74 +57,81 @@ class _WordsListState extends State<WordsList> {
 
   Expanded buildWordsList(List<WordEntity> words) {
     return Expanded(
-      child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: words.length,
-          itemBuilder: (context, index) {
-            var translation = '';
-            final isInDictionary = words[index]
-                .translationList
-                .where((element) => element.isInDictionary == 1)
-                .toList()
-                .length;
-            if (words[index].translationList.isNotEmpty) {
-              translation = isInDictionary > 0
-                  ? words[index]
-                      .translationList
-                      .where((element) => element.isInDictionary == 1)
-                      .toList()
-                      .first
-                      .translation
-                  : words[index].translationList.first.translation;
-            }
-            return GestureDetector(
-              onTap: () async {
-                FocusManager.instance.primaryFocus?.unfocus();
-                widget.editingController.text = '';
-                BlocProvider.of<WordsBloc>(context).add(LoadWords());
-                final returnedWord =
-                    await Navigator.of(context).push(MaterialPageRoute(
-                        builder: (ctx) => WordsDetails(
-                              word: words[index],
-                              isFromSet: false,
-                            )));
-                // if (returnedWord == null) {
-                //   words.removeAt(index);
-                //   setState(() {});
-                if (words.contains(returnedWord)) {
-                  setState(() {});
-                }
-                // } else if (words.contains(returnedWord)) {
-                //   setState(() {});
-                // } else {
-                //   setState(() {
-                //     words.add(returnedWord);
-                //   });
-                // }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        ListTile(
-                          title:
-                              Text("${words[index].source} - ${translation}"),
-                        ),
-                        Image.asset(
-                          'assets/icons/divider.png',
-                          width: 15,
-                          height: 15,
-                        ),
-                      ],
+      child: RefreshIndicator(
+        onRefresh: _refreshList,
+        child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: words.length,
+            itemBuilder: (context, index) {
+              var translation = '';
+              final isInDictionary = words[index]
+                  .translationList
+                  .where((element) => element.isInDictionary == 1)
+                  .toList()
+                  .length;
+              if (words[index].translationList.isNotEmpty) {
+                translation = isInDictionary > 0
+                    ? words[index]
+                        .translationList
+                        .where((element) => element.isInDictionary == 1)
+                        .toList()
+                        .first
+                        .translation
+                    : words[index].translationList.first.translation;
+              }
+              return GestureDetector(
+                onTap: () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  widget.editingController.text = '';
+                  BlocProvider.of<WordsBloc>(context).add(LoadWords());
+                  final returnedWord =
+                      await Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => WordsDetails(
+                                word: words[index],
+                                isFromSet: false,
+                              )));
+                  // if (returnedWord == null) {
+                  //   words.removeAt(index);
+                  //   setState(() {});
+                  if (words.contains(returnedWord)) {
+                    setState(() {});
+                  }
+                  // } else if (words.contains(returnedWord)) {
+                  //   setState(() {});
+                  // } else {
+                  //   setState(() {
+                  //     words.add(returnedWord);
+                  //   });
+                  // }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title:
+                                Text("${words[index].source} - ${translation}"),
+                          ),
+                          Image.asset(
+                            'assets/icons/divider.png',
+                            width: 15,
+                            height: 15,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
+                  ],
+                ),
+              );
+            }),
+      ),
     );
+  }
+
+  Future<void> _refreshList() async {
+    BlocProvider.of<WordsBloc>(context).add(const LoadWords());
   }
 }

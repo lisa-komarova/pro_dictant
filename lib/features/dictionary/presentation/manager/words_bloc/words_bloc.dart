@@ -152,11 +152,11 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
   FutureOr<void> _onFilterWordsEvent(
       FilterWords event, Emitter<WordsState> emit) async {
-    if (event.wordQuery.isEmpty &&
+    if (event.wordQuery.length < 2 &&
         event.isNew == false &&
         event.isLearning == false &&
         event.isLearnt == false) {
-      add(LoadWords());
+      add(const LoadWords());
       return;
     }
     emit(WordsLoading());

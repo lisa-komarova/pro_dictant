@@ -47,11 +47,15 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
           SearchContainer(
             controller: editingController,
             searchHandler: (String searchText) {
-              BlocProvider.of<WordsBloc>(context)
-                  .add(FilterWords(searchText, false, false, false));
+              if (searchText.length >= 2) {
+                BlocProvider.of<WordsBloc>(context)
+                    .add(FilterWords(searchText, false, false, false));
+              } else if (searchText.isEmpty) {
+                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
+              }
             },
           ),
-          DictionaryFilterButtons(),
+          const DictionaryFilterButtons(),
           WordsList(editingController),
         ],
       ),
