@@ -26,10 +26,12 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/update_word.dart
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 
-import '../../../domain/usecases/add_words_from_set_to_dictionary.dart'
+import '../../../domain/usecases/add_words_in_set_to_dictionary.dart'
     as usecase11;
 import '../../../domain/usecases/delete_word.dart' as usecase12;
 import '../../../domain/usecases/fetch_word_by_source.dart' as usecase5;
+import '../../../domain/usecases/remove_words_in_set_from_dictionary.dart'
+    as usecase13;
 
 const SERVER_FAILURE_MESSAGE = 'Server Failure';
 
@@ -48,8 +50,9 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
       fetchTranslationsForSearchedWordsInSet;
   final usecase8.DeleteTranslation deleteTranslation;
   final usecase9.AddTranslation addTranslation;
-  final usecase11.AddWordsFromSetToDictionary addWordsFromSetToDictionary;
+  final usecase11.AddWordsInSetToDictionary addWordsFromSetToDictionary;
   final usecase12.DeleteWord deleteWord;
+  final usecase13.RemoveWordsInSetFromDictionary removeWordsInSetFromDictionary;
 
   WordsBloc({
     required this.loadWords,
@@ -66,6 +69,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     required this.addTranslation,
     required this.addWordsFromSetToDictionary,
     required this.deleteWord,
+    required this.removeWordsInSetFromDictionary,
   }) : super(WordsLoading()) {
     on<LoadWords>(_onLoadWordsEvent);
     on<FilterWords>(_onFilterWordsEvent);
@@ -82,6 +86,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     on<AddTranslation>(_onAddTranslationEvent);
     on<AddWordsFromSetToDictionary>(_onAddWordsFromSetToDictionaryEvent);
     on<DeleteWord>(_onDeleteWordEvent);
+    on<RemoveWordsInSetFromDictionary>(_onRemoveWordsInSetFromDictionaryEvent);
   }
 
   FutureOr<void> _onLoadWordsEvent(
@@ -266,6 +271,11 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   FutureOr<void> _onAddWordsFromSetToDictionaryEvent(
       AddWordsFromSetToDictionary event, Emitter<WordsState> emit) async {
     await addWordsFromSetToDictionary(event.words);
+  }
+
+  FutureOr<void> _onRemoveWordsInSetFromDictionaryEvent(
+      RemoveWordsInSetFromDictionary event, Emitter<WordsState> emit) async {
+    await removeWordsInSetFromDictionary(event.words);
   }
 
   String _mapFailureToMessage(Failure failure) {

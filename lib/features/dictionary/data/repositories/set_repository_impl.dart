@@ -27,7 +27,10 @@ class SetRepositoryImpl extends SetRepository {
   @override
   Future<Either<Failure, void>> addSet(SetEntity set) async {
     try {
-      SetModel setModel = SetModel(id: set.id, name: set.name);
+      SetModel setModel = SetModel(
+          id: set.id,
+          name: set.name,
+          isAddedToDictionary: set.isAddedToDictionary);
       setModel.wordsInSet.addAll(set.wordsInSet);
       await localDataSource.addSet(setModel);
       return const Right(Future<void>);
@@ -49,7 +52,10 @@ class SetRepositoryImpl extends SetRepository {
   @override
   Future<Either<Failure, void>> updateSet(
       SetEntity set, List<WordEntity> toAdd, List<WordEntity> toDelete) async {
-    SetModel setModel = SetModel(id: set.id, name: set.name);
+    SetModel setModel = SetModel(
+        id: set.id,
+        name: set.name,
+        isAddedToDictionary: set.isAddedToDictionary);
     setModel.wordsInSet.addAll(set.wordsInSet);
     List<WordModel> toAddModels = [];
     List<WordModel> toDeleteModels = [];
@@ -85,7 +91,10 @@ class SetRepositoryImpl extends SetRepository {
     try {
       List<SetModel> setModels = [];
       sets.forEach((element) {
-        setModels.add(SetModel(id: element.id, name: element.name));
+        setModels.add(SetModel(
+            id: element.id,
+            name: element.name,
+            isAddedToDictionary: element.isAddedToDictionary));
       });
       final setWithWords = await localDataSource.fetchWordsForSets(setModels);
       return Right(setWithWords);

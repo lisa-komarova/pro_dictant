@@ -4,12 +4,12 @@ import 'package:pro_dictant/features/dictionary/domain/entities/translation_enti
 import '../../../../core/error/failure.dart';
 import '../repositories/word_repository.dart';
 
-class AddWordsFromSetToDictionary {
+class RemoveWordsInSetFromDictionary {
   final WordRepository wordRepository;
 
-  AddWordsFromSetToDictionary({required this.wordRepository});
+  RemoveWordsInSetFromDictionary({required this.wordRepository});
 
   Future<Either<Failure, void>> call(List<TranslationEntity> words) async {
-    return await wordRepository.addWordsFromSetToDictionary(words);
+    return await wordRepository.removeWordsInSetFromDictionary(words);
   }
 }

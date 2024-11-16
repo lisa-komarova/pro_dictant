@@ -218,8 +218,10 @@ class _NewSetPageState extends State<NewSetPage> {
                     content: Text('Введите название набора слов')));
               } else {
                 if (widget.set != null) {
-                  SetEntity set =
-                      SetEntity(id: widget.set!.id, name: _nameController.text);
+                  SetEntity set = SetEntity(
+                      id: widget.set!.id,
+                      name: _nameController.text,
+                      isAddedToDictionary: 0);
                   final List<WordEntity> wordsInSetToAdd = [];
                   final List<WordEntity> wordsInSetToDelete = [];
                   if (wordsInSet.length > widget.set!.wordsInSet.length) {
@@ -254,8 +256,10 @@ class _NewSetPageState extends State<NewSetPage> {
                       toDelete: wordsInSetToDelete));
                   Navigator.of(context).pop();
                 } else {
-                  SetEntity set =
-                      SetEntity(id: Uuid().v4(), name: _nameController.text);
+                  SetEntity set = SetEntity(
+                      id: Uuid().v4(),
+                      name: _nameController.text,
+                      isAddedToDictionary: 0);
                   set.wordsInSet.addAll(wordsInSet);
                   BlocProvider.of<SetBloc>(context).add(AddSet(set: set));
                   Navigator.of(context).pop();

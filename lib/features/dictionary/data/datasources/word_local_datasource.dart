@@ -26,7 +26,9 @@ abstract class WordLocalDatasource {
 
   Future<void> addWord(WordModel word);
 
-  Future<void> addWordsFromSetToDictionary(List<TranslationModel> words);
+  Future<void> addWordsInSetToDictionary(List<TranslationModel> words);
+
+  Future<void> removeWordsInSetFromDictionary(List<TranslationModel> words);
 
   Future<void> addSet(SetModel set);
 
@@ -194,7 +196,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
-  Future<void> addWordsFromSetToDictionary(List<TranslationModel> words) async {
+  Future<void> addWordsInSetToDictionary(List<TranslationModel> words) async {
 // Get a reference to the database.
     final db = await database;
 // Update the given word.
@@ -207,6 +209,29 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       // words[i].isRepeated = 0;
       words[i].isInDictionary = 1;
       words[i].dateAddedToDictionary = DateTime.now().toString();
+      await db!.update(
+        tableTranslations,
+        words[i].toJson(),
+        where: 'id = ?',
+        whereArgs: [words[i].id],
+      );
+    }
+  }
+
+  Future<void> removeWordsInSetFromDictionary(
+      List<TranslationModel> words) async {
+// Get a reference to the database.
+    final db = await database;
+// Update the given word.
+    for (int i = 0; i < words.length; i++) {
+      // words[i].isTW = 0;
+      // words[i].isWT = 0;
+      // words[i].isCards = 0;
+      // words[i].isMatching = 0;
+      // words[i].isDictant = 0;
+      // words[i].isRepeated = 0;
+      words[i].isInDictionary = 0;
+      words[i].dateAddedToDictionary = '';
       await db!.update(
         tableTranslations,
         words[i].toJson(),

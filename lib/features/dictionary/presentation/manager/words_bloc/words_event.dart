@@ -52,6 +52,12 @@ class AddWordsFromSetToDictionary extends WordsEvent {
   const AddWordsFromSetToDictionary({required this.words});
 }
 
+class RemoveWordsInSetFromDictionary extends WordsEvent {
+  final List<TranslationEntity> words;
+
+  const RemoveWordsInSetFromDictionary({required this.words});
+}
+
 class UpdateWord extends WordsEvent {
   final WordEntity word;
 

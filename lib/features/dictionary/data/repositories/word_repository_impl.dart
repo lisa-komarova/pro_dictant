@@ -211,7 +211,7 @@ class WordRepositoryImpl extends WordRepository {
   }
 
   @override
-  Future<Either<Failure, void>> addWordsFromSetToDictionary(
+  Future<Either<Failure, void>> addWordsInSetToDictionary(
       List<TranslationEntity> words) async {
     List<TranslationModel> wordsModels = [];
     words.forEach((translationEntity) {
@@ -222,7 +222,26 @@ class WordRepositoryImpl extends WordRepository {
           notes: translationEntity.notes));
     });
     try {
-      await localDataSource.addWordsFromSetToDictionary(wordsModels);
+      await localDataSource.addWordsInSetToDictionary(wordsModels);
+      return const Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> removeWordsInSetFromDictionary(
+      List<TranslationEntity> words) async {
+    List<TranslationModel> wordsModels = [];
+    words.forEach((translationEntity) {
+      wordsModels.add(TranslationModel(
+          id: translationEntity.id,
+          wordId: translationEntity.wordId,
+          translation: translationEntity.translation,
+          notes: translationEntity.notes));
+    });
+    try {
+      await localDataSource.removeWordsInSetFromDictionary(wordsModels);
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());

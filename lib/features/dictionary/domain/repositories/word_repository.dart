@@ -24,7 +24,10 @@ abstract class WordRepository {
 
   Future<Either<Failure, void>> addWord(WordEntity word);
 
-  Future<Either<Failure, void>> addWordsFromSetToDictionary(
+  Future<Either<Failure, void>> addWordsInSetToDictionary(
+      List<TranslationEntity> words);
+
+  Future<Either<Failure, void>> removeWordsInSetFromDictionary(
       List<TranslationEntity> words);
 
   Future<Either<Failure, void>> deleteWordFromDictionary(
