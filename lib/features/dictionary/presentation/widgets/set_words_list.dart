@@ -38,7 +38,7 @@ class _SetWordsListState extends State<SetWordsList> {
         return buildWordsList(
             state.set.wordsInSet, wordsTranslations, setEntity, context);
       }
-      return SizedBox();
+      return const SizedBox();
     });
   }
 
@@ -58,31 +58,31 @@ class _SetWordsListState extends State<SetWordsList> {
       BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            onTap: () {},
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color(0xFF85977f),
-              ),
-              height: 50,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FittedBox(
-                    child: Text(
-                      'Отправить на изучение',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.hachiMaruPop(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.all(8.0),
+        //   child: GestureDetector(
+        //     onTap: () {},
+        //     child: Container(
+        //       decoration: BoxDecoration(
+        //         borderRadius: BorderRadius.circular(20),
+        //         color: const Color(0xFF85977f),
+        //       ),
+        //       height: 50,
+        //       child: Center(
+        //         child: Padding(
+        //           padding: const EdgeInsets.all(5.0),
+        //           child: FittedBox(
+        //             child: Text(
+        //               'Отправить на изучение',
+        //               textAlign: TextAlign.center,
+        //               style: GoogleFonts.hachiMaruPop(color: Colors.white),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Row(
           children: [
             Expanded(
@@ -96,8 +96,8 @@ class _SetWordsListState extends State<SetWordsList> {
                       setState(() {
                         setEntity.isAddedToDictionary = 1;
                       });
-                      BlocProvider.of<SetBloc>(context).add(
-                          UpdateSet(set: setEntity, toAdd: [], toDelete: []));
+                      BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                          set: setEntity, toAdd: const [], toDelete: const []));
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('слова добавлены в словарь!'),
@@ -109,8 +109,8 @@ class _SetWordsListState extends State<SetWordsList> {
                       setState(() {
                         setEntity.isAddedToDictionary = 0;
                       });
-                      BlocProvider.of<SetBloc>(context).add(
-                          UpdateSet(set: setEntity, toAdd: [], toDelete: []));
+                      BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                          set: setEntity, toAdd: const [], toDelete: const []));
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('слова удалены из словаря!'),

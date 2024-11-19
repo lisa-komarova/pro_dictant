@@ -110,18 +110,32 @@ class _NewSetPageState extends State<NewSetPage> {
                 }
               },
               onTap: () {
-                myFocusNode.requestFocus();
+                if (_searchController.text.isEmpty) {
+                  myFocusNode.requestFocus();
+                } else {
+                  _searchController.text = '';
+                  myFocusNode.unfocus();
+                  setState(() {
+                    isSearchShown = false;
+                  });
+                }
               },
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
                 suffixIcon: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(
-                    'assets/icons/search.png',
-                    width: 24,
-                    height: 24,
-                  ),
+                  child: _searchController.text.isEmpty
+                      ? Image.asset(
+                          'assets/icons/search.png',
+                          width: 24,
+                          height: 24,
+                        )
+                      : Image.asset(
+                          'assets/icons/cancel.png',
+                          width: 24,
+                          height: 24,
+                        ),
                 ),
                 contentPadding: const EdgeInsets.only(
                   left: 30,
@@ -144,7 +158,7 @@ class _NewSetPageState extends State<NewSetPage> {
             buildWordsList(),
             isSearchShown
                 ? SingleChildScrollView(
-                    child: Container(
+                    child: SizedBox(
                       height: 170,
                       child: BlocBuilder<WordsBloc, WordsState>(
                           builder: (context, state) {
@@ -174,7 +188,7 @@ class _NewSetPageState extends State<NewSetPage> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(20),
-                                          color: Color(0xFFffffff)),
+                                          color: const Color(0xFFffffff)),
                                       height: 50,
                                       child: Center(
                                         child: Padding(
@@ -201,12 +215,15 @@ class _NewSetPageState extends State<NewSetPage> {
                                   ),
                                 );
                               });
-                        } else
-                          return SizedBox();
+                        } else if (state is SearchedWordsLoading) {
+                          return _loadingIndicator();
+                        } else {
+                          return const SizedBox();
+                        }
                       }),
                     ),
                   )
-                : SizedBox(),
+                : const SizedBox(),
           ]),
         ),
         Padding(
@@ -257,7 +274,7 @@ class _NewSetPageState extends State<NewSetPage> {
                   Navigator.of(context).pop();
                 } else {
                   SetEntity set = SetEntity(
-                      id: Uuid().v4(),
+                      id: const Uuid().v4(),
                       name: _nameController.text,
                       isAddedToDictionary: 0);
                   set.wordsInSet.addAll(wordsInSet);
@@ -270,8 +287,8 @@ class _NewSetPageState extends State<NewSetPage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: _nameController.text == ''
-                      ? Color(0xFFFFFFFF)
-                      : Color(0xFF85977f)),
+                      ? const Color(0xFFFFFFFF)
+                      : const Color(0xFF85977f)),
               height: 50,
               child: Center(
                 child: Padding(
@@ -282,8 +299,8 @@ class _NewSetPageState extends State<NewSetPage> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.hachiMaruPop(
                           color: _nameController.text == ''
-                              ? Color(0xFF7A7A7A)
-                              : Color(0xFFFFFFFF)),
+                              ? const Color(0xFF7A7A7A)
+                              : const Color(0xFFFFFFFF)),
                     ),
                   ),
                 ),
@@ -292,6 +309,17 @@ class _NewSetPageState extends State<NewSetPage> {
           ),
         ),
       ]),
+    );
+  }
+
+  Widget _loadingIndicator() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 
@@ -309,14 +337,14 @@ class _NewSetPageState extends State<NewSetPage> {
               key: ValueKey(wordsInSet[index]),
               background: Row(
                 children: [
-                  Spacer(),
+                  const Spacer(),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Image.asset(
                       'assets/icons/delete.png',
                       width: 35,
                       height: 35,
-                      color: Color(0xFFB70E0E),
+                      color: const Color(0xFFB70E0E),
                     ),
                   ),
                 ],

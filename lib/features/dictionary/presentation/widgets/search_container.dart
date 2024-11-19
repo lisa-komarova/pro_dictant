@@ -6,8 +6,11 @@ class SearchContainer extends StatefulWidget {
   final void Function(String searchText) searchHandler;
   final TextEditingController controller;
 
-  const SearchContainer(
-      {super.key, required this.searchHandler, required this.controller});
+  const SearchContainer({
+    super.key,
+    required this.searchHandler,
+    required this.controller,
+  });
 
   @override
   State<SearchContainer> createState() => _SearchContainerState();
@@ -47,7 +50,6 @@ class _SearchContainerState extends State<SearchContainer> {
                   cursorWidth: 0,
                   focusNode: myFocusNode,
                   onChanged: (searchText) {
-                    setState(() {});
                     widget.searchHandler(searchText);
                     if (widget.controller.text.isEmpty) {
                       setState(() {

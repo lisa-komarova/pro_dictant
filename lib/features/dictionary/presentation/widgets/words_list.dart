@@ -7,9 +7,9 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 
 class WordsList extends StatefulWidget {
-  TextEditingController editingController;
+  final TextEditingController editingController;
 
-  WordsList(this.editingController, {super.key});
+  const WordsList(this.editingController, {super.key});
 
   @override
   State<WordsList> createState() => _WordsListState();
@@ -19,7 +19,6 @@ class _WordsListState extends State<WordsList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WordsBloc, WordsState>(builder: (context, state) {
-      //TODO redo this
       if (state is WordsEmpty) {
         return Expanded(
           child: Center(
@@ -39,8 +38,9 @@ class _WordsListState extends State<WordsList> {
           state.message,
           style: const TextStyle(color: Colors.white, fontSize: 25),
         );
-      } else
-        return SizedBox();
+      } else {
+        return const SizedBox();
+      }
     });
   }
 
@@ -83,27 +83,13 @@ class _WordsListState extends State<WordsList> {
               return GestureDetector(
                 onTap: () async {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  widget.editingController.text = '';
-                  BlocProvider.of<WordsBloc>(context).add(LoadWords());
-                  final returnedWord =
-                      await Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => WordsDetails(
-                                word: words[index],
-                                isFromSet: false,
-                              )));
-                  // if (returnedWord == null) {
-                  //   words.removeAt(index);
-                  //   setState(() {});
-                  if (words.contains(returnedWord)) {
-                    setState(() {});
-                  }
-                  // } else if (words.contains(returnedWord)) {
-                  //   setState(() {});
-                  // } else {
-                  //   setState(() {
-                  //     words.add(returnedWord);
-                  //   });
-                  // }
+                  //widget.editingController.text = '';
+                  //BlocProvider.of<WordsBloc>(context).add(LoadWords());
+                  await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => WordsDetails(
+                            word: words[index],
+                            isFromSet: false,
+                          )));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -113,7 +99,7 @@ class _WordsListState extends State<WordsList> {
                         children: [
                           ListTile(
                             title:
-                                Text("${words[index].source} - ${translation}"),
+                                Text("${words[index].source} - $translation"),
                           ),
                           Image.asset(
                             'assets/icons/divider.png',
@@ -132,6 +118,12 @@ class _WordsListState extends State<WordsList> {
   }
 
   Future<void> _refreshList() async {
+    if (widget.editingController.text.isNotEmpty) {
+      return;
+    }
+    setState(() {
+      widget.editingController.text = '';
+    });
     BlocProvider.of<WordsBloc>(context).add(const LoadWords());
   }
 }

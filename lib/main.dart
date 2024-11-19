@@ -25,7 +25,8 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
         providers: [
           BlocProvider<WordsBloc>(
-            create: (BuildContext context) => sl<WordsBloc>()..add(LoadWords()),
+            create: (BuildContext context) =>
+                sl<WordsBloc>()..add(const LoadWords()),
           ),
           BlocProvider<SetBloc>(
               create: (BuildContext context) => sl<SetBloc>()),
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: app_theme,
+          theme: appTheme,
           home: const HomePage(),
         ));
   }

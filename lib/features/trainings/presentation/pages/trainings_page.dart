@@ -110,9 +110,11 @@ class _TrainingsPageState extends State<TrainingsPage>
                   ? SizedBox(
                       height: 100,
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            'до выполнения цели осталось : ${widget.goal - (timeOnApp + sessionTime)} минут'),
+                        padding: const EdgeInsets.all(15.0),
+                        child: Center(
+                          child: Text(
+                              'до выполнения цели осталось : ${widget.goal - (timeOnApp + sessionTime)} минут'),
+                        ),
                       ),
                     )
                   : const SizedBox(

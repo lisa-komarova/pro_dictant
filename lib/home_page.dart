@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
               'assets/icons/profile.png',
               width: 35,
               height: 35,
-              color: Color(0xFF243120),
+              color: const Color(0xFF243120),
             ),
             icon: Image.asset(
               'assets/icons/profile.png',
@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
               'assets/icons/dictionary.png',
               width: 35,
               height: 35,
-              color: Color(0xFF243120),
+              color: const Color(0xFF243120),
             ),
             icon: Image.asset(
               'assets/icons/dictionary.png',
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
               'assets/icons/trainings.png',
               width: 35,
               height: 35,
-              color: Color(0xFF243120),
+              color: const Color(0xFF243120),
             ),
             icon: Image.asset(
               'assets/icons/trainings.png',
@@ -73,8 +73,8 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: <Widget>[
-        ProfilePage(),
-        DictionaryPage(),
+        const ProfilePage(),
+        const DictionaryPage(),
         BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
           if (state is ProfileLoading) {
             return _loadingIndicator();
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
               isTodayCompleted: state.statistics.isTodayCompleted,
             );
           } else {
-            return SizedBox();
+            return const SizedBox();
           }
         }),
       ][currentPageIndex],

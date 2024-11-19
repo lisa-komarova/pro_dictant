@@ -13,7 +13,7 @@ class DictionaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFFF7F2ED),
+      color: const Color(0xFFF7F2ED),
       width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -22,15 +22,15 @@ class DictionaryPage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
-                BlocProvider.of<WordsBloc>(context).add(LoadWords());
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => UserDictionaryPage()));
+                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (ctx) => const UserDictionaryPage()));
               },
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
-                    color: Color(0xFFD9C3AC),
+                    color: const Color(0xFFD9C3AC),
                     borderRadius: BorderRadius.circular(16)),
                 child: Text(
                   'мой словарь',
@@ -44,7 +44,7 @@ class DictionaryPage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
-                BlocProvider.of<SetBloc>(context).add(LoadSets());
+                BlocProvider.of<SetBloc>(context).add(const LoadSets());
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (ctx) => UserSetPage()));
               },
@@ -52,7 +52,7 @@ class DictionaryPage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.8,
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
-                    color: Color(0xFFD9C3AC),
+                    color: const Color(0xFFD9C3AC),
                     borderRadius: BorderRadius.circular(16)),
                 child: Text(
                   'наборы слов',

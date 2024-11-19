@@ -35,13 +35,14 @@ class _SetListState extends State<SetList> {
           state.message,
           style: const TextStyle(color: Colors.white, fontSize: 25),
         );
-      } else
-        return SizedBox();
+      } else {
+        return const SizedBox();
+      }
     });
   }
 
   Widget _loadingIndicator() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(8.0),
       child: Center(
         child: CircularProgressIndicator(),
@@ -50,85 +51,93 @@ class _SetListState extends State<SetList> {
   }
 
   Widget buildSetsList(List<SetEntity> sets) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 100,
-        ),
-        Expanded(
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: sets.length,
-            itemBuilder: (context, index) {
-              return Dismissible(
-                direction: DismissDirection.endToStart,
-                key: ValueKey(sets[index]),
-                background: Row(
-                  children: [
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        'assets/icons/delete.png',
-                        width: 35,
-                        height: 35,
-                        color: Color(0xFFB70E0E),
-                      ),
-                    ),
-                  ],
-                ),
-                onDismissed: (DismissDirection direction) {
-                  BlocProvider.of<SetBloc>(context)
-                      .add(DeleteSet(setId: sets[index].id));
-                },
-                child: GestureDetector(
-                  onTap: () async {
-                    BlocProvider.of<SetBloc>(context)
-                        .add(FetchTranslationsForWordsInSets(set: sets[index]));
-                    await Navigator.of(context).push(MaterialPageRoute(
-                        builder: (ctx) => SetsWordsPage(set: sets[index])));
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                        height: 100,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(
-                            color: const Color(0xFFD9C3AC),
-                          ),
-                          color: Color(0xFFFFFFFF),
+    return RefreshIndicator(
+      onRefresh: _pullRefresh,
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 100,
+          ),
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: sets.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  direction: DismissDirection.endToStart,
+                  key: ValueKey(sets[index]),
+                  background: Row(
+                    children: [
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          'assets/icons/delete.png',
+                          width: 35,
+                          height: 35,
+                          color: const Color(0xFFB70E0E),
                         ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: AutoSizeText(
+                      ),
+                    ],
+                  ),
+                  onDismissed: (DismissDirection direction) {
+                    BlocProvider.of<SetBloc>(context)
+                        .add(DeleteSet(setId: sets[index].id));
+                  },
+                  child: GestureDetector(
+                    onTap: () async {
+                      BlocProvider.of<SetBloc>(context).add(
+                          FetchTranslationsForWordsInSets(set: sets[index]));
+                      await Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => SetsWordsPage(set: sets[index])));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                          height: 100,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                              color: const Color(0xFFD9C3AC),
+                            ),
+                            color: const Color(0xFFFFFFFF),
+                          ),
+                          child: Center(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: AutoSizeText(
+                                    overflow: TextOverflow.fade,
+                                    sets[index].name.toUpperCase(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Text(
                                   overflow: TextOverflow.fade,
-                                  "${sets[index].name.toUpperCase()}",
-                                  style:
-                                      Theme.of(context).textTheme.displaySmall,
+                                  "${sets[index].wordsInSet.length} \n слов",
+                                  style: Theme.of(context).textTheme.titleLarge,
                                   textAlign: TextAlign.center,
                                 ),
-                              ),
-                              Text(
-                                overflow: TextOverflow.fade,
-                                "${sets[index].wordsInSet.length} \n слов",
-                                style: Theme.of(context).textTheme.titleLarge,
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        )),
+                              ],
+                            ),
+                          )),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  Future<void> _pullRefresh() async {
+    BlocProvider.of<SetBloc>(context).add(const LoadSets());
   }
 }

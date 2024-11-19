@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -73,11 +74,12 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
             child: Row(
               children: [
                 _buildAWordButton(
-                    title: "На\nизучение", color: Color(0xFFB70E0E)),
-                _buildAWordButton(title: "Уже знаю", color: Color(0xFF85977f)),
+                    title: "На\nизучение", color: const Color(0xFFB70E0E)),
+                _buildAWordButton(
+                    title: "Уже знаю", color: const Color(0xFF85977f)),
                 if (!widget.isChangeable)
                   _buildAWordButton(
-                      title: "Изменить", color: Color(0xFFd9c3ac)),
+                      title: "Изменить", color: const Color(0xFFd9c3ac)),
               ],
             ),
           ),
@@ -153,7 +155,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               width: 2,
-              color: Color(0xFFd9c3ac),
+              color: const Color(0xFFd9c3ac),
             ),
           ),
           child: Column(
@@ -176,7 +178,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      _color = Color(0xFF243120);
+                      _color = const Color(0xFF243120);
                     });
                     speak(widget.word.source);
                   },
@@ -193,20 +195,29 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 ),
               ),
               Flexible(
-                flex: 2,
-                child: Row(
+                flex: 4,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        widget.word.source,
-                        style: Theme.of(context).textTheme.titleLarge,
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 2),
+                        child: Scrollbar(
+                          controller: scrollController,
+                          thumbVisibility: true,
+                          radius: const Radius.circular(2),
+                          child: SingleChildScrollView(
+                            child: Text(widget.word.source,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleLarge),
+                          ),
+                        ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
+                      child: AutoSizeText(
                         widget.word.pos,
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontWeight: FontWeight.bold, fontSize: 12),
@@ -233,7 +244,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 child: Padding(
                   padding: const EdgeInsets.only(right: 2),
                   child: Scrollbar(
-                    controller: ScrollController(),
+                    controller: scrollController,
                     thumbVisibility: true,
                     radius: const Radius.circular(2),
                     child: SingleChildScrollView(
@@ -275,7 +286,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                           ),
                         ),
                       ),
-                    if (translation.isInDictionary == 0) Spacer(),
+                    if (translation.isInDictionary == 0) const Spacer(),
                     if (translation.isInDictionary == 0)
                       Padding(
                         padding: const EdgeInsets.only(
@@ -332,7 +343,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
     await flutterTts.setSpeechRate(0.5);
     await flutterTts.speak(text);
     setState(() {
-      _color = Color(0xFF85977f);
+      _color = const Color(0xFF85977f);
     });
   }
 
@@ -351,7 +362,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
-                foregroundColor: Color(0xFFB70E0E),
+                foregroundColor: const Color(0xFFB70E0E),
               ),
               child: Text(toDelete ? 'удалить' : 'добавить'),
               onPressed: () {
@@ -389,13 +400,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
 
   void sortTranslationList(WordEntity word) {
     List<TranslationEntity> inDictList = [];
-    word.translationList.forEach((e) {
+    for (var e in word.translationList) {
       if (e.isInDictionary == 1) inDictList.add(e);
-    });
+    }
     word.translationList.removeWhere((element) => element.isInDictionary == 1);
-    inDictList.forEach((element) {
+    for (var element in inDictList) {
       word.translationList.insert(0, element);
-    });
+    }
   }
 }
 
@@ -412,7 +423,7 @@ Future<void> _showDialogDelete(
           TextButton(
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: Color(0xFFB70E0E),
+              foregroundColor: const Color(0xFFB70E0E),
             ),
             child: const Text('удалить'),
             onPressed: () {
@@ -454,7 +465,7 @@ Future<void> _showSendToLearntDialog(
           TextButton(
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: Color(0xFFB70E0E),
+              foregroundColor: const Color(0xFFB70E0E),
             ),
             child: const Text('да'),
             onPressed: () {
@@ -499,7 +510,7 @@ Future<void> _showSendToLearningDialog(
           TextButton(
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: Color(0xFFB70E0E),
+              foregroundColor: const Color(0xFFB70E0E),
             ),
             child: const Text('да'),
             onPressed: () {

@@ -121,7 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: HeatMap(
-            startDate: DateTime.now().subtract(const Duration(days: 45)),
+            startDate: DateTime.now().subtract(const Duration(days: 30)),
             endDate: DateTime.now(),
             scrollable: true,
             colorMode: ColorMode.color,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/core/error/failure.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/add_translation.dart'
@@ -33,7 +34,7 @@ import '../../../domain/usecases/fetch_word_by_source.dart' as usecase5;
 import '../../../domain/usecases/remove_words_in_set_from_dictionary.dart'
     as usecase13;
 
-const SERVER_FAILURE_MESSAGE = 'Server Failure';
+const serverFailureMessage = 'Server Failure';
 
 // BLoC 8.0.0
 class WordsBloc extends Bloc<WordsEvent, WordsState> {
@@ -71,8 +72,8 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     required this.deleteWord,
     required this.removeWordsInSetFromDictionary,
   }) : super(WordsLoading()) {
-    on<LoadWords>(_onLoadWordsEvent);
-    on<FilterWords>(_onFilterWordsEvent);
+    on<LoadWords>(_onLoadWordsEvent, transformer: restartable());
+    on<FilterWords>(_onFilterWordsEvent, transformer: restartable());
     on<DeleteWordFromDictionary>(_onDeleteWordFromDictionaryEvent);
     on<UpdateWord>(_onUpdateWordEvent);
     on<UpdateTranslation>(_onUpdateTranslationEvent);
@@ -226,25 +227,25 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   FutureOr<void> _onDeleteWordFromDictionaryEvent(
       DeleteWordFromDictionary event, Emitter<WordsState> emit) async {
     await deleteWordFromDictionary(event.translationEntity);
-    add(LoadWords());
+    //add(LoadWords());
   }
 
   FutureOr<void> _onDeleteWordEvent(
       DeleteWord event, Emitter<WordsState> emit) async {
     await deleteWord(event.word);
-    add(LoadWords());
+    //add(LoadWords());
   }
 
   FutureOr<void> _onUpdateWordEvent(
       UpdateWord event, Emitter<WordsState> emit) async {
     await updateWord(event.word);
-    add(LoadWords());
+    //add(LoadWords());
   }
 
   FutureOr<void> _onUpdateTranslationEvent(
       UpdateTranslation event, Emitter<WordsState> emit) async {
     await updateTranslation(event.translation);
-    add(LoadWords());
+    //add(LoadWords());
   }
 
   FutureOr<void> _onAddWordEvent(
@@ -258,14 +259,14 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
       AddTranslation event, Emitter<WordsState> emit) async {
     await addTranslation(event.translation);
 
-    add(LoadWords());
+    //add(LoadWords());
   }
 
   FutureOr<void> _onDeleteTranslationEvent(
       DeleteTranslation event, Emitter<WordsState> emit) async {
     await deleteTranslation(event.translation);
 
-    add(LoadWords());
+    //add(LoadWords());
   }
 
   FutureOr<void> _onAddWordsFromSetToDictionaryEvent(
@@ -281,7 +282,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   String _mapFailureToMessage(Failure failure) {
     switch (failure.runtimeType) {
       case ServerFailure:
-        return SERVER_FAILURE_MESSAGE;
+        return serverFailureMessage;
       default:
         return 'Unexpected Error';
     }

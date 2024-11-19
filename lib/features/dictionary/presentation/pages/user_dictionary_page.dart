@@ -12,7 +12,7 @@ import 'package:uuid/uuid.dart';
 import 'word_form_page.dart';
 
 class UserDictionaryPage extends StatefulWidget {
-  UserDictionaryPage({super.key});
+  const UserDictionaryPage({super.key});
 
   @override
   State<UserDictionaryPage> createState() => _UserDictionaryPageState();
@@ -20,6 +20,7 @@ class UserDictionaryPage extends StatefulWidget {
 
 class _UserDictionaryPageState extends State<UserDictionaryPage> {
   TextEditingController editingController = TextEditingController();
+  bool isSearching = false;
 
   @override
   void dispose() {

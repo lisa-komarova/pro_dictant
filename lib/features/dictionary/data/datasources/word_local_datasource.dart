@@ -22,7 +22,7 @@ abstract class WordLocalDatasource {
   Future<void> updateSet(
       SetModel set, List<WordModel> toAdd, List<WordModel> toDelete);
 
-  Future<void> updateTranslation(TranslationModel translationModel);
+  Future<void> updateTranslation(TranslationModel translation);
 
   Future<void> addWord(WordModel word);
 
@@ -48,7 +48,7 @@ abstract class WordLocalDatasource {
   Future<List<WordModel>> fetchTranslationsForSearchedWordsInSet(
       List<WordModel> words);
 
-  Future<void> deleteWordFromDictionary(TranslationModel word);
+  Future<void> deleteWordFromDictionary(TranslationModel translation);
 
   Future<void> deleteTranslation(TranslationModel translation);
 
@@ -93,6 +93,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   }
 
   ///gets taro card by id
+  @override
   Future<List<WordModel>> fetchWordBySource(String query) async {
     final db = await instance.database;
     List<WordModel> words = [];
@@ -112,6 +113,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  @override
   Future<List<WordModel>> fetchWordsInDict() async {
     final db = await instance.database;
     List<WordModel> words = [];
@@ -127,6 +129,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  @override
   Future<List<SetModel>> fetchSets() async {
     final db = await instance.database;
     List<SetModel> sets = [];
@@ -146,19 +149,21 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  @override
   Future<List<SetModel>> fetchWordsForSets(List<SetModel> sets) async {
     final db = await instance.database;
     List<WordModel> words = [];
     for (int i = 0; i < sets.length; i++) {
       final wordsInSet = await db!.rawQuery(
           '''SELECT word.id,  word.pos, word.source, word.transcription from words_translations INNER join word_set on words_translations.id == word_set.word_id INNER join word on words_translations.word_id
-               == word.id WHERE word_set.set_id = \"${sets[i].id}\"''');
+               == word.id WHERE word_set.set_id = "${sets[i].id}"''');
       words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
       sets[i].wordsInSet.addAll(words);
     }
     return sets;
   }
 
+  @override
   Future<void> updateWord(WordModel word) async {
 // Get a reference to the database.
     final db = await database;
@@ -171,6 +176,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     );
   }
 
+  @override
   Future<void> addWord(WordModel word) async {
 // Get a reference to the database.
     final db = await database;
@@ -196,6 +202,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  @override
   Future<void> addWordsInSetToDictionary(List<TranslationModel> words) async {
 // Get a reference to the database.
     final db = await database;
@@ -218,6 +225,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  @override
   Future<void> removeWordsInSetFromDictionary(
       List<TranslationModel> words) async {
 // Get a reference to the database.
@@ -241,6 +249,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  @override
   Future<void> addSet(SetModel set) async {
 // Get a reference to the database.
     final db = await database;
@@ -281,6 +290,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
+  @override
   Future<void> deleteWordFromDictionary(TranslationModel translation) async {
 // Get a reference to the database.
     final db = await database;
@@ -294,7 +304,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     );
   }
 
-//TODO check if it works
+  @override
   Future<void> deleteWord(WordEntity word) async {
 // Get a reference to the database.
     final db = await database;
@@ -313,7 +323,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     );
   }
 
-  //
+  @override
   Future<List<WordModel>> filterWordsInDict(String query) async {
     final db = await instance.database;
     List<WordModel> words = [];
@@ -327,7 +337,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
         'matchinfo( source_fts, \'$bm25FormatString\') as info'
       ],
       where: 'source_fts MATCH ?',
-      whereArgs: ['$query'],
+      whereArgs: [query],
     );
     // final maps = await db!.rawQuery(
     //   'SELECT * from source_fts where source_fts MATCH "$query"',
@@ -461,7 +471,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
           '''SELECT words_translations.id, word_id, translation, notes, isInDictionary, isTW, isWT,
                isMatching, isCards, isDictant, isRepeated, dateAddedToDictionary
                from word INNER join words_translations on word.id 
-               == words_translations.word_id WHERE words_translations.word_id = \"${words[i].id}\"''');
+               == words_translations.word_id WHERE words_translations.word_id = "${words[i].id}"''');
       translations =
           translationsMap.map((map) => TranslationModel.fromJson(map)).toList();
       words[i].translationList.addAll(translations);
@@ -500,7 +510,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     final translationsMap = await db!.rawQuery(
         '''SELECT words_translations.id,  words_translations.word_id, translation, notes, isInDictionary, isTW, isWT,
                isMatching, isCards, isDictant, isRepeated, dateAddedToDictionary from words_translations INNER join word_set on words_translations.id 
-               == word_set.word_id WHERE word_set.set_id =  \"$setId\"''');
+               == word_set.word_id WHERE word_set.set_id =  "$setId"''');
     translations =
         translationsMap.map((map) => TranslationModel.fromJson(map)).toList();
     for (int i = 0; i < words.length; i++) {
@@ -520,7 +530,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       final translationsMap = await db!.rawQuery(
           '''SELECT words_translations.id,  words_translations.word_id, translation, notes, isInDictionary, isTW, isWT,
                isMatching, isCards, isDictant, isRepeated, dateAddedToDictionary from words_translations where words_translations.word_id 
-               == \"${words[i].id}\" ''');
+               == "${words[i].id}" ''');
       translations =
           translationsMap.map((map) => TranslationModel.fromJson(map)).toList();
       for (int y = 0; y < translations.length; y++) {

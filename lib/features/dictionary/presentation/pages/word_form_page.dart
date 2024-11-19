@@ -12,7 +12,7 @@ class WordForm extends StatefulWidget {
   final WordEntity word;
   final bool isNew;
 
-  WordForm({required this.word, super.key, required this.isNew});
+  const WordForm({required this.word, super.key, required this.isNew});
 
   @override
   State<WordForm> createState() => _WordFormState();
@@ -22,7 +22,7 @@ class _WordFormState extends State<WordForm> {
   final _formKey = GlobalKey<FormState>();
   final _sourceController = TextEditingController();
   final _posController = TextEditingController();
-  final _transciptionController = TextEditingController();
+  final _transcriptionController = TextEditingController();
   final List<TextEditingController> _translationControllerList = [];
   final List<TranslationEntity> translations = [];
   final List<TranslationEntity> existingTranslations = [];
@@ -35,7 +35,7 @@ class _WordFormState extends State<WordForm> {
       _sourceController.text = widget.word.source;
       _posController.text = widget.word.pos;
       //_translationController.text = widget.word.translations;
-      _transciptionController.text = widget.word.transcription;
+      _transcriptionController.text = widget.word.transcription;
       for (var w = 0; w < widget.word.translationList.length; w++) {
         _translationControllerList.add(TextEditingController());
         _translationControllerList[w].text =
@@ -53,7 +53,7 @@ class _WordFormState extends State<WordForm> {
   void dispose() {
     _sourceController.dispose();
     _posController.dispose();
-    _transciptionController.dispose();
+    _transcriptionController.dispose();
     for (var a in _translationControllerList) {
       a.dispose();
     }
@@ -138,9 +138,9 @@ class _WordFormState extends State<WordForm> {
                   child: SizedBox(
                     height: 50,
                     child: TextFormField(
-                      controller: _transciptionController,
+                      controller: _transcriptionController,
                       keyboardType: TextInputType.text,
-                      style: TextStyle(fontFamily: 'Roboto'),
+                      style: const TextStyle(fontFamily: 'Roboto'),
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -158,13 +158,41 @@ class _WordFormState extends State<WordForm> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      if (widget.isNew)
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _translationControllerList[0],
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFFd9c3ac),
+                                      width: 3,
+                                    )),
+                                hintText: 'Введите перевод',
+                                hintStyle: TextStyle(fontSize: 10),
+                              ),
+                              // The validator receives the text that the user has entered.
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Введите перевод';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
                       buildTranslationTextFields(),
                     ]),
                 GestureDetector(
                   onTap: () {
                     setState(() {
                       translations.add(TranslationEntity(
-                          id: Uuid().v4(),
+                          id: const Uuid().v4(),
                           wordId: widget.word.id,
                           translation: '',
                           notes: ''));
@@ -178,8 +206,9 @@ class _WordFormState extends State<WordForm> {
                       width: double.infinity,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: Color(0xFF85977f).withOpacity(0.5),
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        color: const Color(0xFF85977f).withOpacity(0.5),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -197,7 +226,7 @@ class _WordFormState extends State<WordForm> {
                       child: TextButton(
                         style: TextButton.styleFrom(
                           textStyle: Theme.of(context).textTheme.labelLarge,
-                          foregroundColor: Color(0xFFB70E0E),
+                          foregroundColor: const Color(0xFFB70E0E),
                         ),
                         child: widget.isNew
                             ? const Text('добавить')
@@ -209,12 +238,8 @@ class _WordFormState extends State<WordForm> {
                           if (_formKey.currentState!.validate()) {
                             widget.word.source = _sourceController.text;
                             widget.word.pos = _posController.text;
-                            if (_transciptionController.text == null) {
-                              widget.word.transcription = '';
-                            } else {
-                              widget.word.transcription =
-                                  _transciptionController.text;
-                            }
+                            widget.word.transcription =
+                                _transcriptionController.text;
                             if (widget.isNew) {
                               widget.word.translationList
                                   .addAll(_translationControllerList.map((e) {
@@ -316,7 +341,7 @@ class _WordFormState extends State<WordForm> {
                         },
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextButton(
@@ -338,62 +363,6 @@ class _WordFormState extends State<WordForm> {
       ),
     );
   }
-
-  // List<Widget> buildTranslationTextFieldss() {
-  //   List<Widget> list = [];
-  //   for (var i = 0; i < numberOfTranslations; i++) {
-  //     list.add(Row(
-  //       children: [
-  //         Expanded(
-  //           child: Padding(
-  //             padding: const EdgeInsets.all(8.0),
-  //             child: TextFormField(
-  //               controller: _translationControllerList[i],
-  //               keyboardType: TextInputType.text,
-  //               decoration: const InputDecoration(
-  //                 border: OutlineInputBorder(
-  //                     borderRadius: BorderRadius.all(Radius.circular(15)),
-  //                     borderSide: BorderSide(
-  //                       color: Color(0xFFd9c3ac),
-  //                       width: 3,
-  //                     )),
-  //                 hintText: 'Введите перевод',
-  //                 hintStyle: TextStyle(fontSize: 10),
-  //               ),
-  //               // The validator receives the text that the user has entered.
-  //               validator: (value) {
-  //                 if (value == null || value.isEmpty) {
-  //                   return 'Введите перевод';
-  //                 }
-  //                 return null;
-  //               },
-  //             ),
-  //           ),
-  //         ),
-  //         if (i >= 1)
-  //           GestureDetector(
-  //             onTap: () {
-  //               setState(() {
-  //                 numberOfTranslations--;
-  //               });
-  //               _translationControllerList[i].dispose();
-  //               _translationControllerList.removeAt(i);
-  //               isTranslationDeleted = true;
-  //             },
-  //             child: Padding(
-  //               padding: const EdgeInsets.all(8.0),
-  //               child: Image.asset(
-  //                 'assets/icons/delete.png',
-  //                 width: 35,
-  //                 height: 35,
-  //               ),
-  //             ),
-  //           ),
-  //       ],
-  //     ));
-  //   }
-  //   return list;
-  // }
 
   buildTranslationTextFields() {
     return Flexible(
