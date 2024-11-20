@@ -34,7 +34,6 @@ class _WordFormState extends State<WordForm> {
     if (widget.isNew == false) {
       _sourceController.text = widget.word.source;
       _posController.text = widget.word.pos;
-      //_translationController.text = widget.word.translations;
       _transcriptionController.text = widget.word.transcription;
       for (var w = 0; w < widget.word.translationList.length; w++) {
         _translationControllerList.add(TextEditingController());
@@ -95,7 +94,6 @@ class _WordFormState extends State<WordForm> {
                         hintText: 'Введите слово',
                         hintStyle: TextStyle(fontSize: 11),
                       ),
-                      // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Введите слово';
@@ -122,13 +120,11 @@ class _WordFormState extends State<WordForm> {
                         hintText: 'Введите часть речи',
                         hintStyle: TextStyle(fontSize: 11),
                       ),
-                      // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Введите часть речи';
                         }
                         return null;
-                        // The validator receives the text that the user has entered.
                       },
                     ),
                   ),
@@ -389,7 +385,6 @@ class _WordFormState extends State<WordForm> {
                         hintText: 'Введите перевод',
                         hintStyle: TextStyle(fontSize: 10),
                       ),
-                      // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Введите перевод';

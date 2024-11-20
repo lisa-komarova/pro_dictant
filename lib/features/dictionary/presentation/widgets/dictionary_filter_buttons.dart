@@ -24,7 +24,7 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
   bool isNewSelected = false;
   bool isLearningSelected = false;
   bool isLearntSelected = false;
-  double _buttonWidth = 100;
+  final double _buttonWidth = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -56,30 +56,30 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
               isLearningSelected = false;
               isLearntSelected = false;
               if (isNewSelected == false) {
-                BlocProvider.of<WordsBloc>(context).add(LoadWords());
+                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
               } else {
                 BlocProvider.of<WordsBloc>(context)
-                    .add(FilterWords('', true, false, false));
+                    .add(const FilterWords('', true, false, false));
               }
             } else if (title == titleLearning) {
               isNewSelected = false;
               isLearningSelected = !isLearningSelected;
               isLearntSelected = false;
               if (isLearningSelected == false) {
-                BlocProvider.of<WordsBloc>(context).add(LoadWords());
+                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
               } else {
                 BlocProvider.of<WordsBloc>(context)
-                    .add(FilterWords('', false, true, false));
+                    .add(const FilterWords('', false, true, false));
               }
             } else if (title == titleLearnt) {
               isNewSelected = false;
               isLearningSelected = false;
               isLearntSelected = !isLearntSelected;
               if (isLearntSelected == false) {
-                BlocProvider.of<WordsBloc>(context).add(LoadWords());
+                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
               } else {
                 BlocProvider.of<WordsBloc>(context)
-                    .add(FilterWords('', false, false, true));
+                    .add(const FilterWords('', false, false, true));
               }
             }
           });

@@ -36,7 +36,6 @@ import '../../../domain/usecases/remove_words_in_set_from_dictionary.dart'
 
 const serverFailureMessage = 'Server Failure';
 
-// BLoC 8.0.0
 class WordsBloc extends Bloc<WordsEvent, WordsState> {
   final FetchAllWordsInDict loadWords;
   final usecase5.FetchWordBySource fetchWordBySource;
@@ -92,9 +91,6 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
   FutureOr<void> _onLoadWordsEvent(
       LoadWords event, Emitter<WordsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(WordsLoading());
 
     final failureOrWord = await loadWords();
@@ -112,9 +108,6 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
   FutureOr<void> _onFetchTranslationsForWordsEvent(
       FetchTranslationsForWords event, Emitter<WordsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(WordsLoading());
 
     final failureOrWord = await fetchTranslationsForWords(event.words);
@@ -134,9 +127,6 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
   FutureOr<void> _onFetchTranslationsForSearchedWordsEvent(
       FetchTranslationsForSearchedWords event, Emitter<WordsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(SearchedWordsLoading());
 
     final failureOrWord =
@@ -169,14 +159,12 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
     final failureOrWord = await filterWords(
         event.wordQuery, event.isNew, event.isLearning, event.isLearnt);
-//TODO: smth shady here
+
     failureOrWord
         .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
             (words) async {
       if (words.isEmpty) {
         emit(WordsEmpty());
-        //TODO what's that for
-        //add(FetchWordBySource(event.wordQuery));
       } else {
         add(FetchTranslationsForWords(words));
       }
@@ -188,14 +176,13 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     emit(SearchedWordsLoading());
 
     final failureOrWord = await searchWordsForASet(event.wordQuery);
-//TODO: smth shady here
+
     failureOrWord.fold(
         (error) =>
             emit(SearchedWordsError(message: _mapFailureToMessage(error))),
         (words) async {
       if (words.isEmpty) {
         emit(SearchedWordsEmpty());
-        //add(FetchWordBySource(event.wordQuery));
       } else {
         add(FetchTranslationsForSearchedWords(words));
       }
@@ -204,9 +191,6 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
   FutureOr<void> _onFetchWordBySourceEvent(
       FetchWordBySource event, Emitter<WordsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(WordsLoading());
 
     final failureOrWord = await fetchWordBySource(event.source);
@@ -227,46 +211,36 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   FutureOr<void> _onDeleteWordFromDictionaryEvent(
       DeleteWordFromDictionary event, Emitter<WordsState> emit) async {
     await deleteWordFromDictionary(event.translationEntity);
-    //add(LoadWords());
   }
 
   FutureOr<void> _onDeleteWordEvent(
       DeleteWord event, Emitter<WordsState> emit) async {
     await deleteWord(event.word);
-    //add(LoadWords());
   }
 
   FutureOr<void> _onUpdateWordEvent(
       UpdateWord event, Emitter<WordsState> emit) async {
     await updateWord(event.word);
-    //add(LoadWords());
   }
 
   FutureOr<void> _onUpdateTranslationEvent(
       UpdateTranslation event, Emitter<WordsState> emit) async {
     await updateTranslation(event.translation);
-    //add(LoadWords());
   }
 
   FutureOr<void> _onAddWordEvent(
       AddWord event, Emitter<WordsState> emit) async {
     await addWord(event.word);
-
-    //add(LoadWords());
   }
 
   FutureOr<void> _onAddTranslationEvent(
       AddTranslation event, Emitter<WordsState> emit) async {
     await addTranslation(event.translation);
-
-    //add(LoadWords());
   }
 
   FutureOr<void> _onDeleteTranslationEvent(
       DeleteTranslation event, Emitter<WordsState> emit) async {
     await deleteTranslation(event.translation);
-
-    //add(LoadWords());
   }
 
   FutureOr<void> _onAddWordsFromSetToDictionaryEvent(

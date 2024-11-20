@@ -4,7 +4,7 @@ import '../../../dictionary/data/models/translation_model.dart';
 import '../../../dictionary/data/models/word_model.dart';
 
 class DictantTrainingModel extends DictantTrainingEntity {
-  DictantTrainingModel({
+  const DictantTrainingModel({
     required id,
     required source,
     required translation,

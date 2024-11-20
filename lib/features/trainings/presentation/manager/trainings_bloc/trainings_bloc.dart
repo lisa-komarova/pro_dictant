@@ -28,7 +28,7 @@ import '../../../domain/use_cases/update_words_for_cards_training.dart';
 import '../../../domain/use_cases/update_words_for_dictant_training.dart';
 import '../../../domain/use_cases/update_words_for_repeating_trainings.dart';
 
-const SERVER_FAILURE_MESSAGE = 'Server Failure';
+const serverFailureMessage = 'Server Failure';
 
 // BLoC 8.0.0
 class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
@@ -86,9 +86,6 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
 
   FutureOr<void> _onFetchWordsForWtTRainingsEvent(
       FetchWordsForWtTRainings event, Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords = await fetchWordsForWtTraining();
@@ -107,9 +104,6 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   FutureOr<void> _onFetchWordsForRepeatingTRainingsEvent(
       FetchWordsForRepeatingTRainings event,
       Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords = await fetchWordsForRepeatingTraining();
@@ -127,9 +121,6 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
 
   FutureOr<void> _onFetchWordsForCardsTRainingsEvent(
       FetchWordsForCardsTRainings event, Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords = await fetchWordsForCardsTraining();
@@ -148,9 +139,6 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   FutureOr<void> _onFetchWordsForMatchingTRainingsEvent(
       FetchWordsForMatchingTRainings event,
       Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords = await fetchWordsForMatchingTRaining();
@@ -168,9 +156,6 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
 
   FutureOr<void> _onFetchWordsForDictantTRainingsEvent(
       FetchWordsForDictantTRainings event, Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords = await fetchWordsForDictantTraining();
@@ -188,9 +173,6 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
 
   FutureOr<void> _onFetchWordsForTwTRainingsEvent(
       FetchWordsForTwTRainings event, Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords = await fetchWordsForTwTRainings();
@@ -208,55 +190,40 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
 
   FutureOr<void> _onUpdateWordsForWtTRainingsEvent(
       UpdateWordsForWtTRainings event, Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
     await updateWordsForWTTraining(event.toUpdate);
   }
 
   FutureOr<void> _onUpdateWordsForTwTRainingsEvent(
       UpdateWordsForTwTRainings event, Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
     await updateWordsForTWTraining(event.toUpdate);
   }
 
   FutureOr<void> _onUpdateWordsForMatchingTRainingsEvent(
       UpdateWordsForMatchingTRainings event,
       Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
     await updateWordsForMatchingTraining(event.toUpdate);
   }
 
   FutureOr<void> _onUpdateWordsForDictantTRainingsEvent(
       UpdateWordsForDictantTRainings event,
       Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
     await updateWordsForDictantTraining(event.toUpdate);
   }
 
   FutureOr<void> _onUpdateWordsForCardsTRainingsEvent(
       UpdateWordsForCardsTRainings event, Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
     await updateWordsForCardsTraining(event.toUpdate);
   }
 
   FutureOr<void> _onUpdateWordsForRepeatingTRainingsEvent(
       UpdateWordsForRepeatingTRainings event,
       Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
     await updateWordsForRepeatingTraining(event.mistakes, event.correctAnswers);
   }
 
   FutureOr<void> _onAddSuggestedTranslationsToWordsInWTEvent(
       AddSuggestedTranslationsToWordsInWT event,
       Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords =
@@ -278,9 +245,6 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   FutureOr<void> _onAddSuggestedSourcesToWordsInTWEvent(
       AddSuggestedSourcesToWordsInTW event,
       Emitter<TrainingsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(TrainingLoading());
 
     final failureOrWords = await addSuggestedSourcesToWordsInTW(event.words);
@@ -301,7 +265,7 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   String _mapFailureToMessage(Failure failure) {
     switch (failure.runtimeType) {
       case ServerFailure:
-        return SERVER_FAILURE_MESSAGE;
+        return serverFailureMessage;
       default:
         return 'Unexpected Error';
     }

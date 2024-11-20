@@ -90,12 +90,12 @@ class SetRepositoryImpl extends SetRepository {
       List<SetEntity> sets) async {
     try {
       List<SetModel> setModels = [];
-      sets.forEach((element) {
+      for (var element in sets) {
         setModels.add(SetModel(
             id: element.id,
             name: element.name,
             isAddedToDictionary: element.isAddedToDictionary));
-      });
+      }
       final setWithWords = await localDataSource.fetchWordsForSets(setModels);
       return Right(setWithWords);
     } on ServerException {

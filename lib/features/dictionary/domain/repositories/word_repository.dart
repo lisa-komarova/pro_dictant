@@ -5,7 +5,9 @@ import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart
 
 abstract class WordRepository {
   Future<Either<Failure, List<WordEntity>>> getAllWordsInDict();
-  Future<Either<Failure, List<WordEntity>>> fetchWordBySource(String sorce);
+
+  Future<Either<Failure, List<WordEntity>>> fetchWordBySource(String source);
+
   Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWords(
       List<WordEntity> words);
 
@@ -31,7 +33,7 @@ abstract class WordRepository {
       List<TranslationEntity> words);
 
   Future<Either<Failure, void>> deleteWordFromDictionary(
-      TranslationEntity translationEntity);
+      TranslationEntity translationModel);
 
   Future<Either<Failure, void>> deleteTranslation(
       TranslationEntity translationEntity);

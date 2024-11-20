@@ -1,13 +1,10 @@
 import 'package:pro_dictant/features/dictionary/data/models/translation_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
-import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 
 import '../../domain/entities/tw_training_entity.dart';
 
 ///tarot card model
 class TWTraningModel extends TWTrainingEntity {
-  late final List<WordEntity> suggestedSourcesList = [];
-
   TWTraningModel({
     required id,
     required source,

@@ -58,31 +58,6 @@ class _SetWordsListState extends State<SetWordsList> {
       BuildContext context) {
     return Column(
       children: [
-        // Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: GestureDetector(
-        //     onTap: () {},
-        //     child: Container(
-        //       decoration: BoxDecoration(
-        //         borderRadius: BorderRadius.circular(20),
-        //         color: const Color(0xFF85977f),
-        //       ),
-        //       height: 50,
-        //       child: Center(
-        //         child: Padding(
-        //           padding: const EdgeInsets.all(5.0),
-        //           child: FittedBox(
-        //             child: Text(
-        //               'Отправить на изучение',
-        //               textAlign: TextAlign.center,
-        //               style: GoogleFonts.hachiMaruPop(color: Colors.white),
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
         Row(
           children: [
             Expanded(

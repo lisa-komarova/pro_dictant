@@ -2,12 +2,8 @@ import 'package:pro_dictant/features/dictionary/data/models/translation_model.da
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 
-import '../../../dictionary/domain/entities/translation_entity.dart';
-
 ///tarot card model
 class WTTraningModel extends WTTrainingEntity {
-  late final List<TranslationEntity> suggestedTranslationList = [];
-
   WTTraningModel({
     required id,
     required source,

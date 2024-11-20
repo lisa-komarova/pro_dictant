@@ -50,6 +50,7 @@ class _SearchContainerState extends State<SearchContainer> {
                   cursorWidth: 0,
                   focusNode: myFocusNode,
                   onChanged: (searchText) {
+                    setState(() {});
                     widget.searchHandler(searchText);
                     if (widget.controller.text.isEmpty) {
                       setState(() {

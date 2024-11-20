@@ -27,7 +27,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   List<DictantTrainingEntity> correctAnswers = [];
   List<DictantTrainingEntity> mistakes = [];
   List<String> suggestedLetters = [];
-  Color focusBorderColor = Color(0xff5e6b5a);
+  Color focusBorderColor = const Color(0xff5e6b5a);
   final wordController = TextEditingController();
 
   @override
@@ -43,21 +43,20 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
       body: BlocBuilder<TrainingsBloc, TrainingsState>(
         builder: (context, state) {
           if (state is TrainingEmpty) {
-            return Expanded(
-              child: Center(
-                child: Text(
-                  "Пока недостаточно слов для тренировки ˙◠˙",
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
+            return Center(
+              child: Text(
+                "Пока недостаточно слов для тренировки ˙◠˙",
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
               ),
             );
           } else if (state is TrainingLoading) {
             return _loadingIndicator();
           } else if (state is DictantTrainingLoaded) {
             return _buildWordCard(state.words);
-          } else
-            return SizedBox();
+          } else {
+            return const SizedBox();
+          }
         },
       ),
       floatingActionButton: !isHintSelected
@@ -109,12 +108,6 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-        // Flexible(
-        //   flex: 1,
-        //   child: SizedBox(
-        //     height: 100,
-        //   ),
-        // ),
         Flexible(
           flex: 3,
           child: Center(
@@ -139,7 +132,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             controller: wordController,
                             textInputAction: TextInputAction.go,
                             keyboardType: TextInputType.text,
-                            style: TextStyle(fontFamily: 'Roboto'),
+                            style: const TextStyle(fontFamily: 'Roboto'),
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(
                                 borderRadius:
@@ -170,7 +163,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                 if (!mistakes
                                     .contains(words[currentWordIndex])) {
                                   correctAnswers.add(words[currentWordIndex]);
-                                  focusBorderColor = Color(0xFF85977f);
+                                  focusBorderColor = const Color(0xFF85977f);
                                 }
                                 wordController.text = '';
                                 updateCurrentWord();
@@ -179,7 +172,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                     .contains(words[currentWordIndex])) {
                                   setState(() {
                                     mistakes.add(words[currentWordIndex]);
-                                    focusBorderColor = Color(0xFFB70E0E);
+                                    focusBorderColor = const Color(0xFFB70E0E);
                                   });
                                 } else {
                                   wordController.text = '';
@@ -190,7 +183,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: Color(0xFF85977f),
+                                color: const Color(0xFF85977f),
                               ),
                               height: 50,
                               child: Center(
@@ -210,7 +203,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                           ),
                         )
                       : const SizedBox.shrink(),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                 ],
@@ -235,7 +228,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     }
     setState(() {
       currentWordIndex++;
-      focusBorderColor = Color(0xFF85977f);
+      focusBorderColor = const Color(0xFF85977f);
       isHintSelected = false;
       correctAnswer = '';
       suggestedLetters = [];
@@ -281,13 +274,13 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
-                              color: Color(0xFFd9c3ac),
+                              color: const Color(0xFFd9c3ac),
                             ),
                           ),
                           child: Center(
                             child: currentLetterIndex > index
                                 ? Text(correctAnswer[index])
-                                : Text(''),
+                                : const Text(''),
                           ),
                         ),
                       );
@@ -315,7 +308,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             if (correctAnswer[currentLetterIndex] ==
                                 suggestedLetters[index]) {
                               setState(() {
-                                colors[index] = Color(0xFF85977f);
+                                colors[index] = const Color(0xFF85977f);
                                 currentLetterIndex++;
                               });
                               if (currentLetterIndex == word.source.length) {
@@ -327,7 +320,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             } else {
                               setState(() {
                                 attempts++;
-                                colors[index] = Color(0xFFB70E0E);
+                                colors[index] = const Color(0xFFB70E0E);
                               });
 
                               if (attempts == maxAttempts) {
@@ -359,9 +352,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   void fillLetters(DictantTrainingEntity word) {
     List<String> searchKeywords = List<String>.generate(
         word.source.length, (index) => word.source[index]);
-    searchKeywords.forEach((element) {
-      colors.add(Color(0xFFd9c3ac));
-    });
+    for (int i = 0; i < searchKeywords.length; i++) {
+      colors.add(const Color(0xFFd9c3ac));
+    }
     searchKeywords.shuffle();
     correctAnswer = word.source;
     suggestedLetters.addAll(searchKeywords);

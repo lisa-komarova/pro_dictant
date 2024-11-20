@@ -5,7 +5,7 @@ class DictantTrainingEntity extends Equatable {
   final String translation;
   final String id;
 
-  DictantTrainingEntity(
+  const DictantTrainingEntity(
       {required this.id, required this.source, required this.translation});
 
   @override

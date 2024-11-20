@@ -3,7 +3,7 @@ import '../../../dictionary/data/models/word_model.dart';
 import '../../domain/entities/repeating_entity.dart';
 
 class RepeatingTrainingModel extends RepeatingTrainingEntity {
-  RepeatingTrainingModel({
+  const RepeatingTrainingModel({
     required id,
     required source,
   }) : super(

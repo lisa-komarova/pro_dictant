@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:pro_dictant/core/error/exception.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
-import 'package:http/http.dart' as http;
 
 abstract class WordRemoteDatasource {
   Future<List<WordModel>> searchWord(String query);
@@ -21,7 +21,6 @@ class WordRemoteDatasourceImpl implements WordRemoteDatasource {
       lang=en-ru&text=$query''');
 
   Future<List<WordModel>> _getWordFromUrl(String url) async {
-    print(url);
     final response = await client
         .get(Uri.parse(url), headers: {'Content-Type': 'application/json'});
     if (response.statusCode == 200) {

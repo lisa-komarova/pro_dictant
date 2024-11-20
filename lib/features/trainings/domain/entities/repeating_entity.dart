@@ -4,7 +4,7 @@ class RepeatingTrainingEntity extends Equatable {
   final String source;
   final String id;
 
-  RepeatingTrainingEntity({
+  const RepeatingTrainingEntity({
     required this.id,
     required this.source,
   });

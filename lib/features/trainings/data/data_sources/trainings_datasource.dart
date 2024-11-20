@@ -96,14 +96,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
           '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isWT =0 ORDER by random() limit 10''');
 
       words = maps.map((map) => WTTraningModel.fromJson(map)).toList();
-      // String notIn = '';
-      // for (var element in words) {
-      //   if (element != words.last) {
-      //     notIn += ' \'${element.id}\' , ';
-      //   } else {
-      //     notIn += ' \'${element.id}\' ';
-      //   }
-      // }
+
       return words;
     } on Exception catch (_) {
       throw ServerException();
@@ -116,7 +109,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
-            '''update words_translations set isWT = 1 where id = \'${toUpdate[i]}\'''');
+            '''update words_translations set isWT = 1 where id = '${toUpdate[i]}' ''');
       }
     } on Exception catch (_) {
       throw ServerException();
@@ -129,7 +122,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
-            '''update words_translations set isTW = 1 where id = \'${toUpdate[i]}\'''');
+            '''update words_translations set isTW = 1 where id = '${toUpdate[i]}' ''');
       }
     } on Exception catch (_) {
       throw ServerException();
@@ -144,7 +137,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<TranslationEntity> translation = [];
         final translationMap = await db!.rawQuery(
-            '''select * FROM words_translations WHERE id not in (\'${words[i].id}\') and isInDictionary = 1 ORDER by random() LIMIT 3''');
+            '''select * FROM words_translations WHERE id not in ('${words[i].id}') and isInDictionary = 1 ORDER by random() LIMIT 3''');
         translation =
             translationMap.map((e) => TranslationModel.fromJson(e)).toList();
         words[i].suggestedTranslationList.addAll(translation);
@@ -164,14 +157,6 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
           '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isTW =0 ORDER by random() limit 10''');
 
       words = maps.map((map) => TWTraningModel.fromJson(map)).toList();
-      // String notIn = '';
-      // for (var element in words) {
-      //   if (element != words.last) {
-      //     notIn += ' \'${element.id}\' , ';
-      //   } else {
-      //     notIn += ' \'${element.id}\' ';
-      //   }
-      // }
       return words;
     } on Exception catch (_) {
       throw ServerException();
@@ -186,7 +171,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<WordEntity> sources = [];
         final sourcesMap = await db!.rawQuery(
-            '''select word.id, source, pos, transcription FROM word join words_translations on word.id = words_translations.word_id WHERE word.id not in ('9dd9850d-e127-4760-a18d-a09ef9751da6')  and words_translations.isInDictionary=1  ORDER by random() LIMIT 3''');
+            '''select word.id, source, pos, transcription FROM word join words_translations on words_translations.id = words_translations.word_id WHERE word.id not in ('${words[i].id}')  and words_translations.isInDictionary=1  ORDER by random() LIMIT 3''');
         sources = sourcesMap.map((e) => WordModel.fromJson(e)).toList();
         words[i].suggestedSourcesList.addAll(sources);
       }
@@ -205,14 +190,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
           '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isMatching =0 ORDER by random() limit 30''');
 
       words = maps.map((map) => MatchingTrainingModel.fromJson(map)).toList();
-      // String notIn = '';
-      // for (var element in words) {
-      //   if (element != words.last) {
-      //     notIn += ' \'${element.id}\' , ';
-      //   } else {
-      //     notIn += ' \'${element.id}\' ';
-      //   }
-      // }
+
       return words;
     } on Exception catch (_) {
       throw ServerException();
@@ -226,7 +204,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
-            '''update words_translations set isMatching = 1 where id = \'${toUpdate[i].id}\'''');
+            '''update words_translations set isMatching = 1 where id = '${toUpdate[i].id}' ''');
       }
     } on Exception catch (_) {
       throw ServerException();
@@ -255,7 +233,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
-            '''update words_translations set isDictant = 1 where id = \'${toUpdate[i].id}\'''');
+            '''update words_translations set isDictant = 1 where id = '${toUpdate[i].id}' ''');
       }
     } on Exception catch (_) {
       throw ServerException();
@@ -284,7 +262,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       for (int i = 0; i < toUpdate.length; i++) {
         await db!.rawQuery(
-            '''update words_translations set isCards = 1 where id = \'${toUpdate[i].id}\'''');
+            '''update words_translations set isCards = 1 where id = '${toUpdate[i].id}' ''');
       }
     } on Exception catch (_) {
       throw ServerException();
@@ -314,11 +292,11 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       for (int i = 0; i < mistakes.length; i++) {
         await db!.rawQuery(
-            '''update words_translations set isCards = 0, isTW = 0, isWT = 0, isMatching = 0, isDictant = 0 where id = \'${mistakes[i].id}\'''');
+            '''update words_translations set isCards = 0, isTW = 0, isWT = 0, isMatching = 0, isDictant = 0 where id = '${mistakes[i].id}' ''');
       }
       for (int i = 0; i < correctAnswers.length; i++) {
         await db!.rawQuery(
-            '''update words_translations set isRepeated = 1 where id = \'${correctAnswers[i].id}\'''');
+            '''update words_translations set isRepeated = 1 where id = '${correctAnswers[i].id}' ''');
       }
     } on Exception catch (_) {
       throw ServerException();

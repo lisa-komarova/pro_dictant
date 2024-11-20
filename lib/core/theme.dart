@@ -13,18 +13,11 @@ final appTheme = ThemeData(
         fontSize: 30,
         fontWeight: FontWeight.bold,
       ),
-      // ···
-      // titleLarge: GoogleFonts.hachiMaruPop(
-      //   fontSize: 20,
-      //   fontWeight: FontWeight.bold,
-      //   color: Color(0xFF85977F),
-      // ),
       displayMedium: GoogleFonts.hachiMaruPop(),
       displaySmall: GoogleFonts.hachiMaruPop(),
       headlineLarge: GoogleFonts.hachiMaruPop(),
       headlineMedium: GoogleFonts.hachiMaruPop(),
       headlineSmall: GoogleFonts.hachiMaruPop(),
-      //titleSmall: GoogleFonts.hachiMaruPop(),
       titleMedium: GoogleFonts.hachiMaruPop(),
       titleLarge: GoogleFonts.hachiMaruPop(),
       labelLarge: GoogleFonts.hachiMaruPop(),

@@ -54,8 +54,6 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
             alignment: Alignment.bottomCenter,
             children: <Widget>[
               PageView(
-                /// [PageView.scrollDirection] defaults to [Axis.horizontal].
-                /// Use [Axis.vertical] to scroll vertically.
                 controller: _pageViewController,
                 onPageChanged: _handlePageViewChanged,
                 children: <Widget>[
@@ -66,7 +64,6 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
             ],
           ),
         ),
-        // buildTranslastionCard (scrollController, context, widget.word.translationList[0]),
         Flexible(
           flex: 2,
           child: Align(

@@ -58,7 +58,7 @@ class RepeatingResultPage extends StatelessWidget {
                                     return Column(
                                       children: [
                                         Text(
-                                          '${mistakes[index].source}',
+                                          mistakes[index].source,
                                           style: const TextStyle(
                                               color: Color(0xFFB70E0E)),
                                         ),

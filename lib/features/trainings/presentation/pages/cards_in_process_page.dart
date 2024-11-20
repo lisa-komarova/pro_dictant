@@ -149,13 +149,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                   child: GestureDetector(
                     onTap: () {
                       if (currentWordIndex + 1 >= words.length) {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (ctx) => CardsResultPage(
-                                  correctAnswers: correctAnswers,
-                                  mistakes: mistakes,
-                                )));
-                        // BlocProvider.of<TrainingsBloc>(context)
-                        //     .add(UpdateWordsForCardsTRainings(toUpdate));
+                        finishWorkout();
                         return;
                       }
                       if (suggestedAnswer.first ==

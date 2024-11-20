@@ -4,7 +4,7 @@ import 'package:pro_dictant/features/trainings/domain/entities/matching_training
 
 ///tarot card model
 class MatchingTrainingModel extends MatchingTrainingEntity {
-  MatchingTrainingModel({
+  const MatchingTrainingModel({
     required id,
     required source,
     required translation,

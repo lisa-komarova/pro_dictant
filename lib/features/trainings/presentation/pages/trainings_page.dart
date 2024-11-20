@@ -40,7 +40,6 @@ class _TrainingsPageState extends State<TrainingsPage>
     getTime();
     if (!widget.isTodayCompleted) {
       _ticker = createTicker((elapsed) {
-        // 4. update state
         sessionTime = elapsed.inMinutes;
         setState(() {
           if ((timeOnApp + sessionTime) >= widget.goal) {
@@ -58,25 +57,20 @@ class _TrainingsPageState extends State<TrainingsPage>
     super.initState();
     _state = SchedulerBinding.instance.lifecycleState;
     _listener = AppLifecycleListener(
-      //     onShow: () => _handleTransition('show'),
       onResume: () {
         getTime();
         _ticker?.start();
       },
-//      onHide: () => _handleTransition('hide'),
       onInactive: () {
         saveTime(timeOnApp + sessionTime);
         _ticker?.stop(canceled: false);
       },
-      //     onPause: () => _handleTransition('pause'),
       onDetach: () => () {
         saveTime(timeOnApp + sessionTime);
       },
       onRestart: () => () {
         getTime();
       },
-      // This fires for each state change. Callbacks above fire only for
-      // specific state transitions.
       onStateChange: _handleStateChange,
     );
     if (_state != null) {

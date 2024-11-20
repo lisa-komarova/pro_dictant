@@ -17,9 +17,8 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/update_set.dart'
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 
-const SERVER_FAILURE_MESSAGE = 'Server Failure';
+const serverFailureMessage = 'Server Failure';
 
-// BLoC 8.0.0
 class SetBloc extends Bloc<SetsEvent, SetsState> {
   final usecase1.FetchSets loadSets;
   final usecase2.AddSet addSet;
@@ -47,9 +46,6 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
 
   FutureOr<void> _onLoadSetsEvent(
       LoadSets event, Emitter<SetsState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(SetsLoading());
 
     final failureOrSets = await loadSets();
@@ -100,8 +96,6 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
   }
 
   FutureOr<void> _onAddSetEvent(AddSet event, Emitter<SetsState> emit) async {
-    //TODO check what it's for
-
     await addSet(event.set);
 
     emit(SetsLoading());
@@ -121,8 +115,6 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
 
   FutureOr<void> _onUpdateSetEvent(
       UpdateSet event, Emitter<SetsState> emit) async {
-    //TODO check what it's for
-
     await updateSet(event.set, event.toAdd, event.toDelete);
 
     emit(SetLoaded(set: event.set));
@@ -130,8 +122,6 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
 
   FutureOr<void> _onDeleteSetEvent(
       DeleteSet event, Emitter<SetsState> emit) async {
-    //TODO check what it's for
-
     await deleteSet(event.setId);
 
     emit(SetsLoading());
@@ -152,7 +142,7 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
   String _mapFailureToMessage(Failure failure) {
     switch (failure.runtimeType) {
       case ServerFailure:
-        return SERVER_FAILURE_MESSAGE;
+        return serverFailureMessage;
       default:
         return 'Unexpected Error';
     }

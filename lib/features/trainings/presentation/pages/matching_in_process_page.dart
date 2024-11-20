@@ -22,16 +22,16 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   List<MatchingTrainingEntity> correctAnswers = [];
   List<int> availableIndexes = [];
   List<Color> colors = [
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
-    Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
+    const Color(0xFFFFFFFF),
   ];
   List<MatchingTrainingEntity> wordsList = [];
   List<MatchingTrainingEntity> currentWordsList = [];
@@ -51,13 +51,11 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
         body: BlocBuilder<TrainingsBloc, TrainingsState>(
           builder: (context, state) {
             if (state is TrainingEmpty) {
-              return Expanded(
-                child: Center(
-                  child: Text(
-                    "Пока недостаточно слов для тренировки ˙◠˙",
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
+              return Center(
+                child: Text(
+                  "Пока недостаточно слов для тренировки ˙◠˙",
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
                 ),
               );
             } else if (state is TrainingLoading) {
@@ -77,14 +75,15 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                 currentTranslationList.shuffle();
               }
               return _buildWordCardDeck();
-            } else
-              return SizedBox();
+            } else {
+              return const SizedBox();
+            }
           },
         ));
   }
 
   Widget _loadingIndicator() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(8.0),
       child: Center(
         child: CircularProgressIndicator(),
@@ -194,10 +193,13 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           correctAnswers.length % 5 == 0) {
                         correctAnswers.removeWhere(
                             (element) => mistakes.contains(element));
-                        Navigator.of(context).push(MaterialPageRoute(
+
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => MatchingResultPage(
                                 correctAnswers: correctAnswers,
                                 mistakes: mistakes)));
+                        BlocProvider.of<TrainingsBloc>(context).add(
+                            UpdateWordsForMatchingTRainings(correctAnswers));
                       }
                       //colors[index] = Colors.green;
                     });
@@ -213,7 +215,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       Colors.white,
                     ]);
                     setState(() {
-                      colors[index] = Color(0xFFB70E0E);
+                      colors[index] = const Color(0xFFB70E0E);
                     });
                   }
                 } else {
@@ -228,7 +230,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       Colors.white,
                       Colors.white,
                     ]);
-                    colors[index] = Color(0xFFd9c3ac);
+                    colors[index] = const Color(0xFFd9c3ac);
                   });
                 }
               },
@@ -240,16 +242,20 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: correctAnswers.contains(words[index])
-                        ? Color(0xFF85977f)
+                        ? const Color(0xFF85977f)
                         : colors[index],
                     border: Border.all(
                       color: const Color(0xFFD9C3AC),
                     ),
                   ),
-                  child: Center(
-                    child: AutoSizeText(
-                      '${words[index].source}',
-                      style: Theme.of(context).textTheme.titleMedium,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: AutoSizeText(
+                        words[index].source,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     ),
                   ),
                 ),
@@ -337,7 +343,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       Colors.white,
                     ]);
                     setState(() {
-                      colors[index + 5] = Color(0xFFB70E0E);
+                      colors[index + 5] = const Color(0xFFB70E0E);
                     });
                   }
                 } else {
@@ -352,7 +358,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       Colors.white,
                       Colors.white,
                     ]);
-                    colors[index + 5] = Color(0xFFd9c3ac);
+                    colors[index + 5] = const Color(0xFFd9c3ac);
                   });
                 }
               },
@@ -364,7 +370,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: correctAnswers.contains(words[index])
-                        ? Color(0xFF85977f)
+                        ? const Color(0xFF85977f)
                         : colors[index + 5],
                     border: Border.all(
                       color: const Color(0xFFD9C3AC),
@@ -372,9 +378,10 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Center(
+                    child: Align(
+                      alignment: Alignment.center,
                       child: AutoSizeText(
-                        '${words[index].translation}',
+                        words[index].translation,
                       ),
                     ),
                   ),

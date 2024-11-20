@@ -60,10 +60,10 @@ class WordRepositoryImpl extends WordRepository {
 
   @override
   Future<Either<Failure, void>> deleteTranslation(
-      TranslationEntity translationModel) async {
+      TranslationEntity translationEntity) async {
     try {
       await localDataSource
-          .deleteTranslation(translationModel as TranslationModel);
+          .deleteTranslation(translationEntity as TranslationModel);
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -71,9 +71,9 @@ class WordRepositoryImpl extends WordRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteWord(WordEntity word) async {
+  Future<Either<Failure, void>> deleteWord(WordEntity wordEntity) async {
     try {
-      await localDataSource.deleteWord(word as WordModel);
+      await localDataSource.deleteWord(wordEntity as WordModel);
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -139,13 +139,13 @@ class WordRepositoryImpl extends WordRepository {
       List<WordEntity> words) async {
     try {
       List<WordModel> wordsModels = [];
-      words.forEach((element) {
+      for (var element in words) {
         wordsModels.add(WordModel(
             id: element.id,
             source: element.source,
             pos: element.pos,
             transcription: element.transcription));
-      });
+      }
       final wordsWithTranslations =
           await localDataSource.fetchTranslationsForWords(wordsModels);
       return Right(wordsWithTranslations);
@@ -175,13 +175,13 @@ class WordRepositoryImpl extends WordRepository {
       List<WordEntity> words, String setId) async {
     try {
       List<WordModel> wordsModels = [];
-      words.forEach((element) {
+      for (var element in words) {
         wordsModels.add(WordModel(
             id: element.id,
             source: element.source,
             pos: element.pos,
             transcription: element.transcription));
-      });
+      }
       final wordsWithTranslations = await localDataSource
           .fetchTranslationsForWordsInSet(wordsModels, setId);
       return Right(wordsWithTranslations);
@@ -195,13 +195,13 @@ class WordRepositoryImpl extends WordRepository {
       fetchTranslationsForSearchedWordsInSet(List<WordEntity> words) async {
     try {
       List<WordModel> wordsModels = [];
-      words.forEach((element) {
+      for (var element in words) {
         wordsModels.add(WordModel(
             id: element.id,
             source: element.source,
             pos: element.pos,
             transcription: element.transcription));
-      });
+      }
       final wordsWithTranslations = await localDataSource
           .fetchTranslationsForSearchedWordsInSet(wordsModels);
       return Right(wordsWithTranslations);
@@ -214,13 +214,13 @@ class WordRepositoryImpl extends WordRepository {
   Future<Either<Failure, void>> addWordsInSetToDictionary(
       List<TranslationEntity> words) async {
     List<TranslationModel> wordsModels = [];
-    words.forEach((translationEntity) {
+    for (var translationEntity in words) {
       wordsModels.add(TranslationModel(
           id: translationEntity.id,
           wordId: translationEntity.wordId,
           translation: translationEntity.translation,
           notes: translationEntity.notes));
-    });
+    }
     try {
       await localDataSource.addWordsInSetToDictionary(wordsModels);
       return const Right(Future<void>);
@@ -233,13 +233,13 @@ class WordRepositoryImpl extends WordRepository {
   Future<Either<Failure, void>> removeWordsInSetFromDictionary(
       List<TranslationEntity> words) async {
     List<TranslationModel> wordsModels = [];
-    words.forEach((translationEntity) {
+    for (var translationEntity in words) {
       wordsModels.add(TranslationModel(
           id: translationEntity.id,
           wordId: translationEntity.wordId,
           translation: translationEntity.translation,
           notes: translationEntity.notes));
-    });
+    }
     try {
       await localDataSource.removeWordsInSetFromDictionary(wordsModels);
       return const Right(Future<void>);

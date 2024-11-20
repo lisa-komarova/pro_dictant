@@ -56,15 +56,15 @@ class TWResultPage extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 BlocProvider.of<TrainingsBloc>(context)
-                    .add(FetchWordsForTwTRainings());
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => TWInProcessPage()));
+                    .add(const FetchWordsForTwTRainings());
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (ctx) => const TWInProcessPage()));
               },
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: Color(0xFFD9C3AC),
+                    color: const Color(0xFFD9C3AC),
                     borderRadius: BorderRadius.circular(16)),
                 child: Text(
                   'продолжить тренировку',

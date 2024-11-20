@@ -56,15 +56,15 @@ class WTResultPage extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 BlocProvider.of<TrainingsBloc>(context)
-                    .add(FetchWordsForWtTRainings());
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => WTInProcessPage()));
+                    .add(const FetchWordsForWtTRainings());
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (ctx) => const WTInProcessPage()));
               },
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: Color(0xFFD9C3AC),
+                    color: const Color(0xFFD9C3AC),
                     borderRadius: BorderRadius.circular(16)),
                 child: Text(
                   'продолжить тренировку',

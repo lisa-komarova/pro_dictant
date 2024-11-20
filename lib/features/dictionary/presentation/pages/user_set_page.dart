@@ -4,7 +4,7 @@ import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.
 import 'package:pro_dictant/features/dictionary/presentation/widgets/set_list.dart';
 
 class UserSetPage extends StatefulWidget {
-  UserSetPage({super.key});
+  const UserSetPage({super.key});
 
   @override
   State<UserSetPage> createState() => _UserSetPageState();

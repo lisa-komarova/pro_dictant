@@ -33,21 +33,20 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
         body: BlocBuilder<TrainingsBloc, TrainingsState>(
           builder: (context, state) {
             if (state is TrainingEmpty) {
-              return Expanded(
-                child: Center(
-                  child: Text(
-                    "Пока недостаточно слов для тренировки ˙◠˙",
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
+              return Center(
+                child: Text(
+                  "Пока недостаточно слов для тренировки ˙◠˙",
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
                 ),
               );
             } else if (state is TrainingLoading) {
               return _loadingIndicator();
             } else if (state is WTTrainingLoaded) {
               return _buildWordCard(state.words);
-            } else
-              return SizedBox();
+            } else {
+              return const SizedBox();
+            }
           },
         ));
   }
@@ -76,7 +75,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-        Flexible(
+        const Flexible(
           flex: 1,
           child: SizedBox(
             height: 100,
@@ -85,7 +84,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
         Flexible(
           flex: 2,
           child: Text(
-            '${words[currentWordIndex].source}',
+            words[currentWordIndex].source,
             style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
@@ -140,20 +139,20 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
       randomSequence.add(rng.nextInt(4));
     } while (randomSequence.length < 4);
 
-    randomSequence.forEach((element) {
+    for (var element in randomSequence) {
       element == 3
           ? answersContainers.add(Padding(
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  answers['${words[currentWordIndex].id}'] =
+                  answers[words[currentWordIndex].id] =
                       words[currentWordIndex].translation;
                   updateCurrentWord(words);
                 },
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Color(0xFFd9c3ac),
+                    color: const Color(0xFFd9c3ac),
                   ),
                   height: 25,
                   child: Center(
@@ -180,7 +179,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Color(0xFFd9c3ac),
+                    color: const Color(0xFFd9c3ac),
                   ),
                   height: 25,
                   child: Center(
@@ -197,12 +196,12 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                 ),
               ),
             ));
-    });
+    }
     return answersContainers;
   }
 
   Widget _loadingIndicator() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(8.0),
       child: Center(
         child: CircularProgressIndicator(),

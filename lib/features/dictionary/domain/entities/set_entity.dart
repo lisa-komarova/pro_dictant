@@ -7,8 +7,6 @@ class SetEntity extends Equatable {
   int isAddedToDictionary;
   late final List<WordEntity> wordsInSet = [];
 
-  ///List<WordEntity> wordsInSet;
-
   SetEntity(
       {required this.id,
       required this.name,

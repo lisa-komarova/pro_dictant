@@ -17,9 +17,9 @@ class RepeatingInProcessPage extends StatefulWidget {
 
 class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
   int currentWordIndex = 0;
-  Color colorPositive = Color(0xFFd9c3ac);
-  Color colorNegative = Color(0xFFd9c3ac);
-  Color colorNeutral = Color(0xFFd9c3ac);
+  Color colorPositive = const Color(0xFFd9c3ac);
+  Color colorNegative = const Color(0xFFd9c3ac);
+  Color colorNeutral = const Color(0xFFd9c3ac);
   List<RepeatingTrainingEntity> mistakes = [];
   List<RepeatingTrainingEntity> correctAnswers = [];
 
@@ -104,7 +104,7 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
-                      ?.copyWith(color: Color(0xFF85977f)),
+                      ?.copyWith(color: const Color(0xFF85977f)),
                 ),
               ),
             ],
@@ -137,22 +137,22 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                   child: GestureDetector(
                     onTapDown: (details) {
                       setState(() {
-                        colorPositive = Color(0xFF85977f);
+                        colorPositive = const Color(0xFF85977f);
                       });
                     },
                     onTapUp: (details) {
                       setState(() {
-                        colorPositive = Color(0xFFd9c3ac);
+                        colorPositive = const Color(0xFFd9c3ac);
                       });
                     },
                     onVerticalDragStart: (details) {
                       setState(() {
-                        colorPositive = Color(0xFFd9c3ac);
+                        colorPositive = const Color(0xFFd9c3ac);
                       });
                     },
                     onHorizontalDragStart: (details) {
                       setState(() {
-                        colorPositive = Color(0xFFd9c3ac);
+                        colorPositive = const Color(0xFFd9c3ac);
                       });
                     },
                     onTap: () {
@@ -177,9 +177,9 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         color: colorPositive,
                       ),
                       height: 100,
-                      child: Center(
+                      child: const Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(5.0),
+                          padding: EdgeInsets.all(5.0),
                           child: AutoSizeText(
                             "знаю \nне забуду",
                             textAlign: TextAlign.center,
@@ -196,22 +196,22 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                   child: GestureDetector(
                     onTapDown: (details) {
                       setState(() {
-                        colorNeutral = Color(0xFFffffff);
+                        colorNeutral = const Color(0xFFffffff);
                       });
                     },
                     onTapUp: (details) {
                       setState(() {
-                        colorNeutral = Color(0xFFd9c3ac);
+                        colorNeutral = const Color(0xFFd9c3ac);
                       });
                     },
                     onVerticalDragStart: (details) {
                       setState(() {
-                        colorNeutral = Color(0xFFd9c3ac);
+                        colorNeutral = const Color(0xFFd9c3ac);
                       });
                     },
                     onHorizontalDragStart: (details) {
                       setState(() {
-                        colorNeutral = Color(0xFFd9c3ac);
+                        colorNeutral = const Color(0xFFd9c3ac);
                       });
                     },
                     onTap: () {
@@ -235,9 +235,9 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         color: colorNeutral,
                       ),
                       height: 100,
-                      child: Center(
+                      child: const Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(5.0),
+                          padding: EdgeInsets.all(5.0),
                           child: AutoSizeText(
                             "знаю\nно забываю",
                             textAlign: TextAlign.center,
@@ -254,22 +254,22 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                   child: GestureDetector(
                     onTapDown: (details) {
                       setState(() {
-                        colorNegative = Color(0xFFB70E0E);
+                        colorNegative = const Color(0xFFB70E0E);
                       });
                     },
                     onTapUp: (details) {
                       setState(() {
-                        colorNegative = Color(0xFFd9c3ac);
+                        colorNegative = const Color(0xFFd9c3ac);
                       });
                     },
                     onVerticalDragStart: (details) {
                       setState(() {
-                        colorNegative = Color(0xFFd9c3ac);
+                        colorNegative = const Color(0xFFd9c3ac);
                       });
                     },
                     onHorizontalDragStart: (details) {
                       setState(() {
-                        colorNegative = Color(0xFFd9c3ac);
+                        colorNegative = const Color(0xFFd9c3ac);
                       });
                     },
                     onTap: () {
@@ -294,9 +294,9 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         color: colorNegative,
                       ),
                       height: 100,
-                      child: Center(
+                      child: const Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(5.0),
+                          padding: EdgeInsets.all(5.0),
                           child: AutoSizeText(
                             'не помню',
                             textAlign: TextAlign.center,
@@ -319,19 +319,4 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
       ],
     );
   }
-
-// void finishWorkout() {
-//   final wordsList = correctAnswers.map((e) => e.id).toSet();
-//   final mistakesList = mistakes.map((e) => e.id).toSet();
-//   correctAnswers.retainWhere((x) => wordsList.remove(x.id));
-//   mistakes.retainWhere((element) => mistakesList.remove(element.id));
-//   correctAnswers.removeWhere((element) => mistakesList.remove(element.id));
-//   Navigator.of(context).pushReplacement(MaterialPageRoute(
-//       builder: (ctx) => CardsResultPage(
-//             correctAnswers: correctAnswers,
-//             mistakes: mistakes,
-//           )));
-//   BlocProvider.of<TrainingsBloc>(context)
-//       .add(UpdateWordsForRepeatedTRainings(correctAnswers));
-// }
 }

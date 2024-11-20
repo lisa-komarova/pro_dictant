@@ -10,7 +10,7 @@ import '../widgets/set_words_list.dart';
 class SetsWordsPage extends StatefulWidget {
   final SetEntity set;
 
-  const SetsWordsPage({super.key, required SetEntity this.set});
+  const SetsWordsPage({super.key, required this.set});
 
   @override
   State<SetsWordsPage> createState() => _SetsWordsPageState();
@@ -21,7 +21,7 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvoked: (didPope) {
-        BlocProvider.of<SetBloc>(context).add(LoadSets());
+        BlocProvider.of<SetBloc>(context).add(const LoadSets());
       },
       child: Scaffold(
         appBar: AppBar(
@@ -32,13 +32,13 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
           centerTitle: true,
           leading: IconButton(
             onPressed: () {
-              BlocProvider.of<SetBloc>(context).add(LoadSets());
+              BlocProvider.of<SetBloc>(context).add(const LoadSets());
               Navigator.of(context).pop();
             },
             icon: Image.asset('assets/icons/cancel.png'),
           ),
         ),
-        body: SetWordsList(),
+        body: const SetWordsList(),
       ),
     );
   }

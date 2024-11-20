@@ -32,7 +32,6 @@ class TranslationFields {
   static const String dateAddedToDictionary = 'dateAddedToDictionary';
 }
 
-///tarot card model
 class TranslationModel extends TranslationEntity {
   TranslationModel(
       {required id,
@@ -77,7 +76,6 @@ class TranslationModel extends TranslationEntity {
         TranslationFields.dateAddedToDictionary: dateAddedToDictionary,
       };
 
-//TODO: redo parsinf according to yandex api docs
   static TranslationModel fromJson(Map<String, Object?> json) =>
       TranslationModel(
         id: json[TranslationFields.id] as String,

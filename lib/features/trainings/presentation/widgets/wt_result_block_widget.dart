@@ -40,7 +40,7 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
                           child: Text(widget.source),
                         ),
                       ),
-                      Text(' - '),
+                      const Text(' - '),
                       Flexible(
                         fit: FlexFit.tight,
                         child: GestureDetector(
@@ -58,8 +58,8 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
                                       style: TextStyle(
                                         color: widget.answer ==
                                                 widget.correctAnswer
-                                            ? Color(0xFF85977f)
-                                            : Color(0xFFB70E0E),
+                                            ? const Color(0xFF85977f)
+                                            : const Color(0xFFB70E0E),
                                       ),
                                     )),
                         ),

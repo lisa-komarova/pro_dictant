@@ -30,9 +30,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   FutureOr<void> _onLoadStatisticsEvent(
       LoadStatistics event, Emitter<ProfileState> emit) async {
-    //TODO check what it's for
-    //if (state is WordsLoading) return;
-
     emit(ProfileLoading());
 
     final failureOrSets = await fetchStatistics();

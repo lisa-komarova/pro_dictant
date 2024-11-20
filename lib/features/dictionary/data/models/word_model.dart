@@ -1,5 +1,3 @@
-import 'package:pro_dictant/features/dictionary/domain/entities/translation_entity.dart';
-
 import '../../domain/entities/word_entity.dart';
 
 const String tableWords = 'word';
@@ -18,10 +16,7 @@ class WordsFields {
   static const String transcription = 'transcription';
 }
 
-///tarot card model
 class WordModel extends WordEntity {
-  late final List<TranslationEntity> translationList = [];
-
   WordModel({
     required id,
     required source,

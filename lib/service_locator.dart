@@ -37,6 +37,7 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_wt_training.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_tw_trainings.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_wt_trainings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/dictionary/domain/usecases/add_word.dart';
 import 'features/dictionary/domain/usecases/delete_set.dart';
@@ -61,8 +62,7 @@ import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.da
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  // BLoC / Cubit
-
+  // BLoC
   sl.registerFactory(
     () => WordsBloc(
         loadWords: sl(),
@@ -269,8 +269,8 @@ Future<void> init() async {
   );
 
   // External
-  //final sharedPreferences = await SharedPreferences.getInstance();
-  //sl.registerLazySingleton(() => sharedPreferences);
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker());
 }

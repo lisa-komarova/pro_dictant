@@ -61,7 +61,7 @@ class DictantResultPage extends StatelessWidget {
                                       children: [
                                         Text(
                                           '${correctAnswers[index].source} - ${correctAnswers[index].translation}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Color(0xFF85977f)),
                                         ),
                                         Image.asset(
@@ -95,7 +95,7 @@ class DictantResultPage extends StatelessWidget {
                                       children: [
                                         Text(
                                           '${mistakes[index].source} - ${mistakes[index].translation}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Color(0xFFB70E0E)),
                                         ),
                                         Image.asset(
@@ -122,15 +122,15 @@ class DictantResultPage extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   BlocProvider.of<TrainingsBloc>(context)
-                      .add(FetchWordsForDictantTRainings());
+                      .add(const FetchWordsForDictantTRainings());
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => DictantInProcessPage()));
+                      builder: (ctx) => const DictantInProcessPage()));
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                      color: Color(0xFFD9C3AC),
+                      color: const Color(0xFFD9C3AC),
                       borderRadius: BorderRadius.circular(16)),
                   child: Text(
                     'продолжить тренировку',

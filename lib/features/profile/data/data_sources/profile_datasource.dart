@@ -50,7 +50,6 @@ class ProfileDatasourceImpl extends ProfileDatasource {
     return await openDatabase(path, version: 1);
   }
 
-  ///gets taro card by id
   @override
   Future<int> fetchNumberOfWordsInDictionary() async {
     final db = await instance.database;

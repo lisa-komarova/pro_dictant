@@ -5,7 +5,7 @@ class MatchingTrainingEntity extends Equatable {
   final String source;
   final String id;
 
-  MatchingTrainingEntity(
+  const MatchingTrainingEntity(
       {required this.id, required this.source, required this.translation});
 
   @override

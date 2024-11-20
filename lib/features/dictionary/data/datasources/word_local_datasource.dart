@@ -38,8 +38,6 @@ abstract class WordLocalDatasource {
 
   Future<List<SetModel>> fetchWordsForSets(List<SetModel> sets);
 
-  //Future<List<WordModel>> searchWordForASet(String query);
-
   Future<List<WordModel>> fetchTranslationsForWords(List<WordModel> words);
 
   Future<List<WordModel>> fetchTranslationsForWordsInSet(
@@ -92,7 +90,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     return await openDatabase(path, version: 1);
   }
 
-  ///gets taro card by id
   @override
   Future<List<WordModel>> fetchWordBySource(String query) async {
     final db = await instance.database;
@@ -165,9 +162,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   @override
   Future<void> updateWord(WordModel word) async {
-// Get a reference to the database.
     final db = await database;
-// Update the given word.
     await db!.update(
       tableWords,
       word.toJson(),
@@ -178,9 +173,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   @override
   Future<void> addWord(WordModel word) async {
-// Get a reference to the database.
     final db = await database;
-// Update the given word.
     await db!.insert(
       tableWords,
       word.toJson(),
@@ -204,16 +197,8 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   @override
   Future<void> addWordsInSetToDictionary(List<TranslationModel> words) async {
-// Get a reference to the database.
     final db = await database;
-// Update the given word.
     for (int i = 0; i < words.length; i++) {
-      // words[i].isTW = 0;
-      // words[i].isWT = 0;
-      // words[i].isCards = 0;
-      // words[i].isMatching = 0;
-      // words[i].isDictant = 0;
-      // words[i].isRepeated = 0;
       words[i].isInDictionary = 1;
       words[i].dateAddedToDictionary = DateTime.now().toString();
       await db!.update(
@@ -228,16 +213,8 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   @override
   Future<void> removeWordsInSetFromDictionary(
       List<TranslationModel> words) async {
-// Get a reference to the database.
     final db = await database;
-// Update the given word.
     for (int i = 0; i < words.length; i++) {
-      // words[i].isTW = 0;
-      // words[i].isWT = 0;
-      // words[i].isCards = 0;
-      // words[i].isMatching = 0;
-      // words[i].isDictant = 0;
-      // words[i].isRepeated = 0;
       words[i].isInDictionary = 0;
       words[i].dateAddedToDictionary = '';
       await db!.update(
@@ -251,9 +228,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   @override
   Future<void> addSet(SetModel set) async {
-// Get a reference to the database.
     final db = await database;
-// Update the given word.
     await db!.insert(
       tableSets,
       set.toJson(),
@@ -292,10 +267,8 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   @override
   Future<void> deleteWordFromDictionary(TranslationModel translation) async {
-// Get a reference to the database.
     final db = await database;
     translation.isInDictionary = 0;
-// Update the given word.
     await db!.update(
       tableTranslations,
       translation.toJson(),
@@ -306,7 +279,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   @override
   Future<void> deleteWord(WordEntity word) async {
-// Get a reference to the database.
     final db = await database;
     for (int i = 0; i < word.translationList.length; i++) {
       await db!.delete(
@@ -315,7 +287,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
         whereArgs: [word.translationList[i].id],
       );
     }
-// Update the given word.
     await db!.delete(
       tableWords,
       where: 'id = ?',
@@ -339,9 +310,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       where: 'source_fts MATCH ?',
       whereArgs: [query],
     );
-    // final maps = await db!.rawQuery(
-    //   'SELECT * from source_fts where source_fts MATCH "$query"',
-    // );
     if (maps.isNotEmpty) {
       maps = maps.map((row) {
         return {
@@ -426,33 +394,9 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
-  // @override
-  // Future<List<WordModel>> searchWordForASet(String query) async {
-  //   final db = await instance.database;
-  //   List<WordModel> words = [];
-  //   final maps = await db!.query(
-  //     tableWords,
-  //     columns: WordsFields.values,
-  //     where: ' ${WordsFields.source} LIKE ?',
-  //     whereArgs: ['%$query%'],
-  //   );
-  //   if (maps.isNotEmpty) {
-  //     words = maps.map((map) => WordModel.fromJson(map)).toList();
-  //     // if (words.length >= 3) {
-  //     //   words = words.getRange(0, 3).toList();
-  //     // }
-  //     return words;
-  //   } else if (maps.isEmpty) {
-  //     return words;
-  //   } else {
-  //     throw ServerException();
-  //   }
-  // }
-
   @override
   Future<void> updateTranslation(TranslationModel translation) async {
     final db = await database;
-// Update the given word.
     await db!.update(
       tableTranslations,
       translation.toJson(),
@@ -483,7 +427,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   Future<void> deleteTranslation(TranslationModel translation) async {
     final db = await database;
 
-// Update the given word.
     await db!.delete(
       tableTranslations,
       where: 'id = ?',
@@ -495,7 +438,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   Future<void> addTranslation(TranslationModel translation) async {
     final db = await database;
 
-// Update the given word.
     await db!.insert(
       tableTranslations,
       translation.toJson(),
@@ -568,18 +510,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       where: 'id = ?',
       whereArgs: [set.id],
     );
-    // List<WordModel> wordsInASetModels = [];
-    // for (var i = 0; i < set.wordsInSet.length; i++) {
-    //   wordsInASetModels.add(WordModel(
-    //     id: set.wordsInSet[i].id,
-    //     source: set.wordsInSet[i].source,
-    //     pos: set.wordsInSet[i].pos,
-    //     transcription: set.wordsInSet[i].transcription,
-    //   ));
-    //   wordsInASetModels[i]
-    //       .translationList
-    //       .addAll(set.wordsInSet[i].translationList);
-    // }
     await addWordsInASet(toAdd, set.id);
     await deleteWordsInASet(toDelete);
   }
