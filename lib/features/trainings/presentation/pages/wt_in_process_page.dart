@@ -9,6 +9,8 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_result_page.dart';
 
+import '../../../../generated/l10n.dart';
+
 class WTInProcessPage extends StatefulWidget {
   const WTInProcessPage({super.key});
 
@@ -35,7 +37,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
             if (state is TrainingEmpty) {
               return Center(
                 child: Text(
-                  "Пока недостаточно слов для тренировки ˙◠˙",
+                  S.of(context).notEnoughWords,
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -91,14 +93,11 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
         ),
         Flexible(
           flex: 4,
-          child: GridView.count(
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              crossAxisCount: 2,
-              childAspectRatio: 2,
-              children: <Widget>[
-                ...buildSuggestedAnswers(words),
-              ]),
+          child: Column(
+            children: [
+              ...buildSuggestedAnswers(words),
+            ],
+          ),
         )
       ],
     );
@@ -143,18 +142,22 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
       element == 3
           ? answersContainers.add(Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  answers[words[currentWordIndex].id] =
-                      words[currentWordIndex].translation;
-                  updateCurrentWord(words);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFFd9c3ac),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: FilledButton(
+                  onPressed: () {
+                    answers[words[currentWordIndex].id] =
+                        words[currentWordIndex].translation;
+                    updateCurrentWord(words);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFd9c3ac),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
-                  height: 25,
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(5.0),
@@ -169,28 +172,31 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
             ))
           : answersContainers.add(Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  answers[words[currentWordIndex].id] = words[currentWordIndex]
-                      .suggestedTranslationList[element]
-                      .translation;
-                  updateCurrentWord(words);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFFd9c3ac),
-                  ),
-                  height: 25,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: AutoSizeText(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: FilledButton(
+                  onPressed: () {
+                    answers[words[currentWordIndex].id] =
                         words[currentWordIndex]
                             .suggestedTranslationList[element]
-                            .translation,
-                        textAlign: TextAlign.center,
-                      ),
+                            .translation;
+                    updateCurrentWord(words);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFd9c3ac),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: AutoSizeText(
+                      words[currentWordIndex]
+                          .suggestedTranslationList[element]
+                          .translation,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),

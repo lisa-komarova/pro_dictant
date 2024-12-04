@@ -1,7 +1,9 @@
 import 'package:dartz/dartz.dart';
+import 'package:intl/intl.dart';
 import 'package:pro_dictant/core/error/failure.dart';
 import 'package:pro_dictant/features/profile/domain/entities/statistics_entity.dart';
 import 'package:pro_dictant/features/profile/domain/repositories/profile_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/error/exception.dart';
 import '../data_sources/profile_datasource.dart';
@@ -22,6 +24,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
       final dateSets = await profileDatasource.fetchDatasets();
       DateTime now = DateTime.now();
       DateTime date = DateTime(now.year, now.month, now.day);
+      final prefs = await SharedPreferences.getInstance();
+      String? day = prefs.getString('day');
       final bool isTodayCompleted;
       if (dateSets.isNotEmpty) {
         int isToday = dateSets.first.keys.first.compareTo(date);
@@ -29,6 +33,17 @@ class ProfileRepositoryImpl extends ProfileRepository {
           isTodayCompleted = true;
         } else {
           isTodayCompleted = false;
+          if (day == null) {
+            var formatter = DateFormat('yyyy-MM-dd');
+            String formattedDate = formatter.format(date);
+            prefs.setString('day', formattedDate);
+          } else if (DateTime.parse(day).compareTo(date) != 0) {
+            prefs.setInt('timeOnApp', 0);
+            var formatter = DateFormat('yyyy-MM-dd');
+            String formattedDate =
+                formatter.format(date.subtract(Duration(days: 1)));
+            prefs.setString('day', formattedDate);
+          }
         }
       } else {
         isTodayCompleted = false;

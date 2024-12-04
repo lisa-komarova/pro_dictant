@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 
+import '../../../../generated/l10n.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
@@ -67,7 +68,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
           if (state is TrainingEmpty) {
             return Center(
               child: Text(
-                "Пока недостаточно слов для тренировки ˙◠˙",
+                S.of(context).notEnoughWords,
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -131,44 +132,50 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
         Flexible(
           flex: 2,
           child: Center(
-            child: Text(
-              words[currentWordIndex].source,
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                words[currentWordIndex].source,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),
         Flexible(
-          flex: 6,
-          child: Row(
+          flex: 4,
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
+              Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (currentWordIndex + 1 >= words.length) {
-                        finishWorkout();
-                        return;
-                      }
-                      if (suggestedAnswer.first ==
-                          words[currentWordIndex].translation) {
-                        correctAnswers.add(words[currentWordIndex]);
-                      } else {
-                        mistakes.add(words[currentWordIndex]);
-                      }
-                      setState(() {
-                        currentWordIndex++;
-                        suggestedAnswer = [];
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: const Color(0xFFd9c3ac),
+                  child: SizedBox(
+                    height: 100,
+                    child: FilledButton(
+                      onPressed: () {
+                        if (currentWordIndex + 1 >= words.length) {
+                          finishWorkout();
+                          return;
+                        }
+                        if (suggestedAnswer.first ==
+                            words[currentWordIndex].translation) {
+                          correctAnswers.add(words[currentWordIndex]);
+                        } else {
+                          mistakes.add(words[currentWordIndex]);
+                        }
+                        setState(() {
+                          currentWordIndex++;
+                          suggestedAnswer = [];
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFd9c3ac),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
                       ),
-                      height: 100,
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.all(5.0),
@@ -182,31 +189,34 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                   ),
                 ),
               ),
-              Expanded(
+              Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (currentWordIndex + 1 >= words.length) {
-                        finishWorkout();
-                      }
-                      if (suggestedAnswer.last ==
-                          words[currentWordIndex].translation) {
-                        correctAnswers.add(words[currentWordIndex]);
-                      } else {
-                        mistakes.add(words[currentWordIndex]);
-                      }
-                      setState(() {
-                        currentWordIndex++;
-                        suggestedAnswer = [];
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: const Color(0xFFd9c3ac),
+                  child: SizedBox(
+                    height: 100,
+                    child: FilledButton(
+                      onPressed: () {
+                        if (currentWordIndex + 1 >= words.length) {
+                          finishWorkout();
+                        }
+                        if (suggestedAnswer.last ==
+                            words[currentWordIndex].translation) {
+                          correctAnswers.add(words[currentWordIndex]);
+                        } else {
+                          mistakes.add(words[currentWordIndex]);
+                        }
+                        setState(() {
+                          currentWordIndex++;
+                          suggestedAnswer = [];
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFd9c3ac),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
                       ),
-                      height: 100,
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.all(5.0),

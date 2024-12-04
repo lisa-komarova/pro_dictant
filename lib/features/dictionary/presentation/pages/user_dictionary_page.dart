@@ -4,15 +4,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
-import 'package:pro_dictant/features/dictionary/presentation/widgets/dictionary_filter_buttons.dart';
 import 'package:pro_dictant/features/dictionary/presentation/widgets/search_container.dart';
 import 'package:pro_dictant/features/dictionary/presentation/widgets/words_list.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../generated/l10n.dart';
 import 'word_form_page.dart';
 
 class UserDictionaryPage extends StatefulWidget {
-  const UserDictionaryPage({super.key});
+  const UserDictionaryPage({
+    super.key,
+  });
 
   @override
   State<UserDictionaryPage> createState() => _UserDictionaryPageState();
@@ -20,7 +22,6 @@ class UserDictionaryPage extends StatefulWidget {
 
 class _UserDictionaryPageState extends State<UserDictionaryPage> {
   TextEditingController editingController = TextEditingController();
-  bool isSearching = false;
 
   @override
   void dispose() {
@@ -33,7 +34,7 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Мой словарь",
+          '',
           style: GoogleFonts.hachiMaruPop(),
         ),
         centerTitle: true,
@@ -56,7 +57,6 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
               }
             },
           ),
-          const DictionaryFilterButtons(),
           WordsList(editingController),
         ],
       ),
@@ -73,9 +73,9 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
         },
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        label: const Text(
-          'новое\nслово',
-          style: TextStyle(fontSize: 12),
+        label: Text(
+          S.of(context).newWord,
+          style: const TextStyle(fontSize: 12),
         ),
       ),
     );

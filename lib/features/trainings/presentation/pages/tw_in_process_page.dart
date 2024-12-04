@@ -8,6 +8,7 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_result_page.dart';
 
+import '../../../../generated/l10n.dart';
 import '../../domain/entities/tw_training_entity.dart';
 
 class TWInProcessPage extends StatefulWidget {
@@ -20,7 +21,6 @@ class TWInProcessPage extends StatefulWidget {
 class _TWInProcessPageState extends State<TWInProcessPage> {
   int currentWordIndex = 0;
   Map<String, String> answers = {};
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +36,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
             if (state is TrainingEmpty) {
               return Center(
                 child: Text(
-                  "Пока недостаточно слов для тренировки ˙◠˙",
+                  S.of(context).notEnoughWords,
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -94,14 +94,11 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
         ),
         Flexible(
           flex: 4,
-          child: GridView.count(
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              crossAxisCount: 2,
-              childAspectRatio: 2,
-              children: <Widget>[
-                ...buildSuggestedAnswers(words),
-              ]),
+          child: Column(
+            children: [
+              ...buildSuggestedAnswers(words),
+            ],
+          ),
         )
       ],
     );
@@ -143,25 +140,27 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
       element == 3
           ? answersContainers.add(Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  answers[words[currentWordIndex].id] =
-                      words[currentWordIndex].source;
-                  updateCurrentWord(words);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFFd9c3ac),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: FilledButton(
+                  onPressed: () {
+                    answers[words[currentWordIndex].id] =
+                        words[currentWordIndex].source;
+                    updateCurrentWord(words);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFd9c3ac),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
-                  height: 25,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: AutoSizeText(
-                        words[currentWordIndex].source,
-                        textAlign: TextAlign.center,
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: AutoSizeText(
+                      words[currentWordIndex].source,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
@@ -169,28 +168,31 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
             ))
           : answersContainers.add(Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  answers[words[currentWordIndex].id] = words[currentWordIndex]
-                      .suggestedSourcesList[element]
-                      .source;
-                  updateCurrentWord(words);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFFd9c3ac),
-                  ),
-                  height: 25,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: AutoSizeText(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: FilledButton(
+                  onPressed: () {
+                    answers[words[currentWordIndex].id] =
                         words[currentWordIndex]
                             .suggestedSourcesList[element]
-                            .source,
-                        textAlign: TextAlign.center,
-                      ),
+                            .source;
+                    updateCurrentWord(words);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFd9c3ac),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: AutoSizeText(
+                      words[currentWordIndex]
+                          .suggestedSourcesList[element]
+                          .source,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),

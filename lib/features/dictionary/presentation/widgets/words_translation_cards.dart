@@ -9,6 +9,8 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/word_form_page.dart';
 
+import '../../../../generated/l10n.dart';
+
 class WordTranslationCards extends StatefulWidget {
   final WordEntity word;
   final bool isChangeable;
@@ -71,12 +73,14 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
             child: Row(
               children: [
                 _buildAWordButton(
-                    title: "На\nизучение", color: const Color(0xFFB70E0E)),
+                    title: S.of(context).learn, color: const Color(0xFFB70E0E)),
                 _buildAWordButton(
-                    title: "Уже знаю", color: const Color(0xFF85977f)),
+                    title: S.of(context).alreadyKnow,
+                    color: const Color(0xFF85977f)),
                 if (!widget.isChangeable)
                   _buildAWordButton(
-                      title: "Изменить", color: const Color(0xFFd9c3ac)),
+                      title: S.of(context).changeWord,
+                      color: const Color(0xFFd9c3ac)),
               ],
             ),
           ),
@@ -100,14 +104,14 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
           onTap: () {
-            if (title == "На\nизучение") {
+            if (title == S.of(context).learn) {
               _showSendToLearningDialog(
                   context, widget.word, _currentPageIndex);
             }
-            if (title == "Уже знаю") {
+            if (title == S.of(context).alreadyKnow) {
               _showSendToLearntDialog(context, widget.word, _currentPageIndex);
             }
-            if (title == "Изменить") {
+            if (title == S.of(context).changeWord) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (ctx) => WordForm(
                   word: widget.word,
@@ -352,8 +356,8 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
         return AlertDialog(
           content: Text(
             toDelete
-                ? 'Хотите удалить это слово из своего словаря?'
-                : 'Хотите добавить это слово в свой словарь?',
+                ? S.of(context).removeWordFromDict
+                : S.of(context).addWordToDict,
           ),
           actions: <Widget>[
             TextButton(
@@ -361,7 +365,8 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 textStyle: Theme.of(context).textTheme.labelLarge,
                 foregroundColor: const Color(0xFFB70E0E),
               ),
-              child: Text(toDelete ? 'удалить' : 'добавить'),
+              child: Text(
+                  toDelete ? S.of(context).removeWord : S.of(context).addWord),
               onPressed: () {
                 if (toDelete) {
                   translation.isInDictionary = 0;
@@ -374,7 +379,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                   translation.isInDictionary = 1;
                   translation.dateAddedToDictionary = DateTime.now().toString();
                   BlocProvider.of<WordsBloc>(context)
-                      .add(UpdateTranslation(translation));
+                      .add(DeleteWordFromDictionary(translation));
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 }
@@ -384,7 +389,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
-              child: const Text('отмена'),
+              child: Text(S.of(context).cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -413,8 +418,8 @@ Future<void> _showDialogDelete(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        content: const Text(
-          'Хотите удалить это слово из словаря навсегда?',
+        content: Text(
+          S.of(context).removeWordPermanently,
         ),
         actions: <Widget>[
           TextButton(
@@ -422,7 +427,7 @@ Future<void> _showDialogDelete(
               textStyle: Theme.of(context).textTheme.labelLarge,
               foregroundColor: const Color(0xFFB70E0E),
             ),
-            child: const Text('удалить'),
+            child: Text(S.of(context).removeWord),
             onPressed: () {
               if (word.translationList.length == 1) {
                 BlocProvider.of<WordsBloc>(context).add(DeleteWord(word));
@@ -438,7 +443,7 @@ Future<void> _showDialogDelete(
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.labelLarge,
             ),
-            child: const Text('отмена'),
+            child: Text(S.of(context).cancel),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -455,8 +460,8 @@ Future<void> _showSendToLearntDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        content: const Text(
-          'Хотите переместить это слово в изученные?',
+        content: Text(
+          S.of(context).markAsLearnt,
         ),
         actions: <Widget>[
           TextButton(
@@ -464,7 +469,7 @@ Future<void> _showSendToLearntDialog(
               textStyle: Theme.of(context).textTheme.labelLarge,
               foregroundColor: const Color(0xFFB70E0E),
             ),
-            child: const Text('да'),
+            child: Text(S.of(context).yes),
             onPressed: () {
               word.translationList[index].isInDictionary = 1;
               word.translationList[index].isTW = 1;
@@ -483,7 +488,7 @@ Future<void> _showSendToLearntDialog(
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.labelLarge,
             ),
-            child: const Text('отмена'),
+            child: Text(S.of(context).cancel),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -500,8 +505,8 @@ Future<void> _showSendToLearningDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        content: const Text(
-          'Хотите сбросить прогресс этого слова?',
+        content: Text(
+          S.of(context).markAsNew,
         ),
         actions: <Widget>[
           TextButton(
@@ -509,7 +514,7 @@ Future<void> _showSendToLearningDialog(
               textStyle: Theme.of(context).textTheme.labelLarge,
               foregroundColor: const Color(0xFFB70E0E),
             ),
-            child: const Text('да'),
+            child: Text(S.of(context).yes),
             onPressed: () {
               word.translationList[index].isInDictionary = 1;
               word.translationList[index].isTW = 0;
@@ -532,7 +537,7 @@ Future<void> _showSendToLearningDialog(
             style: TextButton.styleFrom(
               textStyle: Theme.of(context).textTheme.labelLarge,
             ),
-            child: const Text('отмена'),
+            child: Text(S.of(context).cancel),
             onPressed: () {
               Navigator.of(context).pop();
             },

@@ -11,6 +11,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../generated/l10n.dart';
 import 'cards_in_process_page.dart';
 import 'dictant_in_process_page.dart';
 import 'matching_in_process_page.dart';
@@ -106,8 +107,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Center(
-                          child: Text(
-                              'до выполнения цели осталось : ${widget.goal - (timeOnApp + sessionTime)} минут'),
+                          child: Text(S.of(context).timeLeft(
+                              widget.goal - (timeOnApp + sessionTime))),
                         ),
                       ),
                     )
@@ -122,8 +123,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                   childAspectRatio: 0.95,
                   children: <Widget>[
                     GestureDetector(
-                      child: const TrainingCard(
-                        trainingName: 'слово-перевод',
+                      child: TrainingCard(
+                        trainingName: S.of(context).wordTranslation,
                         imageName: 'word-t',
                       ),
                       onTap: () {
@@ -134,8 +135,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                       },
                     ),
                     GestureDetector(
-                      child: const TrainingCard(
-                        trainingName: 'перевод-слово',
+                      child: TrainingCard(
+                        trainingName: S.of(context).TranslationWord,
                         imageName: 't-word',
                       ),
                       onTap: () {
@@ -146,8 +147,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                       },
                     ),
                     GestureDetector(
-                      child: const TrainingCard(
-                        trainingName: 'соответствие',
+                      child: TrainingCard(
+                        trainingName: S.of(context).matchingWords,
                         imageName: 'word_matching',
                       ),
                       onTap: () {
@@ -158,8 +159,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                       },
                     ),
                     GestureDetector(
-                      child: const TrainingCard(
-                        trainingName: 'карточки',
+                      child: TrainingCard(
+                        trainingName: S.of(context).wordCards,
                         imageName: 'sprint',
                       ),
                       onTap: () {
@@ -170,8 +171,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                       },
                     ),
                     GestureDetector(
-                      child: const TrainingCard(
-                        trainingName: 'диктант',
+                      child: TrainingCard(
+                        trainingName: S.of(context).dictant,
                         imageName: 'dictant',
                       ),
                       onTap: () {
@@ -182,8 +183,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                       },
                     ),
                     GestureDetector(
-                      child: const TrainingCard(
-                        trainingName: 'повторение',
+                      child: TrainingCard(
+                        trainingName: S.of(context).repeatWords,
                         imageName: 'repetition',
                       ),
                       onTap: () {

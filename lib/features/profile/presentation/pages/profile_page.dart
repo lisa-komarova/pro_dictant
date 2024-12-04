@@ -6,6 +6,8 @@ import 'package:pro_dictant/features/profile/presentation/manager/profile_bloc.d
 import 'package:pro_dictant/features/profile/presentation/manager/profile_event.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_state.dart';
 
+import '../../../../generated/l10n.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -49,11 +51,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'в словаре: ${state.statistics.wordsInDictionary}',
+                              S.of(context).addedWords(
+                                  state.statistics.wordsInDictionary),
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             Text(
-                              'выучено: ${state.statistics.learntWords}',
+                              S
+                                  .of(context)
+                                  .learntWords(state.statistics.learntWords),
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             GestureDetector(
@@ -64,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'цель: ${state.statistics.goal} мин',
+                                    S.of(context).goal(state.statistics.goal),
                                     style:
                                         Theme.of(context).textTheme.bodyLarge,
                                   ),
@@ -112,30 +117,23 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(35),
-          color: const Color(0xB3D9C3AC),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: HeatMap(
-            startDate: DateTime.now().subtract(const Duration(days: 30)),
-            endDate: DateTime.now(),
-            scrollable: true,
-            colorMode: ColorMode.color,
-            showColorTip: false,
-            showText: true,
-            textColor: Colors.white,
-            defaultColor: const Color(0xFFB70E0E),
-            size: 35,
-            borderRadius: 25,
-            colorsets: const {
-              1: Color(0xFF85977F),
-            },
-            datasets: dateSets,
-          ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: HeatMap(
+          startDate: DateTime.now().subtract(const Duration(days: 30)),
+          endDate: DateTime.now(),
+          scrollable: true,
+          colorMode: ColorMode.color,
+          showColorTip: false,
+          showText: true,
+          textColor: Colors.black,
+          defaultColor: const Color(0xFFd9c3ac),
+          size: 35,
+          borderRadius: 25,
+          colorsets: const {
+            1: Color(0xFF85977F),
+          },
+          datasets: dateSets,
         ),
       ),
     );
@@ -147,7 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Изменить цель',
+            S.of(context).changeGoal,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           content: Column(
@@ -159,9 +157,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       .add(const UpdateGoal(goalInMinutes: 10));
                   Navigator.of(context).pop();
                 },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('10 минут'),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(S.of(context).tenMinutes),
                 ),
               ),
               GestureDetector(
@@ -170,9 +168,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       .add(const UpdateGoal(goalInMinutes: 15));
                   Navigator.of(context).pop();
                 },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('15 минут'),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(S.of(context).fifteenMinutes),
                 ),
               ),
               GestureDetector(
@@ -181,9 +179,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       .add(const UpdateGoal(goalInMinutes: 30));
                   Navigator.of(context).pop();
                 },
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('30 минут'),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(S.of(context).thirtyMinutes),
                 ),
               ),
             ],
@@ -193,7 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
               ),
-              child: const Text('Отмена'),
+              child: Text(S.of(context).cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },

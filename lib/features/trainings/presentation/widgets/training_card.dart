@@ -37,7 +37,10 @@ class TrainingCard extends StatelessWidget {
             ),
           ),
         ),
-        Text(trainingName),
+        Text(
+          trainingName,
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }

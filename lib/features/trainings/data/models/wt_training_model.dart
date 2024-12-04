@@ -8,17 +8,19 @@ class WTTraningModel extends WTTrainingEntity {
     required id,
     required source,
     required translation,
+    required wordId,
   }) : super(
           id: id,
           source: source,
           translation: translation,
+          wordId: wordId,
         );
 
   static WTTraningModel fromJson(Map<String, Object?> json) => WTTraningModel(
-        id: json[TranslationFields.id] as String,
-        source: json[WordsFields.source] as String,
-        translation: json[TranslationFields.translation] as String,
-      );
+      id: json[TranslationFields.id] as String,
+      source: json[WordsFields.source] as String,
+      translation: json[TranslationFields.translation] as String,
+      wordId: json['wordId'] as String);
 
   @override
   List<Object?> get props => [
@@ -26,5 +28,6 @@ class WTTraningModel extends WTTrainingEntity {
         source,
         translation,
         suggestedTranslationList,
+        wordId,
       ];
 }

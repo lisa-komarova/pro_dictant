@@ -7,6 +7,8 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/pages/user_dictionary_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/user_set_page.dart';
 
+import '../../../../generated/l10n.dart';
+
 class DictionaryPage extends StatelessWidget {
   const DictionaryPage({super.key});
 
@@ -23,8 +25,8 @@ class DictionaryPage extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 BlocProvider.of<WordsBloc>(context).add(const LoadWords());
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => const UserDictionaryPage()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (ctx) => UserDictionaryPage()));
               },
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
@@ -33,9 +35,9 @@ class DictionaryPage extends StatelessWidget {
                     color: const Color(0xFFD9C3AC),
                     borderRadius: BorderRadius.circular(16)),
                 child: Text(
-                  'мой словарь',
+                  S.of(context).myDictionary,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  //style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ),
@@ -45,8 +47,8 @@ class DictionaryPage extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 BlocProvider.of<SetBloc>(context).add(const LoadSets());
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (ctx) => UserSetPage()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (ctx) => const UserSetPage()));
               },
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
@@ -55,7 +57,7 @@ class DictionaryPage extends StatelessWidget {
                     color: const Color(0xFFD9C3AC),
                     borderRadius: BorderRadius.circular(16)),
                 child: Text(
-                  'наборы слов',
+                  S.of(context).wordSets,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),

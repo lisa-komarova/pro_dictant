@@ -4,9 +4,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 
+import '../../../../generated/l10n.dart';
+
 class DictionaryFilterButtons extends StatefulWidget {
+  final bool isNewSelected;
+  final bool isLearntSelected;
+  final bool isLearningSelected;
+
   const DictionaryFilterButtons({
     super.key,
+    required this.isNewSelected,
+    required this.isLearntSelected,
+    required this.isLearningSelected,
   });
 
   @override
@@ -18,16 +27,32 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
   Color colorNew = const Color(0xFFB70E0E);
   Color colorLearning = const Color(0xFFd9c3ac);
   Color colorLearnt = const Color(0xFF85977f);
-  String titleNew = "Новые";
-  String titleLearning = "На\nизучении";
-  String titleLearnt = "Изученные";
+  late String titleNew;
+  late String titleLearning;
+  late String titleLearnt;
   bool isNewSelected = false;
   bool isLearningSelected = false;
   bool isLearntSelected = false;
   final double _buttonWidth = 100;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    titleNew = S.of(context).newWords;
+    titleLearning = S.of(context).learning;
+    titleLearnt = S.of(context).learnt;
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    isNewSelected = widget.isNewSelected;
+    isLearningSelected = widget.isLearningSelected;
+    isLearntSelected = widget.isLearntSelected;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [

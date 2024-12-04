@@ -7,6 +7,8 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/s
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/sets_words_page.dart';
 
+import '../../../../generated/l10n.dart';
+
 class SetList extends StatefulWidget {
   const SetList({super.key});
 
@@ -21,7 +23,7 @@ class _SetListState extends State<SetList> {
       if (state is SetsEmpty) {
         return Center(
           child: Text(
-            "Пока наборов слов нет ˙◠˙",
+            S.of(context).noWordsYet,
             style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),

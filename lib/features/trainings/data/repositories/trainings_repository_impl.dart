@@ -42,7 +42,8 @@ class TrainingsRepositoryImpl extends TrainingsRepository {
         WTTraningModel newModel = WTTraningModel(
             id: element.id,
             source: element.source,
-            translation: element.translation);
+            translation: element.translation,
+            wordId: element.wordId);
         wordsModel.add(newModel);
       }
 

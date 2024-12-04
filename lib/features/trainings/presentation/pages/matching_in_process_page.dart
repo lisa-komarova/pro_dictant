@@ -6,6 +6,7 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 
+import '../../../../generated/l10n.dart';
 import 'matching_result_page.dart';
 
 class MatchingInProcessPage extends StatefulWidget {
@@ -18,6 +19,8 @@ class MatchingInProcessPage extends StatefulWidget {
 class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   bool isWordChosen = false;
   bool isTranslationChosen = false;
+  bool isWordChosenWrong = false;
+  bool isTranslationChosenWrong = false;
   List<MatchingTrainingEntity> currentAnswer = [];
   List<MatchingTrainingEntity> correctAnswers = [];
   List<int> availableIndexes = [];
@@ -53,7 +56,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
             if (state is TrainingEmpty) {
               return Center(
                 child: Text(
-                  "Пока недостаточно слов для тренировки ˙◠˙",
+                  S.of(context).notEnoughWords,
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -102,11 +105,12 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('ошибок: ${mistakes.length}'),
+                child: Text(S.of(context).mistakesCount(mistakes.length)),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('ответов: ${correctAnswers.length}'),
+                child: Text(
+                    S.of(context).correctAnswersCount(correctAnswers.length)),
               ),
             ],
           ),
@@ -143,38 +147,81 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: 5,
           itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                if (correctAnswers.contains(words[index])) {
-                  return;
-                }
-                if (isTranslationChosen) {
-                  isWordChosen = true;
-                  currentAnswer.add(words[index]);
-                  if (isWordChosen &&
-                      currentAnswer[0].id == currentAnswer[1].id) {
-                    setState(() {
-                      currentAnswer.clear();
-                      isWordChosen = false;
-                      isTranslationChosen = false;
-                      colors.replaceRange(0, 5, [
-                        Colors.white,
-                        Colors.white,
-                        Colors.white,
-                        Colors.white,
-                        Colors.white,
-                      ]);
-                      correctAnswers.add(words[index]);
-                      if (wordsList.isNotEmpty &&
-                          correctAnswers.length % 5 == 0) {
-                        List<MatchingTrainingEntity> toAdd =
-                            wordsList.getRange(0, 5).toList();
-                        currentWordsList.clear();
-                        currentWordsList.addAll(toAdd);
-                        currentTranslationList.clear();
-                        currentTranslationList.addAll(toAdd);
-                        currentTranslationList.shuffle();
-                        wordsList.removeRange(0, 5);
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: 70,
+                width: 150,
+                child: OutlinedButton(
+                  onPressed: () {
+                    if (correctAnswers.contains(words[index])) {
+                      return;
+                    } else if (isTranslationChosenWrong) {
+                      return;
+                    }
+                    if (isTranslationChosen) {
+                      isWordChosen = true;
+                      currentAnswer.add(words[index]);
+                      if (isWordChosen &&
+                          currentAnswer[0].id == currentAnswer[1].id) {
+                        setState(() {
+                          currentAnswer.clear();
+                          isWordChosen = false;
+                          isTranslationChosen = false;
+                          isWordChosenWrong = false;
+                          colors.replaceRange(0, 5, [
+                            Colors.white,
+                            Colors.white,
+                            Colors.white,
+                            Colors.white,
+                            Colors.white,
+                          ]);
+                          correctAnswers.add(words[index]);
+                          if (wordsList.isNotEmpty &&
+                              correctAnswers.length % 5 == 0) {
+                            List<MatchingTrainingEntity> toAdd =
+                                wordsList.getRange(0, 5).toList();
+                            currentWordsList.clear();
+                            currentWordsList.addAll(toAdd);
+                            currentTranslationList.clear();
+                            currentTranslationList.addAll(toAdd);
+                            currentTranslationList.shuffle();
+                            wordsList.removeRange(0, 5);
+                            colors.replaceRange(0, 5, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                            colors.replaceRange(5, 10, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                          } else if (wordsList.isEmpty &&
+                              correctAnswers.length % 5 == 0) {
+                            correctAnswers.removeWhere(
+                                (element) => mistakes.contains(element));
+
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (ctx) => MatchingResultPage(
+                                        correctAnswers: correctAnswers,
+                                        mistakes: mistakes)));
+                            BlocProvider.of<TrainingsBloc>(context).add(
+                                UpdateWordsForMatchingTRainings(
+                                    correctAnswers));
+                          }
+                          //colors[index] = Colors.green;
+                        });
+                      } else {
+                        isWordChosen = false;
+                        isWordChosenWrong = true;
+                        currentAnswer.remove(words[index]);
+                        mistakes.add(words[index]);
                         colors.replaceRange(0, 5, [
                           Colors.white,
                           Colors.white,
@@ -182,74 +229,40 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           Colors.white,
                           Colors.white,
                         ]);
-                        colors.replaceRange(5, 10, [
+                        setState(() {
+                          colors[index] = const Color(0xFFB70E0E);
+                        });
+                      }
+                    } else {
+                      setState(() {
+                        isWordChosen = true;
+                        currentAnswer.clear();
+                        currentAnswer.add(words[index]);
+                        colors.replaceRange(0, 5, [
                           Colors.white,
                           Colors.white,
                           Colors.white,
                           Colors.white,
                           Colors.white,
                         ]);
-                      } else if (wordsList.isEmpty &&
-                          correctAnswers.length % 5 == 0) {
-                        correctAnswers.removeWhere(
-                            (element) => mistakes.contains(element));
-
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (ctx) => MatchingResultPage(
-                                correctAnswers: correctAnswers,
-                                mistakes: mistakes)));
-                        BlocProvider.of<TrainingsBloc>(context).add(
-                            UpdateWordsForMatchingTRainings(correctAnswers));
-                      }
-                      //colors[index] = Colors.green;
-                    });
-                  } else {
-                    isWordChosen = false;
-                    currentAnswer.remove(words[index]);
-                    mistakes.add(words[index]);
-                    colors.replaceRange(0, 5, [
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                    ]);
-                    setState(() {
-                      colors[index] = const Color(0xFFB70E0E);
-                    });
-                  }
-                } else {
-                  setState(() {
-                    isWordChosen = true;
-                    currentAnswer.clear();
-                    currentAnswer.add(words[index]);
-                    colors.replaceRange(0, 5, [
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                    ]);
-                    colors[index] = const Color(0xFFd9c3ac);
-                  });
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  height: 70,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: correctAnswers.contains(words[index])
+                        colors[index] = const Color(0xFFd9c3ac);
+                      });
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: correctAnswers.contains(words[index])
                         ? const Color(0xFF85977f)
                         : colors[index],
-                    border: Border.all(
-                      color: const Color(0xFFD9C3AC),
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(
+                      color: Color(0xFFD9C3AC),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       alignment: Alignment.center,
                       child: AutoSizeText(
@@ -272,45 +285,80 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: 5,
           itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                if (correctAnswers.contains(words[index])) {
-                  return;
-                }
-                if (isWordChosen) {
-                  isTranslationChosen = true;
-                  currentAnswer.insert(0, words[index]);
-                  if (isTranslationChosen &&
-                      currentAnswer[0].id == currentAnswer[1].id) {
-                    setState(() {
-                      currentAnswer.clear();
-                      isWordChosen = false;
-                      isTranslationChosen = false;
-                      colors.replaceRange(5, 10, [
-                        Colors.white,
-                        Colors.white,
-                        Colors.white,
-                        Colors.white,
-                        Colors.white,
-                      ]);
-                      correctAnswers.add(words[index]);
-                      if (wordsList.isNotEmpty &&
-                          correctAnswers.length % 5 == 0) {
-                        List<MatchingTrainingEntity> toAdd =
-                            wordsList.getRange(0, 5).toList();
-                        currentWordsList.clear();
-                        currentWordsList.addAll(toAdd);
-                        currentTranslationList.clear();
-                        currentTranslationList.addAll(toAdd);
-                        currentTranslationList.shuffle();
-                        wordsList.removeRange(0, 5);
-                        colors.replaceRange(0, 5, [
-                          Colors.white,
-                          Colors.white,
-                          Colors.white,
-                          Colors.white,
-                          Colors.white,
-                        ]);
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: 70,
+                width: 150,
+                child: OutlinedButton(
+                  onPressed: () {
+                    if (correctAnswers.contains(words[index])) {
+                      return;
+                    } else if (isWordChosenWrong) {
+                      return;
+                    }
+                    if (isWordChosen) {
+                      isTranslationChosen = true;
+                      currentAnswer.insert(0, words[index]);
+                      if (isTranslationChosen &&
+                          currentAnswer[0].id == currentAnswer[1].id) {
+                        setState(() {
+                          currentAnswer.clear();
+                          isWordChosen = false;
+                          isTranslationChosen = false;
+                          isTranslationChosenWrong = false;
+                          colors.replaceRange(5, 10, [
+                            Colors.white,
+                            Colors.white,
+                            Colors.white,
+                            Colors.white,
+                            Colors.white,
+                          ]);
+                          correctAnswers.add(words[index]);
+                          if (wordsList.isNotEmpty &&
+                              correctAnswers.length % 5 == 0) {
+                            List<MatchingTrainingEntity> toAdd =
+                                wordsList.getRange(0, 5).toList();
+                            currentWordsList.clear();
+                            currentWordsList.addAll(toAdd);
+                            currentTranslationList.clear();
+                            currentTranslationList.addAll(toAdd);
+                            currentTranslationList.shuffle();
+                            wordsList.removeRange(0, 5);
+                            colors.replaceRange(0, 5, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                            colors.replaceRange(5, 10, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                          } else if (wordsList.isEmpty &&
+                              correctAnswers.length % 5 == 0) {
+                            correctAnswers.removeWhere(
+                                (element) => mistakes.contains(element));
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (ctx) => MatchingResultPage(
+                                        correctAnswers: correctAnswers,
+                                        mistakes: mistakes)));
+                            BlocProvider.of<TrainingsBloc>(context).add(
+                                UpdateWordsForMatchingTRainings(
+                                    correctAnswers));
+                          }
+                          //colors[index + 5] = Colors.green;
+                        });
+                      } else {
+                        isTranslationChosen = false;
+                        isTranslationChosenWrong = true;
+                        currentAnswer.remove(words[index]);
+                        mistakes.add(words[index]);
                         colors.replaceRange(5, 10, [
                           Colors.white,
                           Colors.white,
@@ -318,66 +366,41 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           Colors.white,
                           Colors.white,
                         ]);
-                      } else if (wordsList.isEmpty &&
-                          correctAnswers.length % 5 == 0) {
-                        correctAnswers.removeWhere(
-                            (element) => mistakes.contains(element));
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (ctx) => MatchingResultPage(
-                                correctAnswers: correctAnswers,
-                                mistakes: mistakes)));
-                        BlocProvider.of<TrainingsBloc>(context).add(
-                            UpdateWordsForMatchingTRainings(correctAnswers));
+                        setState(() {
+                          colors[index + 5] = const Color(0xFFB70E0E);
+                        });
                       }
-                      //colors[index + 5] = Colors.green;
-                    });
-                  } else {
-                    isTranslationChosen = false;
-                    currentAnswer.remove(words[index]);
-                    mistakes.add(words[index]);
-                    colors.replaceRange(5, 10, [
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                    ]);
-                    setState(() {
-                      colors[index + 5] = const Color(0xFFB70E0E);
-                    });
-                  }
-                } else {
-                  setState(() {
-                    isTranslationChosen = true;
-                    currentAnswer.clear();
-                    currentAnswer.add(words[index]);
-                    colors.replaceRange(5, 10, [
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                      Colors.white,
-                    ]);
-                    colors[index + 5] = const Color(0xFFd9c3ac);
-                  });
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  height: 70,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: correctAnswers.contains(words[index])
+                    } else {
+                      setState(() {
+                        isTranslationChosen = true;
+                        isTranslationChosenWrong = false;
+                        currentAnswer.clear();
+                        currentAnswer.add(words[index]);
+                        colors.replaceRange(5, 10, [
+                          Colors.white,
+                          Colors.white,
+                          Colors.white,
+                          Colors.white,
+                          Colors.white,
+                        ]);
+                        colors[index + 5] = const Color(0xFFd9c3ac);
+                      });
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: correctAnswers.contains(words[index])
                         ? const Color(0xFF85977f)
                         : colors[index + 5],
-                    border: Border.all(
-                      color: const Color(0xFFD9C3AC),
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(
+                      color: Color(0xFFD9C3AC),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       alignment: Alignment.center,
                       child: AutoSizeText(

@@ -6,6 +6,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page
 import 'features/dictionary/presentation/pages/dictionary_page.dart';
 import 'features/profile/presentation/manager/profile_bloc.dart';
 import 'features/profile/presentation/manager/profile_state.dart';
+import 'generated/l10n.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,7 +41,7 @@ class _HomePageState extends State<HomePage> {
               width: 35,
               height: 35,
             ),
-            label: 'Профиль',
+            label: S.of(context).profile,
           ),
           NavigationDestination(
             selectedIcon: Image.asset(
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
               width: 35,
               height: 35,
             ),
-            label: 'Словарь',
+            label: S.of(context).dictionary,
           ),
           NavigationDestination(
             selectedIcon: Image.asset(
@@ -68,7 +69,7 @@ class _HomePageState extends State<HomePage> {
               width: 35,
               height: 35,
             ),
-            label: 'Тренажёры',
+            label: S.of(context).trainings,
           ),
         ],
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/dictant_result_page.dart';
 
+import '../../../../generated/l10n.dart';
 import '../../domain/entities/dictant_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
@@ -45,7 +46,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           if (state is TrainingEmpty) {
             return Center(
               child: Text(
-                "Пока недостаточно слов для тренировки ˙◠˙",
+                S.of(context).notEnoughWords,
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -191,7 +192,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                   padding: const EdgeInsets.all(5.0),
                                   child: FittedBox(
                                     child: Text(
-                                      'Проверить',
+                                      S.of(context).checkWord,
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.hachiMaruPop(
                                           color: Colors.white),

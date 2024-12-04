@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/widgets/set_list.dart';
 
+import '../../../../generated/l10n.dart';
+
 class UserSetPage extends StatefulWidget {
   const UserSetPage({super.key});
 
@@ -16,7 +18,7 @@ class _UserSetPageState extends State<UserSetPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Наборы слов",
+          S.of(context).wordSets,
           style: GoogleFonts.hachiMaruPop(),
         ),
         centerTitle: true,
@@ -38,9 +40,9 @@ class _UserSetPageState extends State<UserSetPage> {
         },
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        label: const Text(
-          'новый \nнабор',
-          style: TextStyle(fontSize: 12),
+        label: Text(
+          S.of(context).newSet,
+          style: const TextStyle(fontSize: 12),
         ),
       ),
     );

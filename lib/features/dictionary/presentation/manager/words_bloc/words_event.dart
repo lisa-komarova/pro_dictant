@@ -24,8 +24,12 @@ class LoadWords extends WordsEvent {
 
 class FetchTranslationsForWords extends WordsEvent {
   final List<WordEntity> words;
+  final bool isNew;
+  final bool isLearning;
+  final bool isLearnt;
 
-  const FetchTranslationsForWords(this.words);
+  const FetchTranslationsForWords(
+      this.words, this.isNew, this.isLearning, this.isLearnt);
 }
 
 class FetchTranslationsForSearchedWords extends WordsEvent {

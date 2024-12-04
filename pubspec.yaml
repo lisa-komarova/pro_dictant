@@ -1,5 +1,5 @@
 name: pro_dictant
-description: "A new Flutter project."
+description: "ProDictant project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -47,7 +49,7 @@ dependencies:
   uuid: ^4.4.0
   sqlite_bm25: ^0.3.0
   auto_size_text: ^3.0.0
-  intl: ^0.19.0
+  intl: ^0.18.1
   flutter_heatmap_calendar: ^1.0.5
   shared_preferences: ^2.2.3
   path: ^1.8.3
@@ -126,3 +128,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_intl:
+  enabled: true

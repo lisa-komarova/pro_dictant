@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/repeating_result_page.dart';
 
+import '../../../../generated/l10n.dart';
 import '../../domain/entities/repeating_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
@@ -38,7 +39,7 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
           if (state is TrainingEmpty) {
             return Center(
               child: Text(
-                "Пока недостаточно слов для тренировки ˙◠˙",
+                S.of(context).notEnoughWords,
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -100,7 +101,7 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                           mistakes, correctAnswers));
                 },
                 child: Text(
-                  'Завершить тренировку',
+                  S.of(context).endTrainings,
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
@@ -177,11 +178,11 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         color: colorPositive,
                       ),
                       height: 100,
-                      child: const Center(
+                      child: Center(
                         child: Padding(
-                          padding: EdgeInsets.all(5.0),
+                          padding: const EdgeInsets.all(5.0),
                           child: AutoSizeText(
-                            "знаю \nне забуду",
+                            S.of(context).iKnowWontForget,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -235,11 +236,11 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         color: colorNeutral,
                       ),
                       height: 100,
-                      child: const Center(
+                      child: Center(
                         child: Padding(
-                          padding: EdgeInsets.all(5.0),
+                          padding: const EdgeInsets.all(5.0),
                           child: AutoSizeText(
-                            "знаю\nно забываю",
+                            S.of(context).iKnowMightForget,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -294,11 +295,11 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         color: colorNegative,
                       ),
                       height: 100,
-                      child: const Center(
+                      child: Center(
                         child: Padding(
-                          padding: EdgeInsets.all(5.0),
+                          padding: const EdgeInsets.all(5.0),
                           child: AutoSizeText(
-                            'не помню',
+                            S.of(context).iDontRemember,
                             textAlign: TextAlign.center,
                           ),
                         ),

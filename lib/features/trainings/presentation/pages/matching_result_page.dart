@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/matching_in_process_page.dart';
 
+import '../../../../generated/l10n.dart';
 import '../../domain/entities/matching_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 
@@ -27,7 +28,7 @@ class MatchingResultPage extends StatelessWidget {
           child: Column(
         children: [
           Text(
-            'Результаты',
+            S.of(context).results,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           Expanded(
@@ -48,7 +49,7 @@ class MatchingResultPage extends StatelessWidget {
                             SizedBox(
                               height: 50,
                               child: Text(
-                                'верные ответы',
+                                S.of(context).rightAnswers,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
@@ -82,7 +83,7 @@ class MatchingResultPage extends StatelessWidget {
                             SizedBox(
                               height: 50,
                               child: Text(
-                                'ошибки',
+                                S.of(context).mistakes,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
@@ -128,12 +129,13 @@ class MatchingResultPage extends StatelessWidget {
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,
+                  height: 50,
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                       color: const Color(0xFFD9C3AC),
                       borderRadius: BorderRadius.circular(16)),
                   child: Text(
-                    'продолжить тренировку',
+                    S.of(context).continueTraining,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),

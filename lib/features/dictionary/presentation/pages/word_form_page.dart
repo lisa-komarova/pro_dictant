@@ -8,6 +8,8 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../generated/l10n.dart';
+
 class WordForm extends StatefulWidget {
   final WordEntity word;
   final bool isNew;
@@ -84,19 +86,19 @@ class _WordFormState extends State<WordForm> {
                     child: TextFormField(
                       controller: _sourceController,
                       keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                             borderSide: BorderSide(
                               color: Color(0xFFd9c3ac),
                               width: 3,
                             )),
-                        hintText: 'Введите слово',
-                        hintStyle: TextStyle(fontSize: 11),
+                        hintText: S.of(context).enterWord,
+                        hintStyle: const TextStyle(fontSize: 11),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Введите слово';
+                          return S.of(context).enterWord;
                         }
                         return null;
                       },
@@ -110,19 +112,19 @@ class _WordFormState extends State<WordForm> {
                     child: TextFormField(
                       controller: _posController,
                       keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                             borderSide: BorderSide(
                               color: Color(0xFFd9c3ac),
                               width: 3,
                             )),
-                        hintText: 'Введите часть речи',
-                        hintStyle: TextStyle(fontSize: 11),
+                        hintText: S.of(context).enterPartOfSpeech,
+                        hintStyle: const TextStyle(fontSize: 11),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Введите часть речи';
+                          return S.of(context).enterPartOfSpeech;
                         }
                         return null;
                       },
@@ -144,7 +146,7 @@ class _WordFormState extends State<WordForm> {
                               color: Color(0xFFd9c3ac),
                               width: 3,
                             )),
-                        hintText: 'Введите транскрипцию',
+                        hintText: S.of(context).enterTranscription,
                         hintStyle: GoogleFonts.hachiMaruPop(fontSize: 11),
                       ),
                     ),
@@ -161,21 +163,21 @@ class _WordFormState extends State<WordForm> {
                             child: TextFormField(
                               controller: _translationControllerList[0],
                               keyboardType: TextInputType.text,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15)),
                                     borderSide: BorderSide(
                                       color: Color(0xFFd9c3ac),
                                       width: 3,
                                     )),
-                                hintText: 'Введите перевод',
-                                hintStyle: TextStyle(fontSize: 10),
+                                hintText: S.of(context).enterTranslation,
+                                hintStyle: const TextStyle(fontSize: 10),
                               ),
                               // The validator receives the text that the user has entered.
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Введите перевод';
+                                  return S.of(context).enterTranslation;
                                 }
                                 return null;
                               },
@@ -225,8 +227,8 @@ class _WordFormState extends State<WordForm> {
                           foregroundColor: const Color(0xFFB70E0E),
                         ),
                         child: widget.isNew
-                            ? const Text('добавить')
-                            : const Text('обновить'),
+                            ? Text(S.of(context).add)
+                            : Text(S.of(context).update),
                         onPressed: () {
                           Set<TranslationEntity> toDelete = {};
                           Set<TranslationEntity> toUpdate = {};
@@ -344,7 +346,7 @@ class _WordFormState extends State<WordForm> {
                         style: TextButton.styleFrom(
                           textStyle: Theme.of(context).textTheme.labelLarge,
                         ),
-                        child: const Text('отмена'),
+                        child: Text(S.of(context).cancel),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -375,19 +377,19 @@ class _WordFormState extends State<WordForm> {
                     child: TextFormField(
                       controller: _translationControllerList[index],
                       keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                             borderSide: BorderSide(
                               color: Color(0xFFd9c3ac),
                               width: 3,
                             )),
-                        hintText: 'Введите перевод',
-                        hintStyle: TextStyle(fontSize: 10),
+                        hintText: S.of(context).enterTranslation,
+                        hintStyle: const TextStyle(fontSize: 10),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Введите перевод';
+                          return S.of(context).enterTranslation;
                         }
                         return null;
                       },

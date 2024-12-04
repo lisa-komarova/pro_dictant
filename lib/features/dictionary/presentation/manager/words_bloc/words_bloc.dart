@@ -79,9 +79,11 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     on<AddWord>(_onAddWordEvent);
     on<FetchWordBySource>(_onFetchWordBySourceEvent);
     on<SearchWordsForASet>(_onSearchWordsForASetEvent);
-    on<FetchTranslationsForWords>(_onFetchTranslationsForWordsEvent);
+    on<FetchTranslationsForWords>(_onFetchTranslationsForWordsEvent,
+        transformer: restartable());
     on<FetchTranslationsForSearchedWords>(
-        _onFetchTranslationsForSearchedWordsEvent);
+        _onFetchTranslationsForSearchedWordsEvent,
+        transformer: restartable());
     on<DeleteTranslation>(_onDeleteTranslationEvent);
     on<AddTranslation>(_onAddTranslationEvent);
     on<AddWordsFromSetToDictionary>(_onAddWordsFromSetToDictionaryEvent);
@@ -99,9 +101,13 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
         .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
             (words) {
       if (words.isEmpty) {
-        emit(WordsEmpty());
+        emit(WordsEmpty(
+          isNew: false,
+          isLearning: false,
+          isLearnt: false,
+        ));
       } else {
-        add(FetchTranslationsForWords(words));
+        add(FetchTranslationsForWords(words, false, false, false));
       }
     });
   }
@@ -116,10 +122,17 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
         .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
             (words) {
       if (words.isEmpty) {
-        emit(WordsEmpty());
+        emit(WordsEmpty(
+          isNew: event.isNew,
+          isLearning: event.isLearning,
+          isLearnt: event.isLearnt,
+        ));
       } else {
         emit(WordsLoaded(
           words: words,
+          isNew: event.isNew,
+          isLearning: event.isLearning,
+          isLearnt: event.isLearnt,
         ));
       }
     });
@@ -148,13 +161,6 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
 
   FutureOr<void> _onFilterWordsEvent(
       FilterWords event, Emitter<WordsState> emit) async {
-    if (event.wordQuery.length < 2 &&
-        event.isNew == false &&
-        event.isLearning == false &&
-        event.isLearnt == false) {
-      add(const LoadWords());
-      return;
-    }
     emit(WordsLoading());
 
     final failureOrWord = await filterWords(
@@ -164,9 +170,14 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
         .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
             (words) async {
       if (words.isEmpty) {
-        emit(WordsEmpty());
+        emit(WordsEmpty(
+          isNew: event.isNew,
+          isLearning: event.isLearning,
+          isLearnt: event.isLearnt,
+        ));
       } else {
-        add(FetchTranslationsForWords(words));
+        add(FetchTranslationsForWords(
+            words, event.isNew, event.isLearning, event.isLearnt));
       }
     });
   }
@@ -199,10 +210,17 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
         .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
             (words) {
       if (words.isEmpty) {
-        emit(WordsEmpty());
+        emit(WordsEmpty(
+          isNew: false,
+          isLearning: false,
+          isLearnt: false,
+        ));
       } else {
         emit(WordsLoaded(
           words: words,
+          isNew: false,
+          isLearning: false,
+          isLearnt: false,
         ));
       }
     });
@@ -211,11 +229,13 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   FutureOr<void> _onDeleteWordFromDictionaryEvent(
       DeleteWordFromDictionary event, Emitter<WordsState> emit) async {
     await deleteWordFromDictionary(event.translationEntity);
+    add(const LoadWords());
   }
 
   FutureOr<void> _onDeleteWordEvent(
       DeleteWord event, Emitter<WordsState> emit) async {
     await deleteWord(event.word);
+    add(const LoadWords());
   }
 
   FutureOr<void> _onUpdateWordEvent(
@@ -231,6 +251,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   FutureOr<void> _onAddWordEvent(
       AddWord event, Emitter<WordsState> emit) async {
     await addWord(event.word);
+    add(const LoadWords());
   }
 
   FutureOr<void> _onAddTranslationEvent(

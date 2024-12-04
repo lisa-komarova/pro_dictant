@@ -11,6 +11,7 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 
+import '../../../../generated/l10n.dart';
 import '../manager/words_bloc/words_bloc.dart';
 
 class SetWordsList extends StatefulWidget {
@@ -74,8 +75,8 @@ class _SetWordsListState extends State<SetWordsList> {
                       BlocProvider.of<SetBloc>(context).add(UpdateSet(
                           set: setEntity, toAdd: const [], toDelete: const []));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('слова добавлены в словарь!'),
+                        SnackBar(
+                          content: Text(S.of(context).wordsAddedToDictionary),
                         ),
                       );
                     } else {
@@ -87,8 +88,9 @@ class _SetWordsListState extends State<SetWordsList> {
                       BlocProvider.of<SetBloc>(context).add(UpdateSet(
                           set: setEntity, toAdd: const [], toDelete: const []));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('слова удалены из словаря!'),
+                        SnackBar(
+                          content:
+                              Text(S.of(context).wordsREmeovedFromDictionary),
                         ),
                       );
                     }
@@ -107,8 +109,8 @@ class _SetWordsListState extends State<SetWordsList> {
                         child: FittedBox(
                           child: Text(
                             setEntity.isAddedToDictionary == 0
-                                ? 'Добавить в словарь'
-                                : 'Удалить из словаря',
+                                ? S.of(context).addToDictionary
+                                : S.of(context).removeFromDictionary,
                             textAlign: TextAlign.center,
                             style:
                                 GoogleFonts.hachiMaruPop(color: Colors.white),

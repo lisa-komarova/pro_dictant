@@ -5,11 +5,15 @@ class WTTrainingEntity extends Equatable {
   final String source;
   final String translation;
   final String id;
+  final String wordId;
   late final List<TranslationEntity> suggestedTranslationList = [];
 
   WTTrainingEntity(
-      {required this.id, required this.source, required this.translation});
+      {required this.id,
+      required this.wordId,
+      required this.source,
+      required this.translation});
 
   @override
-  List<Object?> get props => [id, source, translation];
+  List<Object?> get props => [id, wordId, source, translation];
 }

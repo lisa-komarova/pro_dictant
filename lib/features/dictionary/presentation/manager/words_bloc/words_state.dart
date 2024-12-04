@@ -8,13 +8,28 @@ abstract class WordsState extends Equatable {
   List<Object> get props => [];
 }
 
-class WordsEmpty extends WordsState {}
+class WordsEmpty extends WordsState {
+  final bool isNew;
+  final bool isLearning;
+  final bool isLearnt;
+
+  WordsEmpty(
+      {required this.isNew, required this.isLearning, required this.isLearnt});
+}
 
 class WordsLoading extends WordsState {}
 
 class WordsLoaded extends WordsState {
   final List<WordEntity> words;
-  const WordsLoaded({required this.words});
+  final bool isNew;
+  final bool isLearning;
+  final bool isLearnt;
+
+  const WordsLoaded(
+      {required this.words,
+      required this.isNew,
+      required this.isLearning,
+      required this.isLearnt});
 
   @override
   List<Object> get props => [words];

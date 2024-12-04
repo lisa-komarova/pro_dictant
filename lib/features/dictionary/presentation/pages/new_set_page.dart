@@ -10,6 +10,8 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../generated/l10n.dart';
+
 class NewSetPage extends StatefulWidget {
   final SetEntity? set;
 
@@ -49,7 +51,7 @@ class _NewSetPageState extends State<NewSetPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Новый набор",
+          S.of(context).newSet,
           style: GoogleFonts.hachiMaruPop(),
         ),
         centerTitle: true,
@@ -71,17 +73,17 @@ class _NewSetPageState extends State<NewSetPage> {
               onChanged: (_) {
                 setState(() {});
               },
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.only(
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.only(
                   left: 30,
                 ),
-                border: OutlineInputBorder(
+                border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                     borderSide: BorderSide(
                       color: Color(0xFFd9c3ac),
                       width: 3,
                     )),
-                hintText: 'Введите название набора',
+                hintText: S.of(context).enterSetName,
                 hintStyle: TextStyle(fontSize: 11),
               ),
             ),
@@ -231,8 +233,8 @@ class _NewSetPageState extends State<NewSetPage> {
           child: GestureDetector(
             onTap: () {
               if (_nameController.text == '') {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Введите название набора слов')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(S.of(context).enterSetName)));
               } else {
                 if (widget.set != null) {
                   SetEntity set = SetEntity(
@@ -295,7 +297,9 @@ class _NewSetPageState extends State<NewSetPage> {
                   padding: const EdgeInsets.all(5.0),
                   child: FittedBox(
                     child: Text(
-                      widget.set != null ? 'Обновить' : 'Сохранить',
+                      widget.set != null
+                          ? S.of(context).update
+                          : S.of(context).save,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.hachiMaruPop(
                           color: _nameController.text == ''

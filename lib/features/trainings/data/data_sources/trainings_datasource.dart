@@ -93,7 +93,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<WTTraningModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isWT =0 ORDER by random() limit 10''');
+          '''select word.source, words_translations.translation, words_translations.id, word.id wordId from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isWT =0 ORDER by random() limit 10''');
 
       words = maps.map((map) => WTTraningModel.fromJson(map)).toList();
 
@@ -137,7 +137,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<TranslationEntity> translation = [];
         final translationMap = await db!.rawQuery(
-            '''select * FROM words_translations WHERE id not in ('${words[i].id}') and isInDictionary = 1 ORDER by random() LIMIT 3''');
+            '''select DISTINCT * FROM words_translations WHERE word_id not in ('${words[i].wordId}') and isInDictionary = 1 ORDER by random() LIMIT 3''');
         translation =
             translationMap.map((e) => TranslationModel.fromJson(e)).toList();
         words[i].suggestedTranslationList.addAll(translation);
@@ -155,7 +155,6 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       final maps = await db!.rawQuery(
           '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isTW =0 ORDER by random() limit 10''');
-
       words = maps.map((map) => TWTraningModel.fromJson(map)).toList();
       return words;
     } on Exception catch (_) {
@@ -171,7 +170,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<WordEntity> sources = [];
         final sourcesMap = await db!.rawQuery(
-            '''select word.id, source, pos, transcription FROM word join words_translations on words_translations.id = words_translations.word_id WHERE word.id not in ('${words[i].id}')  and words_translations.isInDictionary=1  ORDER by random() LIMIT 3''');
+            '''select  word.id, source, pos, transcription FROM word join words_translations on word.id = words_translations.word_id WHERE words_translations.id not in ('${words[i].id}')  and words_translations.isInDictionary=1  ORDER by random() LIMIT 3''');
         sources = sourcesMap.map((e) => WordModel.fromJson(e)).toList();
         words[i].suggestedSourcesList.addAll(sources);
       }
