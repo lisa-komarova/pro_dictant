@@ -65,5 +65,6 @@
   "wordCards": "карточки",
   "dictant": "диктант",
   "repeatWords": "повторение",
-  "myDictionary": "Мой словарь"
+  "myDictionary": "Мой словарь",
+  "shouldDeleteSet": "Вы уверены, что хотите удалить набор слов?"
 }

@@ -95,10 +95,21 @@ class _TrainingsPageState extends State<TrainingsPage>
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    final safePadding = MediaQuery.paddingOf(context).top;
+    var width = size.width;
+    var height = size.height;
+    height -= kToolbarHeight;
+    height -= kBottomNavigationBarHeight;
+    height -= safePadding;
+    if (!widget.isTodayCompleted) {
+      height -= 100;
+    }
+    var aspectRatio = (width / 2) / (height / 3);
     return SafeArea(
       child: Center(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.9,
+          height: MediaQuery.of(context).size.height,
           child: Column(
             children: [
               (!widget.isTodayCompleted)
@@ -112,15 +123,14 @@ class _TrainingsPageState extends State<TrainingsPage>
                         ),
                       ),
                     )
-                  : const SizedBox(
-                      height: 100,
-                    ),
-              Expanded(
+                  : const SizedBox.shrink(),
+              Flexible(
                 child: GridView.count(
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 20,
                   crossAxisCount: 2,
-                  childAspectRatio: 0.95,
+                  childAspectRatio: aspectRatio,
+                  shrinkWrap: true,
                   children: <Widget>[
                     GestureDetector(
                       child: TrainingCard(

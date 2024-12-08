@@ -123,20 +123,6 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
   FutureOr<void> _onDeleteSetEvent(
       DeleteSet event, Emitter<SetsState> emit) async {
     await deleteSet(event.setId);
-
-    emit(SetsLoading());
-
-    final failureOrSets = await loadSets();
-
-    failureOrSets
-        .fold((error) => emit(SetsError(message: _mapFailureToMessage(error))),
-            (sets) {
-      if (sets.isEmpty) {
-        emit(SetsEmpty());
-      } else {
-        add(FetchWordsForSets(sets: sets));
-      }
-    });
   }
 
   String _mapFailureToMessage(Failure failure) {

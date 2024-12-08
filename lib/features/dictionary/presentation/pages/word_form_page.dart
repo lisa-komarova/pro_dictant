@@ -81,74 +81,59 @@ class _WordFormState extends State<WordForm> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 50,
-                    child: TextFormField(
-                      controller: _sourceController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            borderSide: BorderSide(
-                              color: Color(0xFFd9c3ac),
-                              width: 3,
-                            )),
-                        hintText: S.of(context).enterWord,
-                        hintStyle: const TextStyle(fontSize: 11),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return S.of(context).enterWord;
-                        }
-                        return null;
-                      },
+                  child: TextFormField(
+                    controller: _sourceController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderSide: BorderSide(
+                            color: Color(0xFFd9c3ac),
+                            width: 3,
+                          )),
+                      hintText: S.of(context).enterWord,
+                      hintStyle: const TextStyle(fontSize: 11),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return S.of(context).enterWord;
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: _posController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderSide: BorderSide(
+                            color: Color(0xFFd9c3ac),
+                            width: 3,
+                          )),
+                      hintText: S.of(context).enterPartOfSpeech,
+                      hintStyle: const TextStyle(fontSize: 11),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 50,
-                    child: TextFormField(
-                      controller: _posController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            borderSide: BorderSide(
-                              color: Color(0xFFd9c3ac),
-                              width: 3,
-                            )),
-                        hintText: S.of(context).enterPartOfSpeech,
-                        hintStyle: const TextStyle(fontSize: 11),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return S.of(context).enterPartOfSpeech;
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 50,
-                    child: TextFormField(
-                      controller: _transcriptionController,
-                      keyboardType: TextInputType.text,
-                      style: const TextStyle(fontFamily: 'Roboto'),
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            borderSide: BorderSide(
-                              color: Color(0xFFd9c3ac),
-                              width: 3,
-                            )),
-                        hintText: S.of(context).enterTranscription,
-                        hintStyle: GoogleFonts.hachiMaruPop(fontSize: 11),
-                      ),
+                  child: TextFormField(
+                    controller: _transcriptionController,
+                    keyboardType: TextInputType.text,
+                    style: const TextStyle(fontFamily: 'Roboto'),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderSide: BorderSide(
+                            color: Color(0xFFd9c3ac),
+                            width: 3,
+                          )),
+                      hintText: S.of(context).enterTranscription,
+                      hintStyle: GoogleFonts.hachiMaruPop(fontSize: 11),
                     ),
                   ),
                 ),
@@ -365,8 +350,10 @@ class _WordFormState extends State<WordForm> {
   buildTranslationTextFields() {
     return Flexible(
       child: ListView.builder(
-          itemCount: translations.length,
-          scrollDirection: Axis.vertical,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: widget.isNew
+              ? _translationControllerList.length - 1
+              : _translationControllerList.length,
           shrinkWrap: true,
           itemBuilder: (ctx, index) {
             return Row(
@@ -375,7 +362,9 @@ class _WordFormState extends State<WordForm> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
-                      controller: _translationControllerList[index],
+                      controller: widget.isNew
+                          ? _translationControllerList[index + 1]
+                          : _translationControllerList[index],
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(
@@ -396,14 +385,21 @@ class _WordFormState extends State<WordForm> {
                     ),
                   ),
                 ),
-                if (index >= 1)
+                if (index >= 1 || widget.isNew)
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        translations.removeAt(index);
-                      });
-                      _translationControllerList[index].dispose();
-                      _translationControllerList.removeAt(index);
+                      if (widget.isNew) {
+                        setState(() {
+                          _translationControllerList[index + 1].dispose();
+                          _translationControllerList.removeAt(index + 1);
+                        });
+                      } else {
+                        setState(() {
+                          translations.removeAt(index);
+                        });
+                        _translationControllerList[index].dispose();
+                        _translationControllerList.removeAt(index);
+                      }
                       isTranslationDeleted = true;
                     },
                     child: Padding(

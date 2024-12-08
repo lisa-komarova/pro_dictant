@@ -138,61 +138,65 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
 
     for (var element in randomSequence) {
       element == 3
-          ? answersContainers.add(Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: FilledButton(
-                  onPressed: () {
-                    answers[words[currentWordIndex].id] =
-                        words[currentWordIndex].source;
-                    updateCurrentWord(words);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFd9c3ac),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
+          ? answersContainers.add(Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  child: FilledButton(
+                    onPressed: () {
+                      answers[words[currentWordIndex].id] =
+                          words[currentWordIndex].source;
+                      updateCurrentWord(words);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFd9c3ac),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: AutoSizeText(
-                      words[currentWordIndex].source,
-                      textAlign: TextAlign.center,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: AutoSizeText(
+                        words[currentWordIndex].source,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),
               ),
             ))
-          : answersContainers.add(Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: FilledButton(
-                  onPressed: () {
-                    answers[words[currentWordIndex].id] =
+          : answersContainers.add(Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  child: FilledButton(
+                    onPressed: () {
+                      answers[words[currentWordIndex].id] =
+                          words[currentWordIndex]
+                              .suggestedSourcesList[element]
+                              .source;
+                      updateCurrentWord(words);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFd9c3ac),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: AutoSizeText(
                         words[currentWordIndex]
                             .suggestedSourcesList[element]
-                            .source;
-                    updateCurrentWord(words);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFd9c3ac),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: AutoSizeText(
-                      words[currentWordIndex]
-                          .suggestedSourcesList[element]
-                          .source,
-                      textAlign: TextAlign.center,
+                            .source,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),

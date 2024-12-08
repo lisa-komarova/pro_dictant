@@ -39,80 +39,78 @@ class MatchingResultPage extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(25),
                 ),
-                child: Expanded(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 50,
-                              child: Text(
-                                S.of(context).rightAnswers,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            child: Text(
+                              S.of(context).rightAnswers,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: correctAnswers.length,
-                                  itemBuilder: (ctx, index) {
-                                    return Column(
-                                      children: [
-                                        Text(
-                                          correctAnswers[index].source,
-                                          style: const TextStyle(
-                                              color: Color(0xFF85977f)),
-                                        ),
-                                        Image.asset(
-                                          'assets/icons/divider.png',
-                                          width: 15,
-                                          height: 15,
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                            ),
-                          ],
-                        ),
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                                itemCount: correctAnswers.length,
+                                itemBuilder: (ctx, index) {
+                                  return Column(
+                                    children: [
+                                      Text(
+                                        correctAnswers[index].source,
+                                        style: const TextStyle(
+                                            color: Color(0xFF85977f)),
+                                      ),
+                                      Image.asset(
+                                        'assets/icons/divider.png',
+                                        width: 15,
+                                        height: 15,
+                                      ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 50,
-                              child: Text(
-                                S.of(context).mistakes,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            child: Text(
+                              S.of(context).mistakes,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: mistakes.length,
-                                  itemBuilder: (ctx, index) {
-                                    return Column(
-                                      children: [
-                                        Text(
-                                          mistakes[index].source,
-                                          style: const TextStyle(
-                                              color: Color(0xFFB70E0E)),
-                                        ),
-                                        Image.asset(
-                                          'assets/icons/divider.png',
-                                          width: 15,
-                                          height: 15,
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                                itemCount: mistakes.length,
+                                itemBuilder: (ctx, index) {
+                                  return Column(
+                                    children: [
+                                      Text(
+                                        mistakes[index].source,
+                                        style: const TextStyle(
+                                            color: Color(0xFFB70E0E)),
+                                      ),
+                                      Image.asset(
+                                        'assets/icons/divider.png',
+                                        width: 15,
+                                        height: 15,
+                                      ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),

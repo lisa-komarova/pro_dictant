@@ -140,63 +140,67 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
 
     for (var element in randomSequence) {
       element == 3
-          ? answersContainers.add(Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: FilledButton(
-                  onPressed: () {
-                    answers[words[currentWordIndex].id] =
-                        words[currentWordIndex].translation;
-                    updateCurrentWord(words);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFd9c3ac),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
+          ? answersContainers.add(Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  child: FilledButton(
+                    onPressed: () {
+                      answers[words[currentWordIndex].id] =
+                          words[currentWordIndex].translation;
+                      updateCurrentWord(words);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFd9c3ac),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
                     ),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: AutoSizeText(
-                        words[currentWordIndex].translation,
-                        textAlign: TextAlign.center,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: AutoSizeText(
+                          words[currentWordIndex].translation,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ))
-          : answersContainers.add(Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: FilledButton(
-                  onPressed: () {
-                    answers[words[currentWordIndex].id] =
+          : answersContainers.add(Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  child: FilledButton(
+                    onPressed: () {
+                      answers[words[currentWordIndex].id] =
+                          words[currentWordIndex]
+                              .suggestedTranslationList[element]
+                              .translation;
+                      updateCurrentWord(words);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFd9c3ac),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: AutoSizeText(
                         words[currentWordIndex]
                             .suggestedTranslationList[element]
-                            .translation;
-                    updateCurrentWord(words);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFd9c3ac),
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: AutoSizeText(
-                      words[currentWordIndex]
-                          .suggestedTranslationList[element]
-                          .translation,
-                      textAlign: TextAlign.center,
+                            .translation,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),

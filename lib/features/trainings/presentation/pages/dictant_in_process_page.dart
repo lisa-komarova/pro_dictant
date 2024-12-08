@@ -127,75 +127,80 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               child: Column(
                 children: [
                   !isHintSelected
-                      ? SizedBox(
-                          height: 80,
-                          child: TextFormField(
-                            controller: wordController,
-                            textInputAction: TextInputAction.go,
-                            keyboardType: TextInputType.text,
-                            style: const TextStyle(fontFamily: 'Roboto'),
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                borderSide: BorderSide(
-                                  color: Color(0xFFd9c3ac),
-                                  width: 3,
+                      ? Flexible(
+                          child: SizedBox(
+                            height: 80,
+                            child: TextFormField(
+                              controller: wordController,
+                              textInputAction: TextInputAction.go,
+                              keyboardType: TextInputType.text,
+                              style: const TextStyle(fontFamily: 'Roboto'),
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFFd9c3ac),
+                                    width: 3,
+                                  ),
                                 ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: focusBorderColor, width: 3.0),
-                                borderRadius: BorderRadius.circular(15.0),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: focusBorderColor, width: 3.0),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
                               ),
                             ),
                           ),
                         )
                       : _buildWordBricks(words[currentWordIndex]),
                   !isHintSelected
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              if (wordController.text.replaceAll(' ', '') ==
-                                  words[currentWordIndex]
-                                      .source
-                                      .replaceAll(' ', '')) {
-                                if (!mistakes
-                                    .contains(words[currentWordIndex])) {
-                                  correctAnswers.add(words[currentWordIndex]);
-                                  focusBorderColor = const Color(0xFF85977f);
-                                }
-                                wordController.text = '';
-                                updateCurrentWord();
-                              } else {
-                                if (!mistakes
-                                    .contains(words[currentWordIndex])) {
-                                  setState(() {
-                                    mistakes.add(words[currentWordIndex]);
-                                    focusBorderColor = const Color(0xFFB70E0E);
-                                  });
-                                } else {
+                      ? Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                if (wordController.text.replaceAll(' ', '') ==
+                                    words[currentWordIndex]
+                                        .source
+                                        .replaceAll(' ', '')) {
+                                  if (!mistakes
+                                      .contains(words[currentWordIndex])) {
+                                    correctAnswers.add(words[currentWordIndex]);
+                                    focusBorderColor = const Color(0xFF85977f);
+                                  }
                                   wordController.text = '';
                                   updateCurrentWord();
+                                } else {
+                                  if (!mistakes
+                                      .contains(words[currentWordIndex])) {
+                                    setState(() {
+                                      mistakes.add(words[currentWordIndex]);
+                                      focusBorderColor =
+                                          const Color(0xFFB70E0E);
+                                    });
+                                  } else {
+                                    wordController.text = '';
+                                    updateCurrentWord();
+                                  }
                                 }
-                              }
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: const Color(0xFF85977f),
-                              ),
-                              height: 50,
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: FittedBox(
-                                    child: Text(
-                                      S.of(context).checkWord,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.hachiMaruPop(
-                                          color: Colors.white),
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: const Color(0xFF85977f),
+                                ),
+                                height: 50,
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: FittedBox(
+                                      child: Text(
+                                        S.of(context).checkWord,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.hachiMaruPop(
+                                            color: Colors.white),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -249,6 +254,8 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   }
 
   _buildWordBricks(DictantTrainingEntity word) {
+    final int crossAxisCount =
+        MediaQuery.of(context).size.width <= 500 ? 7 : 10;
     if (suggestedLetters.isEmpty) fillLetters(word);
     return Flexible(
       flex: 4,
@@ -258,34 +265,13 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(
-                child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5, // number of items in each row
-                      mainAxisSpacing: 8.0, // spacing between rows
-                      crossAxisSpacing: 8.0, // spacing between columns
-                    ),
-                    itemCount: suggestedLetters.length,
-                    shrinkWrap: true,
-                    itemBuilder: (ctx, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                              color: const Color(0xFFd9c3ac),
-                            ),
-                          ),
-                          child: Center(
-                            child: currentLetterIndex > index
-                                ? Text(correctAnswer[index])
-                                : const Text(''),
-                          ),
-                        ),
-                      );
-                    }),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    children: _buildBoxesForLetters(),
+                  ),
+                ),
               ),
             ),
           ),
@@ -293,55 +279,13 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(
-                child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5, // number of items in each row
-                      mainAxisSpacing: 8.0, // spacing between rows
-                      crossAxisSpacing: 8.0, // spacing between columns
-                    ),
-                    itemCount: suggestedLetters.length,
-                    itemBuilder: (ctx, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (correctAnswer[currentLetterIndex] ==
-                                suggestedLetters[index]) {
-                              setState(() {
-                                colors[index] = const Color(0xFF85977f);
-                                currentLetterIndex++;
-                              });
-                              if (currentLetterIndex == word.source.length) {
-                                updateCurrentWord();
-                                if (!mistakes.contains(word)) {
-                                  correctAnswers.add(word);
-                                }
-                              }
-                            } else {
-                              setState(() {
-                                attempts++;
-                                colors[index] = const Color(0xFFB70E0E);
-                              });
-
-                              if (attempts == maxAttempts) {
-                                mistakes.add(word);
-                                updateCurrentWord();
-                              }
-                            }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: colors[index],
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Center(
-                              child: Text(suggestedLetters[index]),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    children: _buildBoxesWithLetters(word),
+                  ),
+                ),
               ),
             ),
           ),
@@ -359,5 +303,81 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     searchKeywords.shuffle();
     correctAnswer = word.source;
     suggestedLetters.addAll(searchKeywords);
+  }
+
+  List<Widget> _buildBoxesForLetters() {
+    final List<Widget> boxesForLetters = [];
+    for (int index = 0; index < suggestedLetters.length; index++) {
+      boxesForLetters.add(Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: const Color(0xFFd9c3ac),
+            ),
+          ),
+          child: Center(
+            child: currentLetterIndex > index
+                ? Text(correctAnswer[index])
+                : const Text(''),
+          ),
+        ),
+      ));
+    }
+    return boxesForLetters;
+  }
+
+  List<Widget> _buildBoxesWithLetters(DictantTrainingEntity word) {
+    final List<Widget> boxesForLetters = [];
+    for (int index = 0; index < suggestedLetters.length; index++) {
+      boxesForLetters.add(Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: GestureDetector(
+          onTap: () {
+            if (correctAnswer[currentLetterIndex] == suggestedLetters[index]) {
+              setState(() {
+                colors[index] = const Color(0xFF85977f);
+                currentLetterIndex++;
+              });
+              if (currentLetterIndex == word.source.length) {
+                updateCurrentWord();
+                if (!mistakes.contains(word)) {
+                  correctAnswers.add(word);
+                }
+              }
+            } else {
+              if (colors[index] == const Color(0xFF85977f)) {
+                return;
+              }
+              setState(() {
+                attempts++;
+                colors[index] = const Color(0xFFB70E0E);
+              });
+
+              if (attempts == maxAttempts) {
+                mistakes.add(word);
+                updateCurrentWord();
+              }
+            }
+          },
+          child: Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+              color: colors[index],
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Center(
+              child: Text(suggestedLetters[index]),
+            ),
+          ),
+        ),
+      ));
+    }
+    return boxesForLetters;
   }
 }

@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 
@@ -20,38 +19,9 @@ class CardsInProcessPage extends StatefulWidget {
 class _CardsInProcessPageState extends State<CardsInProcessPage>
     with TickerProviderStateMixin {
   int currentWordIndex = 0;
-  Duration _elapsed = Duration.zero;
-  Duration _dif = Duration.zero;
-  late final Ticker _ticker;
   List<String> suggestedAnswer = [];
   List<CardsTrainingEntity> correctAnswers = [];
   List<CardsTrainingEntity> mistakes = [];
-
-  @override
-  void initState() {
-    _ticker = createTicker((elapsed) {
-      // 4. update state
-      setState(() {
-        if (currentWordIndex == 0) {
-          _dif = elapsed;
-        }
-        _elapsed = elapsed - _dif;
-        if (_elapsed.inSeconds > 60) {
-          finishWorkout();
-        }
-      });
-    });
-    // 5. start ticker
-    _ticker.start();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    //timer.cancel();
-    _ticker.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +89,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
         Flexible(
           flex: 2,
           child: Text(
-            '${_elapsed.inSeconds}/60',
+            '${currentWordIndex + 1}/${words.length}',
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),

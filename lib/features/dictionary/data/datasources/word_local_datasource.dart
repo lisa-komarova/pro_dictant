@@ -184,7 +184,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
             wordId: e.wordId,
             translation: e.translation,
             notes: e.notes,
-            isInDictionary: 1,
+            isInDictionary: e.isInDictionary,
             dateAddedToDictionary: e.dateAddedToDictionary))
         .toList();
     for (var tr in trl) {

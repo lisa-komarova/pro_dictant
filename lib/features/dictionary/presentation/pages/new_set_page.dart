@@ -114,12 +114,6 @@ class _NewSetPageState extends State<NewSetPage> {
               onTap: () {
                 if (_searchController.text.isEmpty) {
                   myFocusNode.requestFocus();
-                } else {
-                  _searchController.text = '';
-                  myFocusNode.unfocus();
-                  setState(() {
-                    isSearchShown = false;
-                  });
                 }
               },
               decoration: InputDecoration(
@@ -133,10 +127,19 @@ class _NewSetPageState extends State<NewSetPage> {
                           width: 24,
                           height: 24,
                         )
-                      : Image.asset(
-                          'assets/icons/cancel.png',
-                          width: 24,
-                          height: 24,
+                      : GestureDetector(
+                          onTap: () {
+                            _searchController.text = '';
+                            myFocusNode.unfocus();
+                            setState(() {
+                              isSearchShown = false;
+                            });
+                          },
+                          child: Image.asset(
+                            'assets/icons/cancel.png',
+                            width: 24,
+                            height: 24,
+                          ),
                         ),
                 ),
                 contentPadding: const EdgeInsets.only(

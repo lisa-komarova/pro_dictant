@@ -369,9 +369,8 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                   toDelete ? S.of(context).removeWord : S.of(context).addWord),
               onPressed: () {
                 if (toDelete) {
-                  translation.isInDictionary = 0;
                   BlocProvider.of<WordsBloc>(context)
-                      .add(UpdateTranslation(translation));
+                      .add(DeleteWordFromDictionary(translation));
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                   //TODO resfresh list
@@ -379,7 +378,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                   translation.isInDictionary = 1;
                   translation.dateAddedToDictionary = DateTime.now().toString();
                   BlocProvider.of<WordsBloc>(context)
-                      .add(DeleteWordFromDictionary(translation));
+                      .add(UpdateTranslation(translation));
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 }

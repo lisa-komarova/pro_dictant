@@ -57,9 +57,6 @@ class _SetListState extends State<SetList> {
       onRefresh: _pullRefresh,
       child: Column(
         children: [
-          const SizedBox(
-            height: 100,
-          ),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,
@@ -68,7 +65,7 @@ class _SetListState extends State<SetList> {
               itemBuilder: (context, index) {
                 return Dismissible(
                   direction: DismissDirection.endToStart,
-                  key: ValueKey(sets[index]),
+                  key: UniqueKey(),
                   background: Row(
                     children: [
                       const Spacer(),
@@ -84,8 +81,8 @@ class _SetListState extends State<SetList> {
                     ],
                   ),
                   onDismissed: (DismissDirection direction) {
-                    BlocProvider.of<SetBloc>(context)
-                        .add(DeleteSet(setId: sets[index].id));
+                    _showShouldDeleteSetDialog(
+                        context, sets, sets[index], index);
                   },
                   child: GestureDetector(
                     onTap: () async {
@@ -141,5 +138,42 @@ class _SetListState extends State<SetList> {
 
   Future<void> _pullRefresh() async {
     BlocProvider.of<SetBloc>(context).add(const LoadSets());
+  }
+
+  Future<void> _showShouldDeleteSetDialog(
+      BuildContext context, List<SetEntity> sets, SetEntity set, int index) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(S.of(context).shouldDeleteSet),
+          actions: <Widget>[
+            TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                  foregroundColor: const Color(0xFFB70E0E),
+                ),
+                child: Text(S.of(context).yes),
+                onPressed: () {
+                  BlocProvider.of<SetBloc>(context)
+                      .add(DeleteSet(setId: set.id));
+                  Navigator.of(context).pop();
+                }),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(S.of(context).cancel),
+              onPressed: () {
+                setState(() {
+                  sets.insert(index, set);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
