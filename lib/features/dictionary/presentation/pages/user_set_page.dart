@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/widgets/set_list.dart';
-
-import '../../../../generated/l10n.dart';
 
 class UserSetPage extends StatefulWidget {
   const UserSetPage({super.key});

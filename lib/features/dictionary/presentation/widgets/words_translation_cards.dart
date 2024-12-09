@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/translation_entity.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/word_form_page.dart';
-
-import '../../../../generated/l10n.dart';
 
 class WordTranslationCards extends StatefulWidget {
   final WordEntity word;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/matching_in_process_page.dart';
 
-import '../../../../generated/l10n.dart';
 import '../../domain/entities/matching_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 

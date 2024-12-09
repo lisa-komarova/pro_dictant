@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_bloc.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
@@ -11,7 +12,6 @@ import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../generated/l10n.dart';
 import 'cards_in_process_page.dart';
 import 'dictant_in_process_page.dart';
 import 'matching_in_process_page.dart';
@@ -146,7 +146,7 @@ class _TrainingsPageState extends State<TrainingsPage>
                     ),
                     GestureDetector(
                       child: TrainingCard(
-                        trainingName: S.of(context).TranslationWord,
+                        trainingName: S.of(context).translationWord,
                         imageName: 't-word',
                       ),
                       onTap: () {

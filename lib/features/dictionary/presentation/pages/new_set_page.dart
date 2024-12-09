@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
@@ -9,8 +10,6 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../../../generated/l10n.dart';
 
 class NewSetPage extends StatefulWidget {
   final SetEntity? set;

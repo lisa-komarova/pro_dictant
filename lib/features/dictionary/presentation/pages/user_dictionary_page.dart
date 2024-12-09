@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
@@ -8,7 +9,6 @@ import 'package:pro_dictant/features/dictionary/presentation/widgets/search_cont
 import 'package:pro_dictant/features/dictionary/presentation/widgets/words_list.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../generated/l10n.dart';
 import 'word_form_page.dart';
 
 class UserDictionaryPage extends StatefulWidget {

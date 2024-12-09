@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/profile/domain/entities/statistics_entity.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_bloc.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_event.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_state.dart';
-
-import '../../../../generated/l10n.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

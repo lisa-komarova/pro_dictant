@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/profile/presentation/pages/profile_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page.dart';
 
 import 'features/dictionary/presentation/pages/dictionary_page.dart';
 import 'features/profile/presentation/manager/profile_bloc.dart';
 import 'features/profile/presentation/manager/profile_state.dart';
-import 'generated/l10n.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

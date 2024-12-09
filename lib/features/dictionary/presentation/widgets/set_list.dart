@@ -1,13 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/sets_words_page.dart';
-
-import '../../../../generated/l10n.dart';
 
 class SetList extends StatefulWidget {
   const SetList({super.key});
