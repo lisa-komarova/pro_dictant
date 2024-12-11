@@ -498,6 +498,11 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       where: 'id = ?',
       whereArgs: [setId],
     );
+    await db!.delete(
+      'word_set',
+      where: 'set_id = ?',
+      whereArgs: [setId],
+    );
   }
 
   @override
