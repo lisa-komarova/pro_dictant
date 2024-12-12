@@ -110,7 +110,7 @@ class _WordsListState extends State<WordsList> {
                 isLearningSelected: state.isLearning,
                 isLearntSelected: state.isLearnt,
               ),
-              buildWordsList(state.words.reversed.toSet().toList()),
+              buildWordsList(state.words.toSet().toList()),
             ],
           ),
         );

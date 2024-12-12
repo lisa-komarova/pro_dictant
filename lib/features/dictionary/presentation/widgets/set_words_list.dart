@@ -24,6 +24,9 @@ class SetWordsList extends StatefulWidget {
 }
 
 class _SetWordsListState extends State<SetWordsList> {
+  List<WordEntity> selectedWords = [];
+  bool isSelectionMode = false;
+
   @override
   Widget build(BuildContext context) {
     List<TranslationEntity> wordsTranslations = [];
@@ -67,32 +70,86 @@ class _SetWordsListState extends State<SetWordsList> {
                 child: GestureDetector(
                   onTap: () {
                     if (setEntity.isAddedToDictionary == 0) {
-                      BlocProvider.of<WordsBloc>(context).add(
-                          AddWordsFromSetToDictionary(words: translations));
-                      setState(() {
-                        setEntity.isAddedToDictionary = 1;
-                      });
-                      BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                          set: setEntity, toAdd: const [], toDelete: const []));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(S.of(context).wordsAddedToDictionary),
-                        ),
-                      );
+                      if (selectedWords.isNotEmpty) {
+                        List<TranslationEntity> selectedTranslations = [];
+                        for (int i = 0; i < selectedWords.length; i++) {
+                          selectedTranslations
+                              .add(selectedWords[i].translationList.first);
+                        }
+                        BlocProvider.of<WordsBloc>(context).add(
+                            AddWordsFromSetToDictionary(
+                                words: selectedTranslations));
+                        setState(() {
+                          setEntity.isAddedToDictionary = 1;
+                        });
+                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                            set: setEntity,
+                            toAdd: const [],
+                            toDelete: const []));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(S.of(context).wordsAddedToDictionary),
+                          ),
+                        );
+                        selectedWords.clear();
+                      } else {
+                        BlocProvider.of<WordsBloc>(context).add(
+                            AddWordsFromSetToDictionary(words: translations));
+                        setState(() {
+                          setEntity.isAddedToDictionary = 1;
+                        });
+                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                            set: setEntity,
+                            toAdd: const [],
+                            toDelete: const []));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(S.of(context).wordsAddedToDictionary),
+                          ),
+                        );
+                      }
                     } else {
-                      BlocProvider.of<WordsBloc>(context).add(
-                          RemoveWordsInSetFromDictionary(words: translations));
-                      setState(() {
-                        setEntity.isAddedToDictionary = 0;
-                      });
-                      BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                          set: setEntity, toAdd: const [], toDelete: const []));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                              Text(S.of(context).wordsREmeovedFromDictionary),
-                        ),
-                      );
+                      if (selectedWords.isNotEmpty) {
+                        List<TranslationEntity> selectedTranslations = [];
+                        for (int i = 0; i < selectedWords.length; i++) {
+                          selectedTranslations
+                              .add(selectedWords[i].translationList.first);
+                        }
+                        BlocProvider.of<WordsBloc>(context).add(
+                            RemoveWordsInSetFromDictionary(
+                                words: selectedTranslations));
+                        setState(() {
+                          setEntity.isAddedToDictionary = 0;
+                        });
+                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                            set: setEntity,
+                            toAdd: const [],
+                            toDelete: const []));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text(S.of(context).wordsREmeovedFromDictionary),
+                          ),
+                        );
+                        selectedWords.clear();
+                      } else {
+                        BlocProvider.of<WordsBloc>(context).add(
+                            RemoveWordsInSetFromDictionary(
+                                words: translations));
+                        setState(() {
+                          setEntity.isAddedToDictionary = 0;
+                        });
+                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                            set: setEntity,
+                            toAdd: const [],
+                            toDelete: const []));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text(S.of(context).wordsREmeovedFromDictionary),
+                          ),
+                        );
+                      }
                     }
                   },
                   child: Container(
@@ -167,15 +224,45 @@ class _SetWordsListState extends State<SetWordsList> {
               shrinkWrap: true,
               itemCount: words.length,
               itemBuilder: (context, index) {
-                //bool isInDictionary = (words[index].isInDictionary == 1);
                 return GestureDetector(
+                  onLongPress: () {
+                    if (selectedWords.contains(words[index])) {
+                      setState(() {
+                        selectedWords.remove(words[index]);
+                        if (selectedWords.isEmpty) {
+                          isSelectionMode = false;
+                        }
+                      });
+                    } else {
+                      setState(() {
+                        selectedWords.add(words[index]);
+                        isSelectionMode = true;
+                      });
+                    }
+                  },
                   onTap: () async {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (ctx) => WordsDetails(
-                              word: words[index],
-                              isFromSet: true,
-                            )));
+                    if (isSelectionMode) {
+                      if (selectedWords.contains(words[index])) {
+                        setState(() {
+                          selectedWords.remove(words[index]);
+                          if (selectedWords.isEmpty) {
+                            isSelectionMode = false;
+                          }
+                        });
+                      } else {
+                        setState(() {
+                          selectedWords.add(words[index]);
+                          isSelectionMode = true;
+                        });
+                      }
+                    } else {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => WordsDetails(
+                                word: words[index],
+                                isFromSet: true,
+                              )));
+                    }
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -186,6 +273,9 @@ class _SetWordsListState extends State<SetWordsList> {
                             ListTile(
                               title: Text(
                                   "${words[index].source} - ${words[index].translationList.first.translation}"),
+                              selected: selectedWords.contains(words[index]),
+                              selectedColor: const Color(0xFFFFFFFF),
+                              selectedTileColor: const Color(0xFF5E6B5A),
                             ),
                             Image.asset(
                               'assets/icons/divider.png',
@@ -195,16 +285,6 @@ class _SetWordsListState extends State<SetWordsList> {
                           ],
                         ),
                       ),
-                      /*isInDictionary
-                        ? const SizedBox()
-                        : Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Image.asset(
-                              'assets/icons/add.png',
-                              width: 24,
-                              height: 24,
-                            ),
-                          ),*/
                     ],
                   ),
                 );

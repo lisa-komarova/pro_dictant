@@ -115,7 +115,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     final db = await instance.database;
     List<WordModel> words = [];
     final maps = await db!.rawQuery(
-        'select word.id,source, pos, transcription from word JOIN words_translations on word.id = words_translations.word_id where isInDictionary = 1  order by words_translations.dateAddedToDictionary');
+        'select word.id,source, pos, transcription from word JOIN words_translations on word.id = words_translations.word_id where isInDictionary = 1  order by words_translations.dateAddedToDictionary desc');
     if (maps.isNotEmpty) {
       words = maps.map((map) => WordModel.fromJson(map)).toList();
       return words;
