@@ -29,6 +29,21 @@ abstract class TrainingsDatasource {
 
   Future<List<RepeatingTrainingModel>> fetchWordsForRepeatingTraining();
 
+  Future<List<WTTraningModel>> fetchSetWordsForWTTraining(String setId);
+
+  Future<List<TWTraningModel>> fetchSetWordsForTWTraining(String setId);
+
+  Future<List<MatchingTrainingModel>> fetchSetWordsForMatchingTraining(
+      String setId);
+
+  Future<List<DictantTrainingModel>> fetchSetWordsForDictantTraining(
+      String setId);
+
+  Future<List<CardsTrainingModel>> fetchSetWordsForCardsTraining(String setId);
+
+  Future<List<RepeatingTrainingModel>> fetchSetWordsForRepeatingTraining(
+      String setId);
+
   Future<List<WTTraningModel>> addSuggestedTranslationsToWordsInWT(
       List<WTTraningModel> words);
 
@@ -297,6 +312,99 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
         await db!.rawQuery(
             '''update words_translations set isRepeated = 1 where id = '${correctAnswers[i].id}' ''');
       }
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<CardsTrainingModel>> fetchSetWordsForCardsTraining(
+      String setId) async {
+    final db = await database;
+    List<CardsTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation join word_set on words_translations.id = word_set.word_id where words_translations.isCards =0 and table2.isInDictionary =1 and word_set.set_id = '$setId' order by random() limit 60''');
+
+      words = maps.map((map) => CardsTrainingModel.fromJson(map)).toList();
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<DictantTrainingModel>> fetchSetWordsForDictantTraining(
+      String setId) async {
+    final db = await database;
+    List<DictantTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on words_translations.id = word_set.word_id where word_set.set_id = '$setId' and words_translations.isDictant =0 ORDER by random() limit 10''');
+
+      words = maps.map((map) => DictantTrainingModel.fromJson(map)).toList();
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<MatchingTrainingModel>> fetchSetWordsForMatchingTraining(
+      String setId) async {
+    final db = await database;
+    List<MatchingTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId'  and words_translations.isMatching =0 ORDER by random() limit 30''');
+
+      words = maps.map((map) => MatchingTrainingModel.fromJson(map)).toList();
+
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<RepeatingTrainingModel>> fetchSetWordsForRepeatingTraining(
+      String setId) async {
+    final db = await database;
+    List<RepeatingTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId' and words_translations.isRepeated =0 and words_translations.isCards =1  and words_translations.isTW =1 and words_translations.isWT =1  and words_translations.isMatching =1  and words_translations.isDictant =1  ORDER by random()''');
+
+      words = maps.map((map) => RepeatingTrainingModel.fromJson(map)).toList();
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<TWTraningModel>> fetchSetWordsForTWTraining(String setId) async {
+    final db = await database;
+    List<TWTraningModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId' and words_translations.isTW =0 ORDER by random() limit 10''');
+      words = maps.map((map) => TWTraningModel.fromJson(map)).toList();
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<WTTraningModel>> fetchSetWordsForWTTraining(String setId) async {
+    final db = await database;
+    List<WTTraningModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, words_translations.id, word.id wordId  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId' and words_translations.isWT =0 ORDER by random() limit 10''');
+      words = maps.map((map) => WTTraningModel.fromJson(map)).toList();
+      return words;
     } on Exception catch (_) {
       throw ServerException();
     }

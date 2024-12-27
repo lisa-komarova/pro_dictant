@@ -108,6 +108,10 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
         ));
       } else {
         add(FetchTranslationsForWords(words, false, false, false));
+        // emit(
+        //   WordsLoaded(
+        //       words: words, isNew: false, isLearning: false, isLearnt: false),
+        // );
       }
     });
   }

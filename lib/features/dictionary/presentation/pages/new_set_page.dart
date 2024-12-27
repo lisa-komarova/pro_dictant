@@ -240,9 +240,10 @@ class _NewSetPageState extends State<NewSetPage> {
               } else {
                 if (widget.set != null) {
                   SetEntity set = SetEntity(
-                      id: widget.set!.id,
-                      name: _nameController.text,
-                      isAddedToDictionary: 0);
+                    id: widget.set!.id,
+                    name: _nameController.text,
+                    isAddedToDictionary: widget.set!.isAddedToDictionary,
+                  );
                   final List<WordEntity> wordsInSetToAdd = [];
                   final List<WordEntity> wordsInSetToDelete = [];
                   if (wordsInSet.length > widget.set!.wordsInSet.length) {

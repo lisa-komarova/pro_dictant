@@ -11,10 +11,37 @@ import '../entities/tw_training_entity.dart';
 abstract class TrainingsRepository {
   Future<Either<Failure, List<WTTrainingEntity>>> fetchWordsForWTTraining();
 
+  Future<Either<Failure, List<WTTrainingEntity>>> fetchSetWordsForWTTraining(
+      String setId);
+
   Future<Either<Failure, List<TWTrainingEntity>>> fetchWordsForTWTraining();
+
+  Future<Either<Failure, List<TWTrainingEntity>>> fetchSetWordsForTWTraining(
+      String setId);
 
   Future<Either<Failure, List<RepeatingTrainingEntity>>>
       fetchWordsForRepeatingTraining();
+
+  Future<Either<Failure, List<RepeatingTrainingEntity>>>
+      fetchSetWordsForRepeatingTraining(String setId);
+
+  Future<Either<Failure, List<MatchingTrainingEntity>>>
+      fetchWordsForMatchingTraining();
+
+  Future<Either<Failure, List<MatchingTrainingEntity>>>
+      fetchSetWordsForMatchingTraining(String setId);
+
+  Future<Either<Failure, List<DictantTrainingEntity>>>
+      fetchWordsForDictantTraining();
+
+  Future<Either<Failure, List<DictantTrainingEntity>>>
+      fetchSetWordsForDictantTraining(String setId);
+
+  Future<Either<Failure, List<CardsTrainingEntity>>>
+      fetchWordsForCardsTraining();
+
+  Future<Either<Failure, List<CardsTrainingEntity>>>
+      fetchSetWordsForCardsTraining(String setId);
 
   Future<Either<Failure, void>> updateWordsForWTTraining(List<String> toUpdate);
 
@@ -30,21 +57,12 @@ abstract class TrainingsRepository {
   Future<Either<Failure, void>> updateWordsForCardsTraining(
       List<CardsTrainingEntity> toUpdate);
 
+  Future<Either<Failure, void>> updateWordsForMatchingTraining(
+      List<MatchingTrainingEntity> toUpdate);
+
   Future<Either<Failure, List<WTTrainingEntity>>>
       addSuggestedTranslationsToWordsInWT(List<WTTrainingEntity> words);
 
   Future<Either<Failure, List<TWTrainingEntity>>>
       addSuggestedSourcesToWordsInTW(List<TWTrainingEntity> words);
-
-  Future<Either<Failure, List<MatchingTrainingEntity>>>
-      fetchWordsForMatchingTraining();
-
-  Future<Either<Failure, List<DictantTrainingEntity>>>
-      fetchWordsForDictantTraining();
-
-  Future<Either<Failure, List<CardsTrainingEntity>>>
-      fetchWordsForCardsTraining();
-
-  Future<Either<Failure, void>> updateWordsForMatchingTraining(
-      List<MatchingTrainingEntity> toUpdate);
 }

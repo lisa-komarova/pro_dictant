@@ -6,6 +6,7 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/add_suggested_so
     as usecase4;
 import 'package:pro_dictant/features/trainings/domain/use_cases/add_suggested_translations_to_words_in_wt.dart'
     as usecase2;
+import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_set_words_for_tw_training.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_matching_training.dart'
     as usecase7;
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_tw_training.dart'
@@ -21,6 +22,11 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 
+import '../../../domain/use_cases/fetch_set_words_for_cards_training.dart';
+import '../../../domain/use_cases/fetch_set_words_for_dictant_training.dart';
+import '../../../domain/use_cases/fetch_set_words_for_matching_training.dart';
+import '../../../domain/use_cases/fetch_set_words_for_repeating_training.dart';
+import '../../../domain/use_cases/fetch_set_words_for_wt_training.dart';
 import '../../../domain/use_cases/fetch_words_for_cards_training.dart';
 import '../../../domain/use_cases/fetch_words_for_dictant_training.dart';
 import '../../../domain/use_cases/fetch_words_for_repeating_training.dart';
@@ -47,6 +53,12 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   final UpdateWordsForCardsTraining updateWordsForCardsTraining;
   final FetchWordsForRepeatingTraining fetchWordsForRepeatingTraining;
   final UpdateWordsForRepeatingTraining updateWordsForRepeatingTraining;
+  final FetchSetWordsForTWTraining fetchSetWordsForTwTRainings;
+  final FetchSetWordsForWTTraining fetchSetWordsForWTTraining;
+  final FetchSetWordsForMatchingTraining fetchSetWordsForMatchingTraining;
+  final FetchSetWordsForCardsTraining fetchSetWordsForCardsTraining;
+  final FetchSetWordsForDictantTraining fetchSetWordsForDictantTraining;
+  final FetchSetWordsForRepeatingTraining fetchSetWordsForRepeatingTraining;
 
   TrainingsBloc({
     required this.fetchWordsForWtTraining,
@@ -63,6 +75,12 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     required this.updateWordsForCardsTraining,
     required this.fetchWordsForRepeatingTraining,
     required this.updateWordsForRepeatingTraining,
+    required this.fetchSetWordsForTwTRainings,
+    required this.fetchSetWordsForWTTraining,
+    required this.fetchSetWordsForMatchingTraining,
+    required this.fetchSetWordsForDictantTraining,
+    required this.fetchSetWordsForRepeatingTraining,
+    required this.fetchSetWordsForCardsTraining,
   }) : super(TrainingLoading()) {
     on<FetchWordsForWtTRainings>(_onFetchWordsForWtTRainingsEvent);
     on<FetchWordsForTwTRainings>(_onFetchWordsForTwTRainingsEvent);
@@ -71,6 +89,15 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     on<FetchWordsForCardsTRainings>(_onFetchWordsForCardsTRainingsEvent);
     on<FetchWordsForRepeatingTRainings>(
         _onFetchWordsForRepeatingTRainingsEvent);
+    on<FetchSetWordsForWtTRainings>(_onFetchSetWordsForWtTRainingsEvent);
+    on<FetchSetWordsForTwTRainings>(_onFetchSetWordsForTwTRainingsEvent);
+    on<FetchSetWordsForMatchingTRainings>(
+        _onFetchSetWordsForMatchingTRainingsEvent);
+    on<FetchSetWordsForDictantTRainings>(
+        _onFetchSetWordsForDictantTRainingsEvent);
+    on<FetchSetWordsForCardsTRainings>(_onFetchSetWordsForCardsTRainingsEvent);
+    on<FetchSetWordsForRepeatingTRainings>(
+        _onFetchSetWordsForRepeatingTRainingsEvent);
     on<AddSuggestedTranslationsToWordsInWT>(
         _onAddSuggestedTranslationsToWordsInWTEvent);
     on<AddSuggestedSourcesToWordsInTW>(_onAddSuggestedSourcesToWordsInTWEvent);
@@ -93,7 +120,24 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     failureOrWords.fold(
         (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
         (words) {
-      if (words.isEmpty || words.length < 10) {
+      if (words.isEmpty) {
+        emit(TrainingEmpty());
+      } else {
+        add(AddSuggestedTranslationsToWordsInWT(words));
+      }
+    });
+  }
+
+  FutureOr<void> _onFetchSetWordsForWtTRainingsEvent(
+      FetchSetWordsForWtTRainings event, Emitter<TrainingsState> emit) async {
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchSetWordsForWTTraining(event.setId);
+
+    failureOrWords.fold(
+        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+        (words) {
+      if (words.isEmpty) {
         emit(TrainingEmpty());
       } else {
         add(AddSuggestedTranslationsToWordsInWT(words));
@@ -111,10 +155,30 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     failureOrWords.fold(
         (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
         (words) {
-      if (words.isEmpty || words.length < 10) {
+      if (words.isEmpty) {
         emit(TrainingEmpty());
       } else {
         emit(RepeatingTrainingLoaded(words: words));
+      }
+    });
+  }
+
+  FutureOr<void> _onFetchSetWordsForRepeatingTRainingsEvent(
+      FetchSetWordsForRepeatingTRainings event,
+      Emitter<TrainingsState> emit) async {
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchSetWordsForRepeatingTraining(event.setId);
+
+    failureOrWords.fold(
+        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+        (words) {
+      if (words.isEmpty) {
+        emit(TrainingEmpty());
+      } else {
+        emit(RepeatingTrainingLoaded(
+          words: words,
+        ));
       }
     });
   }
@@ -136,6 +200,26 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     });
   }
 
+  FutureOr<void> _onFetchSetWordsForCardsTRainingsEvent(
+      FetchSetWordsForCardsTRainings event,
+      Emitter<TrainingsState> emit) async {
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchSetWordsForCardsTraining(event.setId);
+
+    failureOrWords.fold(
+        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+        (words) {
+      if (words.isEmpty) {
+        emit(TrainingEmpty());
+      } else {
+        emit(CardsTrainingLoaded(
+          words: words,
+        ));
+      }
+    });
+  }
+
   FutureOr<void> _onFetchWordsForMatchingTRainingsEvent(
       FetchWordsForMatchingTRainings event,
       Emitter<TrainingsState> emit) async {
@@ -146,7 +230,25 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     failureOrWords.fold(
         (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
         (words) {
-      if (words.isEmpty || words.length < 5) {
+      if (words.isEmpty) {
+        emit(TrainingEmpty());
+      } else {
+        emit(MatchingTrainingLoaded(words: words));
+      }
+    });
+  }
+
+  FutureOr<void> _onFetchSetWordsForMatchingTRainingsEvent(
+      FetchSetWordsForMatchingTRainings event,
+      Emitter<TrainingsState> emit) async {
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchSetWordsForMatchingTraining(event.setId);
+
+    failureOrWords.fold(
+        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+        (words) {
+      if (words.isEmpty) {
         emit(TrainingEmpty());
       } else {
         emit(MatchingTrainingLoaded(words: words));
@@ -163,10 +265,30 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     failureOrWords.fold(
         (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
         (words) {
-      if (words.isEmpty || words.length < 10) {
+      if (words.isEmpty) {
         emit(TrainingEmpty());
       } else {
         emit(DictantTrainingLoaded(words: words));
+      }
+    });
+  }
+
+  FutureOr<void> _onFetchSetWordsForDictantTRainingsEvent(
+      FetchSetWordsForDictantTRainings event,
+      Emitter<TrainingsState> emit) async {
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchSetWordsForDictantTraining(event.setId);
+
+    failureOrWords.fold(
+        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+        (words) {
+      if (words.isEmpty) {
+        emit(TrainingEmpty());
+      } else {
+        emit(DictantTrainingLoaded(
+          words: words,
+        ));
       }
     });
   }
@@ -180,7 +302,24 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     failureOrWords.fold(
         (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
         (words) {
-      if (words.isEmpty || words.length < 10) {
+      if (words.isEmpty) {
+        emit(TrainingEmpty());
+      } else {
+        add(AddSuggestedSourcesToWordsInTW(words));
+      }
+    });
+  }
+
+  FutureOr<void> _onFetchSetWordsForTwTRainingsEvent(
+      FetchSetWordsForTwTRainings event, Emitter<TrainingsState> emit) async {
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchSetWordsForTwTRainings(event.setId);
+
+    failureOrWords.fold(
+        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+        (words) {
+      if (words.isEmpty) {
         emit(TrainingEmpty());
       } else {
         add(AddSuggestedSourcesToWordsInTW(words));

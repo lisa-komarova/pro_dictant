@@ -21,48 +21,59 @@ class DictionaryPage extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              onTap: () {
-                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => UserDictionaryPage()));
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                    color: const Color(0xFFD9C3AC),
-                    borderRadius: BorderRadius.circular(16)),
-                child: Text(
-                  S.of(context).myDictionary,
-                  textAlign: TextAlign.center,
-                  //style: Theme.of(context).textTheme.titleMedium,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: FilledButton(
+                onPressed: () {
+                  BlocProvider.of<WordsBloc>(context).add(const LoadWords());
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => const UserDictionaryPage()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFd9c3ac),
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Text(
+                    S.of(context).myDictionary,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              onTap: () {
-                BlocProvider.of<SetBloc>(context).add(const LoadSets());
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => const UserSetPage()));
-              },
-              child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                    color: const Color(0xFFD9C3AC),
-                    borderRadius: BorderRadius.circular(16)),
-                child: Text(
-                  S.of(context).wordSets,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
+                child: FilledButton(
+                  onPressed: () {
+                    BlocProvider.of<SetBloc>(context).add(const LoadSets());
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => const UserSetPage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFd9c3ac),
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: Text(
+                      S.of(context).wordSets,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )
+              ))
         ],
       ),
     );

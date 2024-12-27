@@ -10,7 +10,9 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'matching_result_page.dart';
 
 class MatchingInProcessPage extends StatefulWidget {
-  const MatchingInProcessPage({super.key});
+  final String setId;
+
+  const MatchingInProcessPage({super.key, required this.setId});
 
   @override
   State<MatchingInProcessPage> createState() => _MatchingInProcessPageState();
@@ -65,16 +67,26 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
               return _loadingIndicator();
             } else if (state is MatchingTrainingLoaded) {
               if (wordsList.isEmpty && correctAnswers.isEmpty) {
-                int toRemove = state.words.length % 5;
-                state.words.length -= toRemove;
                 wordsList.addAll(state.words);
-                wordsList.removeRange(0, 5);
+                if (wordsList.length >= 5) {
+                  wordsList.removeRange(0, 5);
+                } else {
+                  wordsList.clear();
+                }
               }
               if (currentWordsList.isEmpty) {
-                currentWordsList.addAll(state.words.getRange(0, 5));
+                if (state.words.length >= 5) {
+                  currentWordsList.addAll(state.words.getRange(0, 5));
+                } else {
+                  currentWordsList.addAll(state.words);
+                }
               }
               if (currentTranslationList.isEmpty) {
-                currentTranslationList.addAll(state.words.getRange(0, 5));
+                if (state.words.length >= 5) {
+                  currentTranslationList.addAll(state.words.getRange(0, 5));
+                } else {
+                  currentTranslationList.addAll(state.words);
+                }
                 currentTranslationList.shuffle();
               }
               return _buildWordCardDeck();
@@ -145,7 +157,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
       height: 500,
       child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 5,
+          itemCount: words.length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.all(10.0),
@@ -154,6 +166,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                 width: 150,
                 child: OutlinedButton(
                   onPressed: () {
+                    List<MatchingTrainingEntity> correctAnswerstoSend = [];
                     if (correctAnswers.contains(words[index])) {
                       return;
                     } else if (isTranslationChosenWrong) {
@@ -177,7 +190,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             Colors.white,
                           ]);
                           correctAnswers.add(words[index]);
-                          if (wordsList.isNotEmpty &&
+                          if (wordsList.length >= 5 &&
                               correctAnswers.length % 5 == 0) {
                             List<MatchingTrainingEntity> toAdd =
                                 wordsList.getRange(0, 5).toList();
@@ -201,19 +214,51 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                               Colors.white,
                               Colors.white,
                             ]);
-                          } else if (wordsList.isEmpty &&
+                          } else if (wordsList.isNotEmpty &&
+                              wordsList.length < 5 &&
                               correctAnswers.length % 5 == 0) {
-                            correctAnswers.removeWhere(
+                            List<MatchingTrainingEntity> toAdd = wordsList
+                                .getRange(0, wordsList.length)
+                                .toList();
+                            currentWordsList.clear();
+                            currentWordsList.addAll(toAdd);
+                            currentTranslationList.clear();
+                            currentTranslationList.addAll(toAdd);
+                            currentTranslationList.shuffle();
+                            wordsList.clear();
+                            colors.replaceRange(0, 5, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                            colors.replaceRange(5, 10, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                          } else if (wordsList.isEmpty &&
+                                  correctAnswers.length % 5 ==
+                                      currentWordsList.length ||
+                              wordsList.isEmpty &&
+                                  correctAnswers.length % 5 == 0) {
+                            correctAnswerstoSend.addAll(correctAnswers);
+                            correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
 
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
+                            Navigator.of(context)
+                                .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
-                                        correctAnswers: correctAnswers,
-                                        mistakes: mistakes)));
+                                          correctAnswers: correctAnswerstoSend,
+                                          mistakes: mistakes,
+                                          setId: widget.setId,
+                                        )));
                             BlocProvider.of<TrainingsBloc>(context).add(
                                 UpdateWordsForMatchingTRainings(
-                                    correctAnswers));
+                                    correctAnswerstoSend));
                           }
                           //colors[index] = Colors.green;
                         });
@@ -283,7 +328,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
       height: 500,
       child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 5,
+          itemCount: words.length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.all(10.0),
@@ -292,6 +337,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                 width: 150,
                 child: OutlinedButton(
                   onPressed: () {
+                    List<MatchingTrainingEntity> correctAnswerstoSend = [];
                     if (correctAnswers.contains(words[index])) {
                       return;
                     } else if (isWordChosenWrong) {
@@ -315,7 +361,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             Colors.white,
                           ]);
                           correctAnswers.add(words[index]);
-                          if (wordsList.isNotEmpty &&
+                          if (wordsList.length >= 5 &&
                               correctAnswers.length % 5 == 0) {
                             List<MatchingTrainingEntity> toAdd =
                                 wordsList.getRange(0, 5).toList();
@@ -339,18 +385,51 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                               Colors.white,
                               Colors.white,
                             ]);
-                          } else if (wordsList.isEmpty &&
+                          } else if (wordsList.isNotEmpty &&
+                              wordsList.length < 5 &&
                               correctAnswers.length % 5 == 0) {
-                            correctAnswers.removeWhere(
+                            List<MatchingTrainingEntity> toAdd = wordsList
+                                .getRange(0, wordsList.length - 1)
+                                .toList();
+                            currentWordsList.clear();
+                            currentWordsList.addAll(toAdd);
+                            currentTranslationList.clear();
+                            currentTranslationList.addAll(toAdd);
+                            currentTranslationList.shuffle();
+                            wordsList.clear();
+                            colors.replaceRange(0, 5, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                            colors.replaceRange(5, 10, [
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                              Colors.white,
+                            ]);
+                          } else if (wordsList.isEmpty &&
+                                  correctAnswers.length % 5 ==
+                                      currentWordsList.length ||
+                              wordsList.isEmpty &&
+                                  correctAnswers.length % 5 == 0) {
+                            correctAnswerstoSend.addAll(correctAnswers);
+                            correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
+
+                            Navigator.of(context)
+                                .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
-                                        correctAnswers: correctAnswers,
-                                        mistakes: mistakes)));
+                                          correctAnswers: correctAnswerstoSend,
+                                          mistakes: mistakes,
+                                          setId: widget.setId,
+                                        )));
                             BlocProvider.of<TrainingsBloc>(context).add(
                                 UpdateWordsForMatchingTRainings(
-                                    correctAnswers));
+                                    correctAnswerstoSend));
                           }
                           //colors[index + 5] = Colors.green;
                         });

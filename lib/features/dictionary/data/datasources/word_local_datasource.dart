@@ -115,7 +115,8 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     final db = await instance.database;
     List<WordModel> words = [];
     final maps = await db!.rawQuery(
-        'select word.id,source, pos, transcription from word JOIN words_translations on word.id = words_translations.word_id where isInDictionary = 1  order by words_translations.dateAddedToDictionary desc');
+        '''select DISTINCT word.id, source, pos, transcription from word JOIN words_translations on word.id = words_translations.word_id 
+               where isInDictionary = 1 group by word.id order by words_translations.dateAddedToDictionary desc''');
     if (maps.isNotEmpty) {
       words = maps.map((map) => WordModel.fromJson(map)).toList();
       return words;
@@ -410,15 +411,29 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       List<WordModel> words) async {
     final db = await database;
     List<TranslationModel> translations = [];
+    String wordIdsList = '';
     for (int i = 0; i < words.length; i++) {
-      final translationsMap = await db!.rawQuery(
-          '''SELECT words_translations.id, word_id, translation, notes, isInDictionary, isTW, isWT,
+      if (i == words.length - 1) {
+        wordIdsList += '\'${words[i].id}\'';
+      } else {
+        wordIdsList += '\'${words[i].id}\' , ';
+      }
+    }
+    final translationsMap = await db!.rawQuery(
+        '''SELECT words_translations.id, word_id, translation, notes, isInDictionary, isTW, isWT,
                isMatching, isCards, isDictant, isRepeated, dateAddedToDictionary
                from word INNER join words_translations on word.id 
-               == words_translations.word_id WHERE words_translations.word_id = "${words[i].id}"''');
-      translations =
-          translationsMap.map((map) => TranslationModel.fromJson(map)).toList();
-      words[i].translationList.addAll(translations);
+               == words_translations.word_id WHERE words_translations.word_id in ($wordIdsList)''');
+    translations =
+        translationsMap.map((map) => TranslationModel.fromJson(map)).toList();
+    for (int i = 0; i < words.length; i++) {
+      List<TranslationModel> translationsForSingleWord = [];
+      for (int y = 0; y < translations.length; y++) {
+        if (words[i].id == translations[y].wordId) {
+          translationsForSingleWord.insert(0, translations[y]);
+        }
+      }
+      words[i].translationList.addAll(translationsForSingleWord);
     }
     return words;
   }

@@ -11,7 +11,9 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_result_page.dart';
 
 class WTInProcessPage extends StatefulWidget {
-  const WTInProcessPage({super.key});
+  final String setId;
+
+  const WTInProcessPage({super.key, required this.setId});
 
   @override
   State<WTInProcessPage> createState() => _WTInProcessPageState();
@@ -108,6 +110,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
           builder: (ctx) => WTResultPage(
                 answers: answers,
                 words: words,
+                setId: widget.setId,
               )));
       List<String> toUpdate = [];
       answers.forEach((key, value) {

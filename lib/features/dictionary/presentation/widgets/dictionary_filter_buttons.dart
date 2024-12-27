@@ -72,65 +72,74 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
   _buildAButton(
       {required String title, required Color color, required bool isSelected}) {
     return Flexible(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            if (title == titleNew) {
-              isNewSelected = !isNewSelected;
-              isLearningSelected = false;
-              isLearntSelected = false;
-              if (isNewSelected == false) {
-                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
-              } else {
-                BlocProvider.of<WordsBloc>(context)
-                    .add(const FilterWords('', true, false, false));
-              }
-            } else if (title == titleLearning) {
-              isNewSelected = false;
-              isLearningSelected = !isLearningSelected;
-              isLearntSelected = false;
-              if (isLearningSelected == false) {
-                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
-              } else {
-                BlocProvider.of<WordsBloc>(context)
-                    .add(const FilterWords('', false, true, false));
-              }
-            } else if (title == titleLearnt) {
-              isNewSelected = false;
-              isLearningSelected = false;
-              isLearntSelected = !isLearntSelected;
-              if (isLearntSelected == false) {
-                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
-              } else {
-                BlocProvider.of<WordsBloc>(context)
-                    .add(const FilterWords('', false, false, true));
-              }
-            }
-          });
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: AnimatedContainer(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: color,
-            ),
-            height: 50,
-            width: isSelected ? _buttonWidth * 1.5 : _buttonWidth,
-            duration: Durations.short4,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: FittedBox(
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.hachiMaruPop(color: Colors.white),
-                  ),
-                ),
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: AnimatedContainer(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: color,
+          ),
+          height: 50,
+          width: isSelected ? _buttonWidth * 1.5 : _buttonWidth,
+          duration: Durations.short4,
+          child: Stack(children: [
+            Center(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.hachiMaruPop(color: Colors.white),
               ),
             ),
-          ),
+            SizedBox.expand(
+              child: FilledButton(
+                  onPressed: () {
+                    setState(() {
+                      if (title == titleNew) {
+                        isNewSelected = !isNewSelected;
+                        isLearningSelected = false;
+                        isLearntSelected = false;
+                        if (isNewSelected == false) {
+                          BlocProvider.of<WordsBloc>(context)
+                              .add(const LoadWords());
+                        } else {
+                          BlocProvider.of<WordsBloc>(context)
+                              .add(const FilterWords('', true, false, false));
+                        }
+                      } else if (title == titleLearning) {
+                        isNewSelected = false;
+                        isLearningSelected = !isLearningSelected;
+                        isLearntSelected = false;
+                        if (isLearningSelected == false) {
+                          BlocProvider.of<WordsBloc>(context)
+                              .add(const LoadWords());
+                        } else {
+                          BlocProvider.of<WordsBloc>(context)
+                              .add(const FilterWords('', false, true, false));
+                        }
+                      } else if (title == titleLearnt) {
+                        isNewSelected = false;
+                        isLearningSelected = false;
+                        isLearntSelected = !isLearntSelected;
+                        if (isLearntSelected == false) {
+                          BlocProvider.of<WordsBloc>(context)
+                              .add(const LoadWords());
+                        } else {
+                          BlocProvider.of<WordsBloc>(context)
+                              .add(const FilterWords('', false, false, true));
+                        }
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: null),
+            ),
+          ]),
         ),
       ),
     );

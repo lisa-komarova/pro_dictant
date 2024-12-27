@@ -38,6 +38,42 @@ class FetchWordsForCardsTRainings extends TrainingsEvent {
   const FetchWordsForCardsTRainings();
 }
 
+class FetchSetWordsForWtTRainings extends TrainingsEvent {
+  final String setId;
+
+  const FetchSetWordsForWtTRainings(this.setId);
+}
+
+class FetchSetWordsForMatchingTRainings extends TrainingsEvent {
+  final String setId;
+
+  const FetchSetWordsForMatchingTRainings(this.setId);
+}
+
+class FetchSetWordsForTwTRainings extends TrainingsEvent {
+  final String setId;
+
+  const FetchSetWordsForTwTRainings(this.setId);
+}
+
+class FetchSetWordsForDictantTRainings extends TrainingsEvent {
+  final String setId;
+
+  const FetchSetWordsForDictantTRainings(this.setId);
+}
+
+class FetchSetWordsForRepeatingTRainings extends TrainingsEvent {
+  final String setId;
+
+  const FetchSetWordsForRepeatingTRainings(this.setId);
+}
+
+class FetchSetWordsForCardsTRainings extends TrainingsEvent {
+  final String setId;
+
+  const FetchSetWordsForCardsTRainings(this.setId);
+}
+
 class UpdateWordsForWtTRainings extends TrainingsEvent {
   final List<String> toUpdate;
 

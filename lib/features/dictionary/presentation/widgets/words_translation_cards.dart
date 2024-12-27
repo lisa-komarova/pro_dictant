@@ -215,30 +215,39 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: AutoSizeText(
-                        widget.word.pos,
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                    ),
+                    widget.word.pos.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: AutoSizeText(
+                              widget.word.pos,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                   ],
                 ),
               ),
-              Flexible(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.word.transcription,
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          fontSize: 20,
-                          fontWeight: FontWeight.normal,
+              widget.word.transcription.isNotEmpty
+                  ? Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          widget.word.transcription,
+                          style:
+                              Theme.of(context).textTheme.titleSmall!.copyWith(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal,
+                                  ),
                         ),
-                  ),
-                ),
-              ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
               Flexible(
                 flex: 3,
                 child: Padding(

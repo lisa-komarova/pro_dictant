@@ -50,6 +50,12 @@ import 'features/profile/data/data_sources/profile_datasource.dart';
 import 'features/profile/data/repositories/profile_repository_impl.dart';
 import 'features/profile/domain/repositories/profile_repository.dart';
 import 'features/profile/domain/use_cases/update_day_statistics.dart';
+import 'features/trainings/domain/use_cases/fetch_set_words_for_cards_training.dart';
+import 'features/trainings/domain/use_cases/fetch_set_words_for_dictant_training.dart';
+import 'features/trainings/domain/use_cases/fetch_set_words_for_matching_training.dart';
+import 'features/trainings/domain/use_cases/fetch_set_words_for_repeating_training.dart';
+import 'features/trainings/domain/use_cases/fetch_set_words_for_tw_training.dart';
+import 'features/trainings/domain/use_cases/fetch_set_words_for_wt_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_cards_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_repeating_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_tw_training.dart';
@@ -95,6 +101,13 @@ Future<void> init() async {
         fetchWordsForMatchingTRaining: sl(),
         fetchWordsForDictantTraining: sl(),
         fetchWordsForRepeatingTraining: sl(),
+        fetchWordsForCardsTraining: sl(),
+        fetchSetWordsForWTTraining: sl(),
+        fetchSetWordsForTwTRainings: sl(),
+        fetchSetWordsForMatchingTraining: sl(),
+        fetchSetWordsForDictantTraining: sl(),
+        fetchSetWordsForRepeatingTraining: sl(),
+        fetchSetWordsForCardsTraining: sl(),
         addSuggestedTranslationsToWordsInWT: sl(),
         addSuggestedSourcesToWordsInTW: sl(),
         updateWordsForWTTraining: sl(),
@@ -103,7 +116,6 @@ Future<void> init() async {
         updateWordsForDictantTraining: sl(),
         updateWordsForCardsTraining: sl(),
         updateWordsForRepeatingTraining: sl(),
-        fetchWordsForCardsTraining: sl(),
       ));
   sl.registerFactory(() => ProfileBloc(
         fetchStatistics: sl(),
@@ -159,6 +171,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchWordsForWTTraining(
         trainingsRepository: sl(),
       ));
+  sl.registerLazySingleton(() => FetchSetWordsForWTTraining(
+        trainingsRepository: sl(),
+      ));
   sl.registerLazySingleton(() => AddSuggestedTranslationsToWordsInWT(
         trainingsRepository: sl(),
       ));
@@ -183,7 +198,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchWordsForTWTraining(
         trainingsRepository: sl(),
       ));
+  sl.registerLazySingleton(() => FetchSetWordsForTWTraining(
+        trainingsRepository: sl(),
+      ));
   sl.registerLazySingleton(() => FetchWordsForMatchingTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchSetWordsForMatchingTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => UpdateWordsForTWTraining(
@@ -192,7 +213,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => FetchWordsForDictantTraining(
         trainingsRepository: sl(),
       ));
+  sl.registerLazySingleton(() => FetchSetWordsForDictantTraining(
+        trainingsRepository: sl(),
+      ));
   sl.registerLazySingleton(() => FetchWordsForCardsTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchSetWordsForCardsTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => UpdateWordsForMatchingTraining(
@@ -208,6 +235,9 @@ Future<void> init() async {
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchWordsForRepeatingTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchSetWordsForRepeatingTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchTranslationsForWordsInSet(

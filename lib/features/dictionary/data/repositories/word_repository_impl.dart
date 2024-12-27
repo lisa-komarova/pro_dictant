@@ -101,8 +101,7 @@ class WordRepositoryImpl extends WordRepository {
   }
 
   @override
-  Future<Either<Failure, List<WordModel>>> fetchWordBySource(
-      String source) async {
+  Future<Either<Failure, List<WordModel>>> fetchWordById(String source) async {
     try {
       List<WordModel> word = await localDataSource.fetchWordBySource(source);
       return Right(word);
@@ -216,10 +215,17 @@ class WordRepositoryImpl extends WordRepository {
     List<TranslationModel> wordsModels = [];
     for (var translationEntity in words) {
       wordsModels.add(TranslationModel(
-          id: translationEntity.id,
-          wordId: translationEntity.wordId,
-          translation: translationEntity.translation,
-          notes: translationEntity.notes));
+        id: translationEntity.id,
+        wordId: translationEntity.wordId,
+        translation: translationEntity.translation,
+        notes: translationEntity.notes,
+        isTW: translationEntity.isTW,
+        isWT: translationEntity.isWT,
+        isCards: translationEntity.isCards,
+        isMatching: translationEntity.isMatching,
+        isDictant: translationEntity.isDictant,
+        isRepeated: translationEntity.isRepeated,
+      ));
     }
     try {
       await localDataSource.addWordsInSetToDictionary(wordsModels);
@@ -235,10 +241,17 @@ class WordRepositoryImpl extends WordRepository {
     List<TranslationModel> wordsModels = [];
     for (var translationEntity in words) {
       wordsModels.add(TranslationModel(
-          id: translationEntity.id,
-          wordId: translationEntity.wordId,
-          translation: translationEntity.translation,
-          notes: translationEntity.notes));
+        id: translationEntity.id,
+        wordId: translationEntity.wordId,
+        translation: translationEntity.translation,
+        notes: translationEntity.notes,
+        isTW: translationEntity.isTW,
+        isWT: translationEntity.isWT,
+        isCards: translationEntity.isCards,
+        isMatching: translationEntity.isMatching,
+        isDictant: translationEntity.isDictant,
+        isRepeated: translationEntity.isRepeated,
+      ));
     }
     try {
       await localDataSource.removeWordsInSetFromDictionary(wordsModels);

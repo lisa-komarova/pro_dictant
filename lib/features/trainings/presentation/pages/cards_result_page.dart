@@ -10,9 +10,13 @@ import 'cards_in_process_page.dart';
 class CardsResultPage extends StatelessWidget {
   final List<CardsTrainingEntity> correctAnswers;
   final List<CardsTrainingEntity> mistakes;
+  final String setId;
 
   const CardsResultPage(
-      {required this.correctAnswers, required this.mistakes, super.key});
+      {required this.correctAnswers,
+      required this.mistakes,
+      super.key,
+      required this.setId});
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +124,21 @@ class CardsResultPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(const FetchWordsForCardsTRainings());
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => const CardsInProcessPage()));
+                  if (setId.isNotEmpty) {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchSetWordsForCardsTRainings(setId));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => CardsInProcessPage(
+                              setId: setId,
+                            )));
+                  } else {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(const FetchWordsForCardsTRainings());
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => const CardsInProcessPage(
+                              setId: "",
+                            )));
+                  }
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,

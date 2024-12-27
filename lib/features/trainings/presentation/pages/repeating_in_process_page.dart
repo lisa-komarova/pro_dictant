@@ -10,7 +10,9 @@ import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
 
 class RepeatingInProcessPage extends StatefulWidget {
-  const RepeatingInProcessPage({super.key});
+  final String setId;
+
+  const RepeatingInProcessPage({super.key, required this.setId});
 
   @override
   State<RepeatingInProcessPage> createState() => _CardsInProcessPageState();
@@ -23,6 +25,7 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
   Color colorNeutral = const Color(0xFFd9c3ac);
   List<RepeatingTrainingEntity> mistakes = [];
   List<RepeatingTrainingEntity> correctAnswers = [];
+  List<RepeatingTrainingEntity> stillLearning = [];
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +95,15 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
               ),
               TextButton(
                 onPressed: () {
+                  words.removeWhere((element) =>
+                      correctAnswers.contains(element) ||
+                      mistakes.contains(element));
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (ctx) => RepeatingResultPage(
                             mistakes: mistakes,
+                            learnt: correctAnswers,
+                            learning: words,
+                            setId: widget.setId,
                           )));
                   BlocProvider.of<TrainingsBloc>(context).add(
                       UpdateWordsForRepeatingTRainings(
@@ -157,17 +166,25 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                       });
                     },
                     onTap: () {
+                      correctAnswers.add(words[currentWordIndex]);
                       if (currentWordIndex + 1 >= words.length) {
+                        stillLearning.addAll(words);
+                        stillLearning.removeWhere((element) =>
+                            correctAnswers.contains(element) ||
+                            mistakes.contains(element));
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => RepeatingResultPage(
                                   mistakes: mistakes,
+                                  learnt: correctAnswers,
+                                  learning: words,
+                                  setId: widget.setId,
                                 )));
                         BlocProvider.of<TrainingsBloc>(context).add(
                             UpdateWordsForRepeatingTRainings(
                                 mistakes, correctAnswers));
                         return;
                       }
-                      correctAnswers.add(words[currentWordIndex]);
+
                       setState(() {
                         currentWordIndex++;
                       });
@@ -217,9 +234,16 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                     },
                     onTap: () {
                       if (currentWordIndex + 1 >= words.length) {
+                        stillLearning.addAll(words);
+                        stillLearning.removeWhere((element) =>
+                            correctAnswers.contains(element) ||
+                            mistakes.contains(element));
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => RepeatingResultPage(
                                   mistakes: mistakes,
+                                  learnt: correctAnswers,
+                                  learning: words,
+                                  setId: widget.setId,
                                 )));
                         BlocProvider.of<TrainingsBloc>(context).add(
                             UpdateWordsForRepeatingTRainings(
@@ -274,17 +298,24 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                       });
                     },
                     onTap: () {
+                      mistakes.add(words[currentWordIndex]);
                       if (currentWordIndex + 1 >= words.length) {
+                        stillLearning.addAll(words);
+                        stillLearning.removeWhere((element) =>
+                            correctAnswers.contains(element) ||
+                            mistakes.contains(element));
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => RepeatingResultPage(
                                   mistakes: mistakes,
+                                  learnt: correctAnswers,
+                                  learning: words,
+                                  setId: widget.setId,
                                 )));
                         BlocProvider.of<TrainingsBloc>(context).add(
                             UpdateWordsForRepeatingTRainings(
                                 mistakes, correctAnswers));
                         return;
                       }
-                      mistakes.add(words[currentWordIndex]);
                       setState(() {
                         currentWordIndex++;
                       });

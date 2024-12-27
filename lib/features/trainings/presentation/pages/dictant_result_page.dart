@@ -10,9 +10,13 @@ import 'dictant_in_process_page.dart';
 class DictantResultPage extends StatelessWidget {
   final List<DictantTrainingEntity> correctAnswers;
   final List<DictantTrainingEntity> mistakes;
+  final String setId;
 
   const DictantResultPage(
-      {required this.correctAnswers, required this.mistakes, super.key});
+      {required this.correctAnswers,
+      required this.mistakes,
+      super.key,
+      required this.setId});
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +124,23 @@ class DictantResultPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(const FetchWordsForDictantTRainings());
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => const DictantInProcessPage()));
+                  if (setId.isNotEmpty) {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchSetWordsForDictantTRainings(setId));
+
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => DictantInProcessPage(
+                              setId: setId,
+                            )));
+                  } else {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(const FetchWordsForDictantTRainings());
+
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => const DictantInProcessPage(
+                              setId: '',
+                            )));
+                  }
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,

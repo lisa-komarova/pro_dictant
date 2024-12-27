@@ -10,6 +10,6 @@ class FetchWordBySource {
   FetchWordBySource({required this.wordRepository});
 
   Future<Either<Failure, List<WordEntity>>> call(String source) async {
-    return await wordRepository.fetchWordBySource(source);
+    return await wordRepository.fetchWordById(source);
   }
 }

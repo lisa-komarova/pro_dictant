@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,9 +20,16 @@ import 'matching_in_process_page.dart';
 class TrainingsPage extends StatefulWidget {
   final int goal;
   bool isTodayCompleted;
+  String setId;
+  String setName;
 
-  TrainingsPage(
-      {required this.goal, required this.isTodayCompleted, super.key});
+  TrainingsPage({
+    required this.goal,
+    required this.isTodayCompleted,
+    this.setId = '',
+    this.setName = '',
+    super.key,
+  });
 
   @override
   State<TrainingsPage> createState() => _TrainingsPageState();
@@ -100,114 +108,215 @@ class _TrainingsPageState extends State<TrainingsPage>
     var width = size.width;
     var height = size.height;
     height -= kToolbarHeight;
-    height -= kBottomNavigationBarHeight;
-    height -= safePadding;
-    if (!widget.isTodayCompleted) {
-      height -= 100;
+    if (widget.setName.isEmpty) {
+      height -= kBottomNavigationBarHeight;
     }
+    height -= safePadding;
+    height -= 50;
+    if (!widget.isTodayCompleted) {
+      height -= 50;
+    }
+    int timeLeft = widget.goal - (timeOnApp + sessionTime);
     var aspectRatio = (width / 2) / (height / 3);
-    return SafeArea(
-      child: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            children: [
-              (!widget.isTodayCompleted)
-                  ? SizedBox(
-                      height: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Center(
-                          child: Text(S.of(context).timeLeft(
-                              widget.goal - (timeOnApp + sessionTime))),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                (!widget.isTodayCompleted)
+                    ? SizedBox(
+                        height: 50,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 10.0, right: 10, top: 10),
+                          child: AutoSizeText(
+                            S.of(context).timeLeft(timeLeft),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                (widget.setName.isNotEmpty)
+                    ? SizedBox(
+                        height: 50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Center(
+                            child: AutoSizeText(
+                              S.of(context).currentlyLearning(widget.setName),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      )
+                    : SizedBox(
+                        height: 50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Center(
+                            child: AutoSizeText(
+                              S.of(context).currentlyLearning(
+                                  S.of(context).myDictionary),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
                       ),
-                    )
-                  : const SizedBox.shrink(),
-              Flexible(
-                child: GridView.count(
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  crossAxisCount: 2,
-                  childAspectRatio: aspectRatio,
-                  shrinkWrap: true,
-                  children: <Widget>[
-                    GestureDetector(
-                      child: TrainingCard(
-                        trainingName: S.of(context).wordTranslation,
-                        imageName: 'word-t',
+                Flexible(
+                  child: GridView.count(
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    crossAxisCount: 2,
+                    childAspectRatio: aspectRatio,
+                    shrinkWrap: true,
+                    children: <Widget>[
+                      GestureDetector(
+                        child: TrainingCard(
+                          trainingName: S.of(context).wordTranslation,
+                          imageName: 'word-t',
+                        ),
+                        onTap: () {
+                          if (widget.setId.isNotEmpty) {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(FetchSetWordsForWtTRainings(widget.setId));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => WTInProcessPage(
+                                      setId: widget.setId,
+                                    )));
+                          } else {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(const FetchWordsForWtTRainings());
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => const WTInProcessPage(
+                                      setId: '',
+                                    )));
+                          }
+                        },
                       ),
-                      onTap: () {
-                        BlocProvider.of<TrainingsBloc>(context)
-                            .add(const FetchWordsForWtTRainings());
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => const WTInProcessPage()));
-                      },
-                    ),
-                    GestureDetector(
-                      child: TrainingCard(
-                        trainingName: S.of(context).translationWord,
-                        imageName: 't-word',
+                      GestureDetector(
+                        child: TrainingCard(
+                          trainingName: S.of(context).translationWord,
+                          imageName: 't-word',
+                        ),
+                        onTap: () {
+                          if (widget.setId.isNotEmpty) {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(FetchSetWordsForTwTRainings(widget.setId));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => TWInProcessPage(
+                                      setId: widget.setId,
+                                    )));
+                          } else {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(const FetchWordsForTwTRainings());
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => const TWInProcessPage(
+                                      setId: '',
+                                    )));
+                          }
+                        },
                       ),
-                      onTap: () {
-                        BlocProvider.of<TrainingsBloc>(context)
-                            .add(const FetchWordsForTwTRainings());
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => const TWInProcessPage()));
-                      },
-                    ),
-                    GestureDetector(
-                      child: TrainingCard(
-                        trainingName: S.of(context).matchingWords,
-                        imageName: 'word_matching',
+                      GestureDetector(
+                        child: TrainingCard(
+                          trainingName: S.of(context).matchingWords,
+                          imageName: 'word_matching',
+                        ),
+                        onTap: () {
+                          if (widget.setId.isNotEmpty) {
+                            BlocProvider.of<TrainingsBloc>(context).add(
+                                FetchSetWordsForMatchingTRainings(
+                                    widget.setId));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => MatchingInProcessPage(
+                                      setId: widget.setId,
+                                    )));
+                          } else {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(const FetchWordsForMatchingTRainings());
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => const MatchingInProcessPage(
+                                      setId: '',
+                                    )));
+                          }
+                        },
                       ),
-                      onTap: () {
-                        BlocProvider.of<TrainingsBloc>(context)
-                            .add(const FetchWordsForMatchingTRainings());
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => const MatchingInProcessPage()));
-                      },
-                    ),
-                    GestureDetector(
-                      child: TrainingCard(
-                        trainingName: S.of(context).wordCards,
-                        imageName: 'sprint',
+                      GestureDetector(
+                        child: TrainingCard(
+                          trainingName: S.of(context).wordCards,
+                          imageName: 'sprint',
+                        ),
+                        onTap: () {
+                          if (widget.setId.isNotEmpty) {
+                            BlocProvider.of<TrainingsBloc>(context).add(
+                                FetchSetWordsForCardsTRainings(widget.setId));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => CardsInProcessPage(
+                                      setId: widget.setId,
+                                    )));
+                          } else {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(const FetchWordsForCardsTRainings());
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => const CardsInProcessPage(
+                                      setId: '',
+                                    )));
+                          }
+                        },
                       ),
-                      onTap: () {
-                        BlocProvider.of<TrainingsBloc>(context)
-                            .add(const FetchWordsForCardsTRainings());
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => const CardsInProcessPage()));
-                      },
-                    ),
-                    GestureDetector(
-                      child: TrainingCard(
-                        trainingName: S.of(context).dictant,
-                        imageName: 'dictant',
+                      GestureDetector(
+                        child: TrainingCard(
+                          trainingName: S.of(context).dictant,
+                          imageName: 'dictant',
+                        ),
+                        onTap: () {
+                          if (widget.setId.isNotEmpty) {
+                            BlocProvider.of<TrainingsBloc>(context).add(
+                                FetchSetWordsForDictantTRainings(widget.setId));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => DictantInProcessPage(
+                                      setId: widget.setId,
+                                    )));
+                          } else {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(const FetchWordsForDictantTRainings());
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => const DictantInProcessPage(
+                                      setId: '',
+                                    )));
+                          }
+                        },
                       ),
-                      onTap: () {
-                        BlocProvider.of<TrainingsBloc>(context)
-                            .add(const FetchWordsForDictantTRainings());
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => const DictantInProcessPage()));
-                      },
-                    ),
-                    GestureDetector(
-                      child: TrainingCard(
-                        trainingName: S.of(context).repeatWords,
-                        imageName: 'repetition',
+                      GestureDetector(
+                        child: TrainingCard(
+                          trainingName: S.of(context).repeatWords,
+                          imageName: 'repetition',
+                        ),
+                        onTap: () {
+                          if (widget.setId.isNotEmpty) {
+                            BlocProvider.of<TrainingsBloc>(context).add(
+                                FetchSetWordsForRepeatingTRainings(
+                                    widget.setId));
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => RepeatingInProcessPage(
+                                      setId: widget.setId,
+                                    )));
+                          } else {
+                            BlocProvider.of<TrainingsBloc>(context)
+                                .add(const FetchWordsForRepeatingTRainings());
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => const RepeatingInProcessPage(
+                                      setId: '',
+                                    )));
+                          }
+                        },
                       ),
-                      onTap: () {
-                        BlocProvider.of<TrainingsBloc>(context)
-                            .add(const FetchWordsForRepeatingTRainings());
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => const RepeatingInProcessPage()));
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

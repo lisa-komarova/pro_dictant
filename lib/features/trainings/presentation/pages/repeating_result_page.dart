@@ -8,9 +8,17 @@ import '../../domain/entities/repeating_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 
 class RepeatingResultPage extends StatelessWidget {
+  final String setId;
   final List<RepeatingTrainingEntity> mistakes;
+  final List<RepeatingTrainingEntity> learnt;
+  final List<RepeatingTrainingEntity> learning;
 
-  const RepeatingResultPage({required this.mistakes, super.key});
+  const RepeatingResultPage(
+      {required this.mistakes,
+      super.key,
+      required this.setId,
+      required this.learnt,
+      required this.learning});
 
   @override
   Widget build(BuildContext context) {
@@ -37,46 +45,107 @@ class RepeatingResultPage extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(25),
                 ),
-                child: Expanded(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 50,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    mistakes.isNotEmpty
+                        ? SizedBox(
+                            child: Text(
+                              S.of(context).sentToLearning,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                    mistakes.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: mistakes.length,
+                            shrinkWrap: true,
+                            itemBuilder: (ctx, index) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    mistakes[index].source,
+                                    style: const TextStyle(
+                                        color: Color(0xFFB70E0E)),
+                                  ),
+                                  Image.asset(
+                                    'assets/icons/divider.png',
+                                    width: 15,
+                                    height: 15,
+                                  ),
+                                ],
+                              );
+                            })
+                        : const SizedBox.shrink(),
+                    learnt.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: SizedBox(
                               child: Text(
-                                S.of(context).sentToLearning,
+                                S.of(context).sentToLearnt,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ),
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: mistakes.length,
-                                  itemBuilder: (ctx, index) {
-                                    return Column(
-                                      children: [
-                                        Text(
-                                          mistakes[index].source,
-                                          style: const TextStyle(
-                                              color: Color(0xFFB70E0E)),
-                                        ),
-                                        Image.asset(
-                                          'assets/icons/divider.png',
-                                          width: 15,
-                                          height: 15,
-                                        ),
-                                      ],
-                                    );
-                                  }),
+                          )
+                        : const SizedBox.shrink(),
+                    learnt.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: learnt.length,
+                            shrinkWrap: true,
+                            itemBuilder: (ctx, index) {
+                              return Column(
+                                children: [
+                                  Text(
+                                    learnt[index].source,
+                                    style: const TextStyle(
+                                        color: Color(0xFF85977f)),
+                                  ),
+                                  Image.asset(
+                                    'assets/icons/divider.png',
+                                    width: 15,
+                                    height: 15,
+                                  ),
+                                ],
+                              );
+                            })
+                        : const SizedBox.shrink(),
+                    learning.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: SizedBox(
+                              child: Text(
+                                S.of(context).onLearning,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          )
+                        : const SizedBox.shrink(),
+                    learning.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: learning.length,
+                            shrinkWrap: true,
+                            itemBuilder: (ctx, index) {
+                              return Column(
+                                children: [
+                                  Text(
+                                    learning[index].source,
+                                    style: const TextStyle(
+                                        color: Color(0xFFC0A183)),
+                                  ),
+                                  Image.asset(
+                                    'assets/icons/divider.png',
+                                    width: 15,
+                                    height: 15,
+                                  ),
+                                ],
+                              );
+                            })
+                        : const SizedBox.shrink(),
+                  ],
                 ),
               ),
             ),
@@ -86,10 +155,21 @@ class RepeatingResultPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(const FetchWordsForRepeatingTRainings());
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => const RepeatingInProcessPage()));
+                  if (setId.isNotEmpty) {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchSetWordsForRepeatingTRainings(setId));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => RepeatingInProcessPage(
+                              setId: setId,
+                            )));
+                  } else {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(const FetchWordsForRepeatingTRainings());
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => const RepeatingInProcessPage(
+                              setId: '',
+                            )));
+                  }
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,

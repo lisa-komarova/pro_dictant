@@ -45,8 +45,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       } else if (DateTime.parse(day).compareTo(date) != 0) {
         prefs.setInt('timeOnApp', 0);
         var formatter = DateFormat('yyyy-MM-dd');
-        String formattedDate =
-            formatter.format(date.subtract(Duration(days: 1)));
+        String formattedDate = formatter.format(date);
         prefs.setString('day', formattedDate);
       }
       final StatisticsEntity statistics = StatisticsEntity(

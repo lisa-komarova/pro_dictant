@@ -10,9 +10,13 @@ import '../manager/trainings_bloc/trainings_bloc.dart';
 class MatchingResultPage extends StatelessWidget {
   final List<MatchingTrainingEntity> correctAnswers;
   final List<MatchingTrainingEntity> mistakes;
+  final String setId;
 
   const MatchingResultPage(
-      {required this.correctAnswers, required this.mistakes, super.key});
+      {required this.correctAnswers,
+      required this.mistakes,
+      super.key,
+      required this.setId});
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +124,21 @@ class MatchingResultPage extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(const FetchWordsForMatchingTRainings());
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => const MatchingInProcessPage()));
+                  if (setId.isNotEmpty) {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchSetWordsForMatchingTRainings(setId));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => MatchingInProcessPage(
+                              setId: setId,
+                            )));
+                  } else {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(const FetchWordsForMatchingTRainings());
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => const MatchingInProcessPage(
+                              setId: "",
+                            )));
+                  }
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.8,

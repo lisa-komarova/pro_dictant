@@ -10,7 +10,12 @@ import '../manager/trainings_bloc/trainings_state.dart';
 import 'cards_result_page.dart';
 
 class CardsInProcessPage extends StatefulWidget {
-  const CardsInProcessPage({super.key});
+  final String setId;
+
+  const CardsInProcessPage({
+    super.key,
+    required this.setId,
+  });
 
   @override
   State<CardsInProcessPage> createState() => _CardsInProcessPageState();
@@ -22,7 +27,6 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
   List<String> suggestedAnswer = [];
   List<CardsTrainingEntity> correctAnswers = [];
   List<CardsTrainingEntity> mistakes = [];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -223,6 +227,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
         builder: (ctx) => CardsResultPage(
               correctAnswers: correctAnswers,
               mistakes: mistakes,
+              setId: widget.setId,
             )));
     BlocProvider.of<TrainingsBloc>(context)
         .add(UpdateWordsForCardsTRainings(correctAnswers));

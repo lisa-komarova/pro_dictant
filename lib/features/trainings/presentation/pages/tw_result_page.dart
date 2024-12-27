@@ -10,11 +10,13 @@ import 'package:pro_dictant/features/trainings/presentation/widgets/wt_result_bl
 class TWResultPage extends StatelessWidget {
   final Map<String, String> answers;
   final List<TWTrainingEntity> words;
+  final String setId;
 
   const TWResultPage({
     super.key,
     required this.answers,
     required this.words,
+    required this.setId,
   });
 
   @override
@@ -56,10 +58,21 @@ class TWResultPage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
-                BlocProvider.of<TrainingsBloc>(context)
-                    .add(const FetchWordsForTwTRainings());
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (ctx) => const TWInProcessPage()));
+                if (setId.isNotEmpty) {
+                  BlocProvider.of<TrainingsBloc>(context)
+                      .add(FetchSetWordsForTwTRainings(setId));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (ctx) => TWInProcessPage(
+                            setId: setId,
+                          )));
+                } else {
+                  BlocProvider.of<TrainingsBloc>(context)
+                      .add(const FetchWordsForTwTRainings());
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (ctx) => const TWInProcessPage(
+                            setId: '',
+                          )));
+                }
               },
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,

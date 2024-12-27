@@ -11,7 +11,9 @@ import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
 
 class DictantInProcessPage extends StatefulWidget {
-  const DictantInProcessPage({super.key});
+  final String setId;
+
+  const DictantInProcessPage({super.key, required this.setId});
 
   @override
   State<DictantInProcessPage> createState() => _DictantInProcessPageState();
@@ -25,6 +27,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   List<Color> colors = [];
   String correctAnswer = '';
   bool isHintSelected = false;
+  List<DictantTrainingEntity> words = [];
   List<DictantTrainingEntity> correctAnswers = [];
   List<DictantTrainingEntity> mistakes = [];
   List<String> suggestedLetters = [];
@@ -54,6 +57,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           } else if (state is TrainingLoading) {
             return _loadingIndicator();
           } else if (state is DictantTrainingLoaded) {
+            if (words.isEmpty) {
+              words.addAll(state.words);
+            }
             return _buildWordCard(state.words);
           } else {
             return const SizedBox();
@@ -89,28 +95,25 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Flexible(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(25),
-              ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(25),
             ),
           ),
         ),
         Flexible(
-          flex: 2,
+          flex: isHintSelected ? 1 : 2,
           child: Text(
             '${currentWordIndex + 1}/${words.length}',
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
         Flexible(
-          flex: 3,
+          flex: isHintSelected ? 1 : 3,
           child: Center(
             child: AutoSizeText(
               words[currentWordIndex].translation,
@@ -222,11 +225,12 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   }
 
   void updateCurrentWord() {
-    if (currentWordIndex == 9) {
+    if (currentWordIndex == words.length - 1) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => DictantResultPage(
                 correctAnswers: correctAnswers,
                 mistakes: mistakes,
+                setId: widget.setId,
               )));
       BlocProvider.of<TrainingsBloc>(context)
           .add(UpdateWordsForDictantTRainings(correctAnswers));
@@ -254,17 +258,17 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   }
 
   _buildWordBricks(DictantTrainingEntity word) {
-    final int crossAxisCount =
-        MediaQuery.of(context).size.width <= 500 ? 7 : 10;
     if (suggestedLetters.isEmpty) fillLetters(word);
     return Flexible(
       flex: 4,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Wrap(
@@ -276,9 +280,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
             ),
           ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
+            child: Container(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Wrap(

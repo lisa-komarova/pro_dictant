@@ -242,4 +242,76 @@ class TrainingsRepositoryImpl extends TrainingsRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<CardsTrainingEntity>>>
+      fetchSetWordsForCardsTraining(String setId) async {
+    try {
+      final cardsWords =
+          await trainingsDataSource.fetchSetWordsForCardsTraining(setId);
+      return Right(cardsWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<DictantTrainingEntity>>>
+      fetchSetWordsForDictantTraining(String setId) async {
+    try {
+      final dictantWords =
+          await trainingsDataSource.fetchSetWordsForDictantTraining(setId);
+      return Right(dictantWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MatchingTrainingEntity>>>
+      fetchSetWordsForMatchingTraining(String setId) async {
+    try {
+      final matchingWords =
+          await trainingsDataSource.fetchSetWordsForMatchingTraining(setId);
+      return Right(matchingWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<RepeatingTrainingEntity>>>
+      fetchSetWordsForRepeatingTraining(String setId) async {
+    try {
+      final repeatingWords =
+          await trainingsDataSource.fetchSetWordsForRepeatingTraining(setId);
+      return Right(repeatingWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<TWTrainingEntity>>> fetchSetWordsForTWTraining(
+      String setId) async {
+    try {
+      final twWords =
+          await trainingsDataSource.fetchSetWordsForTWTraining(setId);
+      return Right(twWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<WTTrainingEntity>>> fetchSetWordsForWTTraining(
+      String setId) async {
+    try {
+      final wtWords =
+          await trainingsDataSource.fetchSetWordsForWTTraining(setId);
+      return Right(wtWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

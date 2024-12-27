@@ -12,7 +12,9 @@ import 'package:pro_dictant/features/trainings/presentation/pages/tw_result_page
 import '../../domain/entities/tw_training_entity.dart';
 
 class TWInProcessPage extends StatefulWidget {
-  const TWInProcessPage({super.key});
+  final String setId;
+
+  const TWInProcessPage({super.key, required this.setId});
 
   @override
   State<TWInProcessPage> createState() => _TWInProcessPageState();
@@ -110,6 +112,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
           builder: (ctx) => TWResultPage(
                 answers: answers,
                 words: words,
+                setId: widget.setId,
               )));
       List<String> toUpdate = [];
       answers.forEach((key, value) {
