@@ -260,7 +260,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<CardsTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation where words_translations.isInDictionary =1 and words_translations.isCards =0 and table2.isInDictionary =1 order by random() limit 60 ''');
+          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation where words_translations.isInDictionary =1 and words_translations.isCards =0 and table2.isInDictionary =1 order by random() limit 30 ''');
 
       words = maps.map((map) => CardsTrainingModel.fromJson(map)).toList();
       return words;
@@ -324,7 +324,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<CardsTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation join word_set on words_translations.id = word_set.word_id where words_translations.isCards =0 and table2.isInDictionary =1 and word_set.set_id = '$setId' order by random() limit 60''');
+          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation join word_set on words_translations.id = word_set.word_id where words_translations.isCards =0 and table2.isInDictionary =1 and word_set.set_id = '$setId' order by random() limit 30''');
 
       words = maps.map((map) => CardsTrainingModel.fromJson(map)).toList();
       return words;

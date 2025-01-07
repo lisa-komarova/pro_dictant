@@ -42,8 +42,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
         String formattedDate = formatter.format(date);
         prefs.setString('day', formattedDate);
         prefs.setInt('timeOnApp', 0);
+        prefs.setInt('numberOfAdsShown', 0);
       } else if (DateTime.parse(day).compareTo(date) != 0) {
         prefs.setInt('timeOnApp', 0);
+        prefs.setInt('numberOfAdsShown', 0);
         var formatter = DateFormat('yyyy-MM-dd');
         String formattedDate = formatter.format(date);
         prefs.setString('day', formattedDate);

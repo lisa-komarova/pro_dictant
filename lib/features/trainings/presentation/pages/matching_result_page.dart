@@ -63,10 +63,17 @@ class MatchingResultPage extends StatelessWidget {
                                 itemBuilder: (ctx, index) {
                                   return Column(
                                     children: [
-                                      Text(
-                                        correctAnswers[index].source,
-                                        style: const TextStyle(
-                                            color: Color(0xFF85977f)),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Text(
+                                            correctAnswers[index].source,
+                                            style: const TextStyle(
+                                                color: Color(0xFF85977f)),
+                                          ),
+                                        ),
                                       ),
                                       Image.asset(
                                         'assets/icons/divider.png',
@@ -97,10 +104,17 @@ class MatchingResultPage extends StatelessWidget {
                                 itemBuilder: (ctx, index) {
                                   return Column(
                                     children: [
-                                      Text(
-                                        mistakes[index].source,
-                                        style: const TextStyle(
-                                            color: Color(0xFFB70E0E)),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Text(
+                                            mistakes[index].source,
+                                            style: const TextStyle(
+                                                color: Color(0xFFB70E0E)),
+                                          ),
+                                        ),
                                       ),
                                       Image.asset(
                                         'assets/icons/divider.png',

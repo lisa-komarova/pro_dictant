@@ -3,12 +3,17 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_result_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
+
+import '../../../../core/ad_widget.dart';
 
 class WTInProcessPage extends StatefulWidget {
   final String setId;
@@ -22,6 +27,21 @@ class WTInProcessPage extends StatefulWidget {
 class _WTInProcessPageState extends State<WTInProcessPage> {
   int currentWordIndex = 0;
   Map<String, String> answers = {};
+  final FlutterTts flutterTts = FlutterTts();
+  var isPronounceSelected = false;
+  final Color _color = const Color(0xFF85977f);
+  InterstitialAd? _interstitialAd;
+  late final Future<InterstitialAdLoader> _adLoader;
+  int numberOfAdsShown = 0;
+
+  @override
+  void initState() {
+    getNumberOfAdsShown();
+    MobileAds.initialize();
+    _adLoader = _createInterstitialAdLoader();
+    _loadInterstitialAd();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,11 +82,27 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
           flex: 2,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
+            child: SizedBox(
               height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(25),
+              child: BannerAdvertisement(
+                screenWidth: MediaQuery.of(context).size.width.round(),
+              ),
+            ),
+          ),
+        ),
+        Flexible(
+          child: GestureDetector(
+            onTap: () {
+              speak(words[currentWordIndex].source);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(seconds: 1),
+              curve: Curves.fastOutSlowIn,
+              child: Image.asset(
+                'assets/icons/pronounce.png',
+                width: 80,
+                height: 80,
+                color: _color,
               ),
             ),
           ),
@@ -106,6 +142,14 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
 
   void updateCurrentWord(List<WTTrainingEntity> words) {
     if (currentWordIndex + 1 >= words.length) {
+      if (numberOfAdsShown < 3) {
+        _loadInterstitialAd();
+        if (_interstitialAd != null) {
+          _interstitialAd?.show();
+          numberOfAdsShown++;
+          saveNumberOfAdsShown(numberOfAdsShown);
+        }
+      }
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => WTResultPage(
                 answers: answers,
@@ -219,5 +263,45 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
         child: CircularProgressIndicator(),
       ),
     );
+  }
+
+  Future<void> speak(String text) async {
+    await flutterTts.setLanguage('en-GB');
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.speak(text);
+  }
+
+  void saveNumberOfAdsShown(int number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('numberOfAdsShown', number);
+  }
+
+  getNumberOfAdsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  ///creates an ad
+  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
+    return InterstitialAdLoader.create(
+      onAdLoaded: (InterstitialAd interstitialAd) {
+        // The ad was loaded successfully. Now you can show loaded ad
+        _interstitialAd = interstitialAd;
+      },
+      onAdFailedToLoad: (error) {
+        // Ad failed to load with AdRequestError.
+        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+      },
+    );
+  }
+
+  ///loads an ad
+  Future<void> _loadInterstitialAd() async {
+    final adLoader = await _adLoader;
+    await adLoader.loadAd(
+        adRequestConfiguration: const AdRequestConfiguration(
+            adUnitId:
+                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

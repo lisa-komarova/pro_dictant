@@ -6,7 +6,10 @@ import 'package:pro_dictant/features/trainings/domain/entities/matching_training
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
 
+import '../../../../core/ad_widget.dart';
 import 'matching_result_page.dart';
 
 class MatchingInProcessPage extends StatefulWidget {
@@ -42,6 +45,18 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   List<MatchingTrainingEntity> currentWordsList = [];
   List<MatchingTrainingEntity> currentTranslationList = [];
   List<MatchingTrainingEntity> mistakes = [];
+  InterstitialAd? _interstitialAd;
+  late final Future<InterstitialAdLoader> _adLoader;
+  int numberOfAdsShown = 0;
+
+  @override
+  void initState() {
+    getNumberOfAdsShown();
+    MobileAds.initialize();
+    _adLoader = _createInterstitialAdLoader();
+    _loadInterstitialAd();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +125,18 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Flexible(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 100,
+              child: BannerAdvertisement(
+                screenWidth: MediaQuery.of(context).size.width.round(),
+              ),
+            ),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.all(28.0),
           child: Row(
@@ -248,7 +275,14 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             correctAnswerstoSend.addAll(correctAnswers);
                             correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
-
+                            if (numberOfAdsShown < 3) {
+                              _loadInterstitialAd();
+                              if (_interstitialAd != null) {
+                                _interstitialAd?.show();
+                                numberOfAdsShown++;
+                                saveNumberOfAdsShown(numberOfAdsShown);
+                              }
+                            }
                             Navigator.of(context)
                                 .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
@@ -389,7 +423,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                               wordsList.length < 5 &&
                               correctAnswers.length % 5 == 0) {
                             List<MatchingTrainingEntity> toAdd = wordsList
-                                .getRange(0, wordsList.length - 1)
+                                .getRange(0, wordsList.length)
                                 .toList();
                             currentWordsList.clear();
                             currentWordsList.addAll(toAdd);
@@ -419,7 +453,14 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             correctAnswerstoSend.addAll(correctAnswers);
                             correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
-
+                            if (numberOfAdsShown < 3) {
+                              _loadInterstitialAd();
+                              if (_interstitialAd != null) {
+                                _interstitialAd?.show();
+                                numberOfAdsShown++;
+                                saveNumberOfAdsShown(numberOfAdsShown);
+                              }
+                            }
                             Navigator.of(context)
                                 .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
@@ -492,5 +533,38 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
             );
           }),
     );
+  }
+
+  void saveNumberOfAdsShown(int number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('numberOfAdsShown', number);
+  }
+
+  getNumberOfAdsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  ///creates an ad
+  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
+    return InterstitialAdLoader.create(
+      onAdLoaded: (InterstitialAd interstitialAd) {
+        // The ad was loaded successfully. Now you can show loaded ad
+        _interstitialAd = interstitialAd;
+      },
+      onAdFailedToLoad: (error) {
+        // Ad failed to load with AdRequestError.
+        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+      },
+    );
+  }
+
+  ///loads an ad
+  Future<void> _loadInterstitialAd() async {
+    final adLoader = await _adLoader;
+    await adLoader.loadAd(
+        adRequestConfiguration: const AdRequestConfiguration(
+            adUnitId:
+                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

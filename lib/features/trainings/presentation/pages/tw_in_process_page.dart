@@ -8,7 +8,10 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_result_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
 
+import '../../../../core/ad_widget.dart';
 import '../../domain/entities/tw_training_entity.dart';
 
 class TWInProcessPage extends StatefulWidget {
@@ -23,6 +26,19 @@ class TWInProcessPage extends StatefulWidget {
 class _TWInProcessPageState extends State<TWInProcessPage> {
   int currentWordIndex = 0;
   Map<String, String> answers = {};
+  InterstitialAd? _interstitialAd;
+  late final Future<InterstitialAdLoader> _adLoader;
+  int numberOfAdsShown = 0;
+
+  @override
+  void initState() {
+    getNumberOfAdsShown();
+    MobileAds.initialize();
+    _adLoader = _createInterstitialAdLoader();
+    _loadInterstitialAd();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,11 +78,10 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
           flex: 2,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
+            child: SizedBox(
               height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(25),
+              child: BannerAdvertisement(
+                screenWidth: MediaQuery.of(context).size.width.round(),
               ),
             ),
           ),
@@ -108,6 +123,14 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
 
   void updateCurrentWord(List<TWTrainingEntity> words) {
     if (currentWordIndex + 1 >= words.length) {
+      if (numberOfAdsShown < 3) {
+        _loadInterstitialAd();
+        if (_interstitialAd != null) {
+          _interstitialAd?.show();
+          numberOfAdsShown++;
+          saveNumberOfAdsShown(numberOfAdsShown);
+        }
+      }
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => TWResultPage(
                 answers: answers,
@@ -216,5 +239,38 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
         child: CircularProgressIndicator(),
       ),
     );
+  }
+
+  void saveNumberOfAdsShown(int number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('numberOfAdsShown', number);
+  }
+
+  getNumberOfAdsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  ///creates an ad
+  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
+    return InterstitialAdLoader.create(
+      onAdLoaded: (InterstitialAd interstitialAd) {
+        // The ad was loaded successfully. Now you can show loaded ad
+        _interstitialAd = interstitialAd;
+      },
+      onAdFailedToLoad: (error) {
+        // Ad failed to load with AdRequestError.
+        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+      },
+    );
+  }
+
+  ///loads an ad
+  Future<void> _loadInterstitialAd() async {
+    final adLoader = await _adLoader;
+    await adLoader.loadAd(
+        adRequestConfiguration: const AdRequestConfiguration(
+            adUnitId:
+                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

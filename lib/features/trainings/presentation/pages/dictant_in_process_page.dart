@@ -4,7 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/dictant_result_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
 
+import '../../../../core/ad_widget.dart';
 import '../../domain/entities/dictant_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
@@ -33,6 +36,18 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   List<String> suggestedLetters = [];
   Color focusBorderColor = const Color(0xff5e6b5a);
   final wordController = TextEditingController();
+  InterstitialAd? _interstitialAd;
+  late final Future<InterstitialAdLoader> _adLoader;
+  int numberOfAdsShown = 0;
+
+  @override
+  void initState() {
+    getNumberOfAdsShown();
+    MobileAds.initialize();
+    _adLoader = _createInterstitialAdLoader();
+    _loadInterstitialAd();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,11 +112,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Container(
+          child: SizedBox(
             height: 100,
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(25),
+            child: BannerAdvertisement(
+              screenWidth: MediaQuery.of(context).size.width.round(),
             ),
           ),
         ),
@@ -226,6 +240,20 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
 
   void updateCurrentWord() {
     if (currentWordIndex == words.length - 1) {
+      final wordsSet = correctAnswers.map((e) => e.id).toSet();
+      Set<String> mistakesSet = mistakes.map((e) => e.id).toSet();
+      correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
+      mistakes.retainWhere((element) => mistakesSet.remove(element.id));
+      mistakesSet = mistakes.map((e) => e.id).toSet();
+      correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
+      if (numberOfAdsShown < 3) {
+        _loadInterstitialAd();
+        if (_interstitialAd != null) {
+          _interstitialAd?.show();
+          numberOfAdsShown++;
+          saveNumberOfAdsShown(numberOfAdsShown);
+        }
+      }
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => DictantResultPage(
                 correctAnswers: correctAnswers,
@@ -384,5 +412,38 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
       ));
     }
     return boxesForLetters;
+  }
+
+  void saveNumberOfAdsShown(int number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('numberOfAdsShown', number);
+  }
+
+  getNumberOfAdsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  ///creates an ad
+  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
+    return InterstitialAdLoader.create(
+      onAdLoaded: (InterstitialAd interstitialAd) {
+        // The ad was loaded successfully. Now you can show loaded ad
+        _interstitialAd = interstitialAd;
+      },
+      onAdFailedToLoad: (error) {
+        // Ad failed to load with AdRequestError.
+        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+      },
+    );
+  }
+
+  ///loads an ad
+  Future<void> _loadInterstitialAd() async {
+    final adLoader = await _adLoader;
+    await adLoader.loadAd(
+        adRequestConfiguration: const AdRequestConfiguration(
+            adUnitId:
+                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

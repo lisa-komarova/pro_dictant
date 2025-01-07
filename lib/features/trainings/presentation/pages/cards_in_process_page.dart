@@ -1,9 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
 
+import '../../../../core/ad_widget.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
@@ -27,6 +31,22 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
   List<String> suggestedAnswer = [];
   List<CardsTrainingEntity> correctAnswers = [];
   List<CardsTrainingEntity> mistakes = [];
+  final FlutterTts flutterTts = FlutterTts();
+  var isPronounceSelected = false;
+  final Color _color = const Color(0xFF85977f);
+  InterstitialAd? _interstitialAd;
+  late final Future<InterstitialAdLoader> _adLoader;
+  int numberOfAdsShown = 0;
+
+  @override
+  void initState() {
+    getNumberOfAdsShown();
+    MobileAds.initialize();
+    _adLoader = _createInterstitialAdLoader();
+    _loadInterstitialAd();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,11 +101,10 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
           flex: 2,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
+            child: SizedBox(
               height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(25),
+              child: BannerAdvertisement(
+                screenWidth: MediaQuery.of(context).size.width.round(),
               ),
             ),
           ),
@@ -101,6 +120,23 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
           flex: 1,
           child: SizedBox(
             height: 100,
+          ),
+        ),
+        Flexible(
+          child: GestureDetector(
+            onTap: () {
+              speak(words[currentWordIndex].source);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(seconds: 1),
+              curve: Curves.fastOutSlowIn,
+              child: Image.asset(
+                'assets/icons/pronounce.png',
+                width: 80,
+                height: 80,
+                color: _color,
+              ),
+            ),
           ),
         ),
         Flexible(
@@ -131,17 +167,18 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                         if (currentWordIndex + 1 >= words.length) {
                           finishWorkout();
                           return;
-                        }
-                        if (suggestedAnswer.first ==
-                            words[currentWordIndex].translation) {
-                          correctAnswers.add(words[currentWordIndex]);
                         } else {
-                          mistakes.add(words[currentWordIndex]);
+                          if (suggestedAnswer.first ==
+                              words[currentWordIndex].translation) {
+                            correctAnswers.add(words[currentWordIndex]);
+                          } else {
+                            mistakes.add(words[currentWordIndex]);
+                          }
+                          setState(() {
+                            currentWordIndex++;
+                            suggestedAnswer = [];
+                          });
                         }
-                        setState(() {
-                          currentWordIndex++;
-                          suggestedAnswer = [];
-                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFd9c3ac),
@@ -172,17 +209,18 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                       onPressed: () {
                         if (currentWordIndex + 1 >= words.length) {
                           finishWorkout();
-                        }
-                        if (suggestedAnswer.last ==
-                            words[currentWordIndex].translation) {
-                          correctAnswers.add(words[currentWordIndex]);
                         } else {
-                          mistakes.add(words[currentWordIndex]);
+                          if (suggestedAnswer.last ==
+                              words[currentWordIndex].translation) {
+                            correctAnswers.add(words[currentWordIndex]);
+                          } else {
+                            mistakes.add(words[currentWordIndex]);
+                          }
+                          setState(() {
+                            currentWordIndex++;
+                            suggestedAnswer = [];
+                          });
                         }
-                        setState(() {
-                          currentWordIndex++;
-                          suggestedAnswer = [];
-                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFd9c3ac),
@@ -218,11 +256,20 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
   }
 
   void finishWorkout() {
-    final wordsList = correctAnswers.map((e) => e.id).toSet();
-    final mistakesList = mistakes.map((e) => e.id).toSet();
-    correctAnswers.retainWhere((x) => wordsList.remove(x.id));
-    mistakes.retainWhere((element) => mistakesList.remove(element.id));
-    correctAnswers.removeWhere((element) => mistakesList.remove(element.id));
+    final wordsSet = correctAnswers.map((e) => e.id).toSet();
+    Set<String> mistakesSet = mistakes.map((e) => e.id).toSet();
+    correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
+    mistakes.retainWhere((element) => mistakesSet.remove(element.id));
+    mistakesSet = mistakes.map((e) => e.id).toSet();
+    correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
+    if (numberOfAdsShown < 3) {
+      _loadInterstitialAd();
+      if (_interstitialAd != null) {
+        _interstitialAd?.show();
+        numberOfAdsShown++;
+        saveNumberOfAdsShown(numberOfAdsShown);
+      }
+    }
     Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (ctx) => CardsResultPage(
               correctAnswers: correctAnswers,
@@ -231,5 +278,45 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
             )));
     BlocProvider.of<TrainingsBloc>(context)
         .add(UpdateWordsForCardsTRainings(correctAnswers));
+  }
+
+  Future<void> speak(String text) async {
+    await flutterTts.setLanguage('en-GB');
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.speak(text);
+  }
+
+  void saveNumberOfAdsShown(int number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('numberOfAdsShown', number);
+  }
+
+  getNumberOfAdsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  ///creates an ad
+  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
+    return InterstitialAdLoader.create(
+      onAdLoaded: (InterstitialAd interstitialAd) {
+        // The ad was loaded successfully. Now you can show loaded ad
+        _interstitialAd = interstitialAd;
+      },
+      onAdFailedToLoad: (error) {
+        // Ad failed to load with AdRequestError.
+        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+      },
+    );
+  }
+
+  ///loads an ad
+  Future<void> _loadInterstitialAd() async {
+    final adLoader = await _adLoader;
+    await adLoader.loadAd(
+        adRequestConfiguration: const AdRequestConfiguration(
+            adUnitId:
+                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

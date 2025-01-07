@@ -554,6 +554,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
+  yandex_mobileads:
+    dependency: "direct main"
+    description:
+      name: yandex_mobileads
+      sha256: "81d8e6d7f486bd559d7736c37361fda5f636d40b350348dbe31681cb80e4a2c2"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "7.7.0"
 sdks:
   dart: ">=3.2.2 <4.0.0"
   flutter: ">=3.16.0"

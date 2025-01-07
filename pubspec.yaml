@@ -53,6 +53,7 @@ dependencies:
   shared_preferences: ^2.2.3
   path: ^1.8.3
   bloc_concurrency: ^0.2.5
+  yandex_mobileads: ^7.7.0
 
 dev_dependencies:
   flutter_test:

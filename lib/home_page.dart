@@ -6,6 +6,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page
 
 import 'features/dictionary/presentation/pages/dictionary_page.dart';
 import 'features/profile/presentation/manager/profile_bloc.dart';
+import 'features/profile/presentation/manager/profile_event.dart';
 import 'features/profile/presentation/manager/profile_state.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,7 +17,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int currentPageIndex = 0;
+  int currentPageIndex = 1;
+
+  @override
+  void initState() {
+    BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

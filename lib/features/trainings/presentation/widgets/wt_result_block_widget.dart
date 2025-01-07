@@ -30,43 +30,46 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(widget.source),
-                        ),
-                      ),
-                      const Text(' - '),
-                      Flexible(
-                        fit: FlexFit.tight,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              toShowCorrectAnswer = !toShowCorrectAnswer;
-                            });
-                          },
-                          child: Padding(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: toShowCorrectAnswer
-                                  ? Text(widget.correctAnswer)
-                                  : Text(
-                                      widget.answer,
-                                      style: TextStyle(
-                                        color: widget.answer ==
-                                                widget.correctAnswer
-                                            ? const Color(0xFF85977f)
-                                            : const Color(0xFFB70E0E),
-                                      ),
-                                    )),
-                        ),
+                              child: Text(widget.source),
+                            ),
+                          ),
+                          const Text(' - '),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  toShowCorrectAnswer = !toShowCorrectAnswer;
+                                });
+                              },
+                              child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: toShowCorrectAnswer
+                                      ? Text(widget.correctAnswer)
+                                      : Text(
+                                          widget.answer,
+                                          style: TextStyle(
+                                            color: widget.answer ==
+                                                    widget.correctAnswer
+                                                ? const Color(0xFF85977f)
+                                                : const Color(0xFFB70E0E),
+                                          ),
+                                        )),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  ],
+                )),
                 Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: widget.answer != widget.correctAnswer
@@ -74,6 +77,7 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
                             'assets/icons/cancel.png',
                             width: 15,
                             height: 15,
+                            color: const Color(0xFFB70E0E),
                           )
                         : Image.asset(
                             'assets/icons/add.png',

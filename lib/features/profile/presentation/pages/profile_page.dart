@@ -18,12 +18,6 @@ class _ProfilePageState extends State<ProfilePage> {
   DateTime dateNow = DateTime.now();
 
   @override
-  void initState() {
-    BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
       if (state is ProfileLoading) {

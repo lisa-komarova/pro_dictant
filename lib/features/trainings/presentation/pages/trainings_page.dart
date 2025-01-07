@@ -47,6 +47,7 @@ class _TrainingsPageState extends State<TrainingsPage>
   @override
   void initState() {
     getTime();
+
     if (!widget.isTodayCompleted) {
       _ticker = createTicker((elapsed) {
         sessionTime = elapsed.inMinutes;
@@ -54,6 +55,7 @@ class _TrainingsPageState extends State<TrainingsPage>
           if ((timeOnApp + sessionTime) >= widget.goal) {
             BlocProvider.of<ProfileBloc>(context)
                 .add(UpdateDayStatistics(date: DateTime.now()));
+            BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
             timeOnApp = 0;
             sessionTime = 0;
             widget.isTodayCompleted = true;
