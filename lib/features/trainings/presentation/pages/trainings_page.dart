@@ -47,7 +47,6 @@ class _TrainingsPageState extends State<TrainingsPage>
   @override
   void initState() {
     getTime();
-
     if (!widget.isTodayCompleted) {
       _ticker = createTicker((elapsed) {
         sessionTime = elapsed.inMinutes;

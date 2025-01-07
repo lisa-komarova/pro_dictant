@@ -114,9 +114,11 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
             height: 100,
-            child: BannerAdvertisement(
-              screenWidth: MediaQuery.of(context).size.width.round(),
-            ),
+            child: numberOfAdsShown < 3
+                ? BannerAdvertisement(
+                    screenWidth: MediaQuery.of(context).size.width.round(),
+                  )
+                : null,
           ),
         ),
         Flexible(
