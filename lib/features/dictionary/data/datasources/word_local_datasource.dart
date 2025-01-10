@@ -430,7 +430,8 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       List<TranslationModel> translationsForSingleWord = [];
       for (int y = 0; y < translations.length; y++) {
         if (words[i].id == translations[y].wordId) {
-          translationsForSingleWord.insert(0, translations[y]);
+          translationsForSingleWord.add(translations[y]);
+          //translationsForSingleWord.insert(0, translations[y]);
         }
       }
       words[i].translationList.addAll(translationsForSingleWord);
