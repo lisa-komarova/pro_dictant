@@ -330,13 +330,17 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   }
 
   void fillLetters(DictantTrainingEntity word) {
-    List<String> searchKeywords = List<String>.generate(
-        word.source.length, (index) => word.source[index]);
+    String str = word.source;
+    if (str.characters.last == ' ') {
+      str = word.source.substring(0, str.length - 1);
+    }
+    List<String> searchKeywords =
+        List<String>.generate(str.length, (index) => str[index]);
     for (int i = 0; i < searchKeywords.length; i++) {
       colors.add(const Color(0xFFd9c3ac));
     }
     searchKeywords.shuffle();
-    correctAnswer = word.source;
+    correctAnswer = str;
     suggestedLetters.addAll(searchKeywords);
   }
 

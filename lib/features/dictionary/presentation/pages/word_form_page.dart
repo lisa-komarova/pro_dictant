@@ -25,6 +25,7 @@ class _WordFormState extends State<WordForm> {
   final _posController = TextEditingController();
   final _transcriptionController = TextEditingController();
   final List<TextEditingController> _translationControllerList = [];
+  final List<TextEditingController> _notesControllerList = [];
   final List<TranslationEntity> translations = [];
   final List<TranslationEntity> existingTranslations = [];
   bool isTranslationDeleted = false;
@@ -38,13 +39,16 @@ class _WordFormState extends State<WordForm> {
       _transcriptionController.text = widget.word.transcription;
       for (var w = 0; w < widget.word.translationList.length; w++) {
         _translationControllerList.add(TextEditingController());
+        _notesControllerList.add(TextEditingController());
         _translationControllerList[w].text =
             widget.word.translationList[w].translation;
+        _notesControllerList[w].text = widget.word.translationList[w].notes;
         translations.add(widget.word.translationList[w]);
         existingTranslations.add(widget.word.translationList[w]);
       }
     } else {
       _translationControllerList.add(TextEditingController());
+      _notesControllerList.add(TextEditingController());
     }
     super.initState();
   }
@@ -55,6 +59,9 @@ class _WordFormState extends State<WordForm> {
     _posController.dispose();
     _transcriptionController.dispose();
     for (var a in _translationControllerList) {
+      a.dispose();
+    }
+    for (var a in _notesControllerList) {
       a.dispose();
     }
     super.dispose();
@@ -142,30 +149,84 @@ class _WordFormState extends State<WordForm> {
                     children: [
                       if (widget.isNew)
                         Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: _translationControllerList[0],
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15)),
-                                    borderSide: BorderSide(
-                                      color: Color(0xFFd9c3ac),
-                                      width: 3,
-                                    )),
-                                hintText: S.of(context).enterTranslation,
-                                hintStyle: const TextStyle(fontSize: 10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextFormField(
+                                    controller: _translationControllerList[0],
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15)),
+                                          borderSide: BorderSide(
+                                            color: Color(0xFFd9c3ac),
+                                            width: 3,
+                                          )),
+                                      hintText: S.of(context).enterTranslation,
+                                      hintStyle: const TextStyle(fontSize: 10),
+                                    ),
+                                    // The validator receives the text that the user has entered.
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return S.of(context).enterTranslation;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
                               ),
-                              // The validator receives the text that the user has entered.
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return S.of(context).enterTranslation;
-                                }
-                                return null;
-                              },
-                            ),
+                              GestureDetector(
+                                onTap: () async {
+                                  final result = await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text(
+                                            'Add notes to translation'),
+                                        content: TextField(
+                                          controller: _notesControllerList[0],
+                                          autofocus: true,
+                                          maxLines: null,
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            child: Text(S.of(context).cancel),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text(S.of(context).add),
+                                            onPressed: () {
+                                              Navigator.pop(context,
+                                                  _notesControllerList[0].text);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                  if (result != null) {
+                                    result as String;
+                                    setState(() {
+                                      translations[0].notes = result;
+                                    });
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    'assets/icons/dictant.png',
+                                    width: 35,
+                                    height: 35,
+                                    color: const Color(0xFF85977f),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       buildTranslationTextFields(),
@@ -179,6 +240,7 @@ class _WordFormState extends State<WordForm> {
                           translation: '',
                           notes: ''));
                       _translationControllerList.add(TextEditingController());
+                      _notesControllerList.add(TextEditingController());
                       isTranslationAdded = true;
                     });
                   },
@@ -230,7 +292,9 @@ class _WordFormState extends State<WordForm> {
                                   id: const Uuid().v4(),
                                   wordId: widget.word.id,
                                   translation: e.text,
-                                  notes: '',
+                                  notes: _notesControllerList[
+                                          _translationControllerList.indexOf(e)]
+                                      .text,
                                 );
                                 if (_translationControllerList.indexOf(e) ==
                                     0) {
@@ -246,6 +310,8 @@ class _WordFormState extends State<WordForm> {
                                   i++) {
                                 translations[i].translation =
                                     _translationControllerList[i].text;
+                                translations[i].notes =
+                                    _notesControllerList[i].text;
                               }
                               final newTranslationsIds =
                                   translations.map((e) => e.id).toList();
@@ -274,7 +340,8 @@ class _WordFormState extends State<WordForm> {
                                     id: const Uuid().v4(),
                                     wordId: widget.word.id,
                                     translation: translations[i].translation,
-                                    notes: '',
+                                    //
+                                    notes: translations[i].notes,
                                   );
                                   if (translations[i].isInDictionary == 1) {
                                     newTranslation.isInDictionary = 1;
@@ -391,6 +458,8 @@ class _WordFormState extends State<WordForm> {
                         setState(() {
                           _translationControllerList[index + 1].dispose();
                           _translationControllerList.removeAt(index + 1);
+                          _notesControllerList[index + 1].dispose();
+                          _notesControllerList.removeAt(index + 1);
                         });
                       } else {
                         setState(() {
@@ -398,6 +467,8 @@ class _WordFormState extends State<WordForm> {
                         });
                         _translationControllerList[index].dispose();
                         _translationControllerList.removeAt(index);
+                        _notesControllerList[index].dispose();
+                        _notesControllerList.removeAt(index);
                       }
                       isTranslationDeleted = true;
                     },
@@ -410,6 +481,55 @@ class _WordFormState extends State<WordForm> {
                       ),
                     ),
                   ),
+                GestureDetector(
+                  onTap: () async {
+                    final result = await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Add notes to translation'),
+                          content: TextField(
+                            controller: widget.isNew
+                                ? _notesControllerList[index + 1]
+                                : _notesControllerList[index],
+                            autofocus: true,
+                            maxLines: null,
+                          ),
+                          actions: [
+                            TextButton(
+                              child: Text(S.of(context).cancel),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            TextButton(
+                              child: Text(S.of(context).add),
+                              onPressed: () {
+                                Navigator.pop(
+                                    context, _notesControllerList[index].text);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    if (result != null) {
+                      result as String;
+                      setState(() {
+                        translations[index].notes = result;
+                      });
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(
+                      'assets/icons/dictant.png',
+                      width: 35,
+                      height: 35,
+                      color: const Color(0xFF85977f),
+                    ),
+                  ),
+                ),
               ],
             );
           }),

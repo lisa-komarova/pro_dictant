@@ -7,9 +7,9 @@
    "@profile": {
      "description": "Bottom navigation dictionary"
    },
-  "trainings": "trainings",
+  "trainings": "training",
   "@trainings": {
-    "description": "Bottom navigation trainings"
+    "description": "Bottom navigation training"
   },
   "wordSets": "word sets",
     "newSet": "new set",
@@ -79,6 +79,6 @@
     "myDictionary": "my dictionary",
     "shouldDeleteSet": "are you sure you want to delete this set of words?",
     "currentlyLearning": "currently learning : {setName}",
-    "sendSetToTrainings" : "send to trainings",
+    "sendSetToTrainings" : "send to training",
     "learntPercentage" : "{learntPercentage} percent learned"
 }

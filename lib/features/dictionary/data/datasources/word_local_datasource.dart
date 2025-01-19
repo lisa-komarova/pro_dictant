@@ -6,6 +6,7 @@ import 'package:pro_dictant/core/error/exception.dart';
 import 'package:pro_dictant/features/dictionary/data/models/set_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/translation_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
+import 'package:pro_dictant/features/dictionary/data/models/word_set_model.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_bm25/sqlite_bm25.dart';
@@ -150,13 +151,24 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   @override
   Future<List<SetModel>> fetchWordsForSets(List<SetModel> sets) async {
     final db = await instance.database;
-    List<WordModel> words = [];
+    final wordsInSetsMap = await db!.rawQuery(
+        '''SELECT word.id,  word.pos, word.source, word.transcription from words_translations INNER join word_set on words_translations.id == word_set.word_id INNER join word on words_translations.word_id
+               == word.id''');
+    final wordsInSets =
+        wordsInSetsMap.map((map) => WordModel.fromJson(map)).toList();
+    final wordSetMap = await db.rawQuery(
+        '''select words_translations.word_id, word_set.set_id from word_set join words_translations on word_set.word_id = words_translations.id''');
+    final wordSet = wordSetMap.map((e) => WordSetModel.fromJson(e)).toList();
     for (int i = 0; i < sets.length; i++) {
-      final wordsInSet = await db!.rawQuery(
-          '''SELECT word.id,  word.pos, word.source, word.transcription from words_translations INNER join word_set on words_translations.id == word_set.word_id INNER join word on words_translations.word_id
-               == word.id WHERE word_set.set_id = "${sets[i].id}"''');
-      words = wordsInSet.map((map) => WordModel.fromJson(map)).toList();
-      sets[i].wordsInSet.addAll(words);
+      final List<WordModel> wordsForSingleSet = [];
+      for (int y = 0; y < wordSet.length; y++) {
+        if (sets[i].id == wordSet[y].set_id) {
+          wordsForSingleSet.add(wordsInSets
+              .where((element) => element.id == wordSet[y].word_id)
+              .first);
+        }
+      }
+      sets[i].wordsInSet.addAll(wordsForSingleSet);
     }
     return sets;
   }
@@ -514,7 +526,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       where: 'id = ?',
       whereArgs: [setId],
     );
-    await db!.delete(
+    await db.delete(
       'word_set',
       where: 'set_id = ?',
       whereArgs: [setId],
