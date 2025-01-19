@@ -23,69 +23,77 @@ class _ProfilePageState extends State<ProfilePage> {
       if (state is ProfileLoading) {
         return _loadingIndicator();
       } else if (state is ProfileLoaded) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(
-              height: 100,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              S.of(context).addedWords(
-                                  state.statistics.wordsInDictionary),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              S
-                                  .of(context)
-                                  .learntWords(state.statistics.learntWords),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                _dialogBuilder(context);
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    S.of(context).goal(state.statistics.goal),
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
+        return RefreshIndicator(
+          onRefresh: _refreshPage,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  height: 100,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  S.of(context).addedWords(
+                                      state.statistics.wordsInDictionary),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                Text(
+                                  S.of(context).learntWords(
+                                      state.statistics.learntWords),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    _dialogBuilder(context);
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        S
+                                            .of(context)
+                                            .goal(state.statistics.goal),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge,
+                                      ),
+                                      Image.asset(
+                                        'assets/icons/dictant.png',
+                                        width: 25,
+                                        height: 25,
+                                      ),
+                                    ],
                                   ),
-                                  Image.asset(
-                                    'assets/icons/dictant.png',
-                                    width: 25,
-                                    height: 25,
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+                      )
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: _buildStatistics(context, state.statistics),
+                ),
+              ],
             ),
-            Flexible(
-              child: _buildStatistics(context, state.statistics),
-            ),
-          ],
+          ),
         );
       }
       return const SizedBox();
@@ -193,5 +201,9 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
     );
+  }
+
+  Future<void> _refreshPage() async {
+    BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
   }
 }
