@@ -487,7 +487,7 @@ class _WordFormState extends State<WordForm> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: const Text('Add notes to translation'),
+                          title: Text(S.of(context).addNotes),
                           content: TextField(
                             controller: widget.isNew
                                 ? _notesControllerList[index + 1]

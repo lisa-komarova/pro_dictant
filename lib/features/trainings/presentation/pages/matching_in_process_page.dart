@@ -15,7 +15,10 @@ import 'matching_result_page.dart';
 class MatchingInProcessPage extends StatefulWidget {
   final String setId;
 
-  const MatchingInProcessPage({super.key, required this.setId});
+  const MatchingInProcessPage({
+    super.key,
+    required this.setId,
+  });
 
   @override
   State<MatchingInProcessPage> createState() => _MatchingInProcessPageState();
@@ -45,16 +48,11 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   List<MatchingTrainingEntity> currentWordsList = [];
   List<MatchingTrainingEntity> currentTranslationList = [];
   List<MatchingTrainingEntity> mistakes = [];
-  InterstitialAd? _interstitialAd;
-  late final Future<InterstitialAdLoader> _adLoader;
   int numberOfAdsShown = 0;
 
   @override
   void initState() {
     getNumberOfAdsShown();
-    MobileAds.initialize();
-    _adLoader = _createInterstitialAdLoader();
-    _loadInterstitialAd();
     super.initState();
   }
 
@@ -277,14 +275,6 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             correctAnswerstoSend.addAll(correctAnswers);
                             correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
-                            if (numberOfAdsShown < 3) {
-                              _loadInterstitialAd();
-                              if (_interstitialAd != null) {
-                                _interstitialAd?.show();
-                                numberOfAdsShown++;
-                                saveNumberOfAdsShown(numberOfAdsShown);
-                              }
-                            }
                             Navigator.of(context)
                                 .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
@@ -455,14 +445,6 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             correctAnswerstoSend.addAll(correctAnswers);
                             correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
-                            if (numberOfAdsShown < 3) {
-                              _loadInterstitialAd();
-                              if (_interstitialAd != null) {
-                                _interstitialAd?.show();
-                                numberOfAdsShown++;
-                                saveNumberOfAdsShown(numberOfAdsShown);
-                              }
-                            }
                             Navigator.of(context)
                                 .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
@@ -537,36 +519,8 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
     );
   }
 
-  void saveNumberOfAdsShown(int number) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('numberOfAdsShown', number);
-  }
-
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  ///creates an ad
-  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
-    return InterstitialAdLoader.create(
-      onAdLoaded: (InterstitialAd interstitialAd) {
-        // The ad was loaded successfully. Now you can show loaded ad
-        _interstitialAd = interstitialAd;
-      },
-      onAdFailedToLoad: (error) {
-        // Ad failed to load with AdRequestError.
-        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-      },
-    );
-  }
-
-  ///loads an ad
-  Future<void> _loadInterstitialAd() async {
-    final adLoader = await _adLoader;
-    await adLoader.loadAd(
-        adRequestConfiguration: const AdRequestConfiguration(
-            adUnitId:
-                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

@@ -12,6 +12,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
 
 import 'cards_in_process_page.dart';
 import 'dictant_in_process_page.dart';
@@ -38,8 +39,8 @@ class TrainingsPage extends StatefulWidget {
 class _TrainingsPageState extends State<TrainingsPage>
     with TickerProviderStateMixin {
   Ticker? _ticker;
-  int timeOnApp = 0;
-  int sessionTime = 0;
+  Duration timeOnApp = const Duration();
+  Duration sessionTime = const Duration();
   late final AppLifecycleListener _listener;
   final List<String> _states = <String>[];
   late AppLifecycleState? _state;
@@ -49,14 +50,14 @@ class _TrainingsPageState extends State<TrainingsPage>
     getTime();
     if (!widget.isTodayCompleted) {
       _ticker = createTicker((elapsed) {
-        sessionTime = elapsed.inMinutes;
+        sessionTime = elapsed;
         setState(() {
-          if ((timeOnApp + sessionTime) >= widget.goal) {
+          if ((timeOnApp + sessionTime) >= Duration(minutes: widget.goal)) {
             BlocProvider.of<ProfileBloc>(context)
                 .add(UpdateDayStatistics(date: DateTime.now()));
             BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
-            timeOnApp = 0;
-            sessionTime = 0;
+            timeOnApp = const Duration();
+            sessionTime = const Duration();
             widget.isTodayCompleted = true;
             _ticker!.stop();
           }
@@ -72,11 +73,20 @@ class _TrainingsPageState extends State<TrainingsPage>
         _ticker?.start();
       },
       onInactive: () {
-        saveTime(timeOnApp + sessionTime);
+        saveTime();
         _ticker?.stop(canceled: false);
       },
+      onHide: () => () {
+        saveTime();
+      },
+      onShow: () => () {
+        getTime();
+      },
+      onPause: () => () {
+        saveTime();
+      },
       onDetach: () => () {
-        saveTime(timeOnApp + sessionTime);
+        saveTime();
       },
       onRestart: () => () {
         getTime();
@@ -90,7 +100,7 @@ class _TrainingsPageState extends State<TrainingsPage>
 
   @override
   void dispose() {
-    saveTime(timeOnApp + sessionTime);
+    saveTime();
     _ticker?.dispose();
     _listener.dispose();
     super.dispose();
@@ -117,7 +127,8 @@ class _TrainingsPageState extends State<TrainingsPage>
     if (!widget.isTodayCompleted) {
       height -= 50;
     }
-    int timeLeft = widget.goal - (timeOnApp + sessionTime);
+    Duration timeLeft =
+        Duration(minutes: widget.goal) - (timeOnApp + sessionTime);
     var aspectRatio = (width / 2) / (height / 3);
     return Scaffold(
       body: SafeArea(
@@ -133,7 +144,11 @@ class _TrainingsPageState extends State<TrainingsPage>
                           padding: const EdgeInsets.only(
                               left: 10.0, right: 10, top: 10),
                           child: AutoSizeText(
-                            S.of(context).timeLeft(timeLeft),
+                            timeLeft.inMinutes == widget.goal
+                                ? ""
+                                : S
+                                    .of(context)
+                                    .timeLeft(timeLeft.inMinutes + 1),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -324,13 +339,31 @@ class _TrainingsPageState extends State<TrainingsPage>
     );
   }
 
-  void saveTime(int time) async {
+  void saveTime() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('timeOnApp', time);
+    Duration time = sessionTime + timeOnApp;
+    prefs.setString('timeOnApp', time.toString());
   }
 
   getTime() async {
     final prefs = await SharedPreferences.getInstance();
-    timeOnApp = prefs.getInt('timeOnApp') ?? 0;
+    String time = prefs.getString('timeOnApp') ?? "";
+    timeOnApp = parseDuration(time);
+  }
+
+  Duration parseDuration(String s) {
+    if (s.isEmpty) return const Duration();
+    int hours = 0;
+    int minutes = 0;
+    int micros;
+    List<String> parts = s.split(':');
+    if (parts.length > 2) {
+      hours = int.parse(parts[parts.length - 3]);
+    }
+    if (parts.length > 1) {
+      minutes = int.parse(parts[parts.length - 2]);
+    }
+    micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
+    return Duration(hours: hours, minutes: minutes, microseconds: micros);
   }
 }

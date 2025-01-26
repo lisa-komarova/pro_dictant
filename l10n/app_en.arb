@@ -80,5 +80,6 @@
     "shouldDeleteSet": "are you sure you want to delete this set of words?",
     "currentlyLearning": "currently learning : {setName}",
     "sendSetToTrainings" : "send to training",
-    "learntPercentage" : "{learntPercentage} percent learned"
+    "learntPercentage" : "{learntPercentage} percent learned",
+    "addNotes" : "add notes to translation"
 }

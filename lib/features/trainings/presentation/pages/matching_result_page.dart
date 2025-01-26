@@ -12,11 +12,12 @@ class MatchingResultPage extends StatelessWidget {
   final List<MatchingTrainingEntity> mistakes;
   final String setId;
 
-  const MatchingResultPage(
-      {required this.correctAnswers,
-      required this.mistakes,
-      super.key,
-      required this.setId});
+  const MatchingResultPage({
+    required this.correctAnswers,
+    required this.mistakes,
+    super.key,
+    required this.setId,
+  });
 
   @override
   Widget build(BuildContext context) {

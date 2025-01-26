@@ -37,6 +37,8 @@ abstract class WordLocalDatasource {
 
   Future<List<WordModel>> filterWordsInDict(String query);
 
+  Future<List<WordModel>> searchWordsInTranslation(String query);
+
   Future<List<SetModel>> fetchWordsForSets(List<SetModel> sets);
 
   Future<List<WordModel>> fetchTranslationsForWords(List<WordModel> words);
@@ -344,10 +346,20 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     }
   }
 
-//closes db
-  Future close() async {
+  @override
+  Future<List<WordModel>> searchWordsInTranslation(String query) async {
     final db = await instance.database;
-    db!.close();
+    List<WordModel> words = [];
+    var maps = await db!.rawQuery(
+        'select word.id, word.source, word.transcription, word.pos from word join words_translations on word.id = words_translations.word_id where words_translations.translation like \'%$query%\'');
+    if (maps.isNotEmpty) {
+      words = maps.map((map) => WordModel.fromJson(map)).toList();
+      return words;
+    } else if (maps.isEmpty) {
+      return words;
+    } else {
+      throw ServerException();
+    }
   }
 
   @override
@@ -360,7 +372,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     or isMatching=1 or  isDictant=1 or  isRepeated=1)
        and (isTW=0 or isWT=0 or isCards=0 
        or  isMatching=0 or  isDictant=0 
-       or  isRepeated=0)''');
+       or  isRepeated=0) order by words_translations.dateAddedToDictionary desc''');
     if (maps.isNotEmpty) {
       words = maps.map((map) => WordModel.fromJson(map)).toList();
       return words;
@@ -378,7 +390,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     final maps = await db!.rawQuery(
         '''select word.id,source, pos, transcription from word JOIN words_translations on word.id = words_translations.word_id where 
     isInDictionary= 1 and  isTW=1 and isWT=1 and isCards=1 
-    and isMatching=1 and  isDictant=1 and  isRepeated=1''');
+    and isMatching=1 and  isDictant=1 and  isRepeated=1 order by words_translations.dateAddedToDictionary desc''');
     if (maps.isNotEmpty) {
       words = maps.map((map) => WordModel.fromJson(map)).toList();
       return words;
@@ -396,7 +408,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     final maps = await db!.rawQuery(
         '''select word.id,source, pos, transcription from word JOIN words_translations on word.id = words_translations.word_id where 
     isInDictionary= 1 and  isTW=0 and isWT=0 and isCards=0 
-    and isMatching=0 and  isDictant=0 and  isRepeated=0''');
+    and isMatching=0 and  isDictant=0 and  isRepeated=0  order by words_translations.dateAddedToDictionary desc''');
     if (maps.isNotEmpty) {
       words = maps.map((map) => WordModel.fromJson(map)).toList();
       return words;

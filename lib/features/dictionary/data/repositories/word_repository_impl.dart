@@ -33,6 +33,9 @@ class WordRepositoryImpl extends WordRepository {
     try {
       if (query.isNotEmpty) {
         wordsInDict = await localDataSource.filterWordsInDict(query);
+        // if (wordsInDict.isEmpty) {
+        //   wordsInDict = await localDataSource.searchWordsInTranslation(query);
+        // }
       } else if (isNew) {
         wordsInDict = await localDataSource.getNewWords();
       } else if (isLearning) {

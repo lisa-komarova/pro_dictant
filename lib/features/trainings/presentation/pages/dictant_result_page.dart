@@ -12,11 +12,12 @@ class DictantResultPage extends StatelessWidget {
   final List<DictantTrainingEntity> mistakes;
   final String setId;
 
-  const DictantResultPage(
-      {required this.correctAnswers,
-      required this.mistakes,
-      super.key,
-      required this.setId});
+  const DictantResultPage({
+    required this.correctAnswers,
+    required this.mistakes,
+    super.key,
+    required this.setId,
+  });
 
   @override
   Widget build(BuildContext context) {

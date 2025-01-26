@@ -12,11 +12,12 @@ class CardsResultPage extends StatelessWidget {
   final List<CardsTrainingEntity> mistakes;
   final String setId;
 
-  const CardsResultPage(
-      {required this.correctAnswers,
-      required this.mistakes,
-      super.key,
-      required this.setId});
+  const CardsResultPage({
+    required this.correctAnswers,
+    required this.mistakes,
+    super.key,
+    required this.setId,
+  });
 
   @override
   Widget build(BuildContext context) {

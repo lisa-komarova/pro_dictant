@@ -71,5 +71,6 @@
   "shouldDeleteSet": "вы уверены, что хотите удалить набор слов?",
    "currentlyLearning": "сейчас на изучении : {setName}",
   "sendSetToTrainings" : "отправить на изучение",
-  "learntPercentage" : "выучено {learntPercentage}"
+  "learntPercentage" : "выучено {learntPercentage}",
+  "addNotes" : "добавить примечание к переводу"
 }

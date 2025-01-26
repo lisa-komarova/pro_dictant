@@ -16,7 +16,10 @@ import '../manager/trainings_bloc/trainings_state.dart';
 class DictantInProcessPage extends StatefulWidget {
   final String setId;
 
-  const DictantInProcessPage({super.key, required this.setId});
+  const DictantInProcessPage({
+    super.key,
+    required this.setId,
+  });
 
   @override
   State<DictantInProcessPage> createState() => _DictantInProcessPageState();
@@ -36,16 +39,11 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   List<String> suggestedLetters = [];
   Color focusBorderColor = const Color(0xff5e6b5a);
   final wordController = TextEditingController();
-  InterstitialAd? _interstitialAd;
-  late final Future<InterstitialAdLoader> _adLoader;
   int numberOfAdsShown = 0;
 
   @override
   void initState() {
     getNumberOfAdsShown();
-    MobileAds.initialize();
-    _adLoader = _createInterstitialAdLoader();
-    _loadInterstitialAd();
     super.initState();
   }
 
@@ -248,14 +246,6 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
       mistakes.retainWhere((element) => mistakesSet.remove(element.id));
       mistakesSet = mistakes.map((e) => e.id).toSet();
       correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
-      if (numberOfAdsShown < 3) {
-        _loadInterstitialAd();
-        if (_interstitialAd != null) {
-          _interstitialAd?.show();
-          numberOfAdsShown++;
-          saveNumberOfAdsShown(numberOfAdsShown);
-        }
-      }
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => DictantResultPage(
                 correctAnswers: correctAnswers,
@@ -330,9 +320,11 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   }
 
   void fillLetters(DictantTrainingEntity word) {
-    String str = word.source;
-    if (str.characters.last == ' ') {
-      str = word.source.substring(0, str.length - 1);
+    String str;
+    if (word.source.characters.last == ' ') {
+      str = word.source.substring(0, word.source.length - 1);
+    } else {
+      str = word.source;
     }
     List<String> searchKeywords =
         List<String>.generate(str.length, (index) => str[index]);
@@ -382,7 +374,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                 colors[index] = const Color(0xFF85977f);
                 currentLetterIndex++;
               });
-              if (currentLetterIndex == word.source.length) {
+              if (currentLetterIndex == correctAnswer.length) {
                 updateCurrentWord();
                 if (!mistakes.contains(word)) {
                   correctAnswers.add(word);
@@ -420,36 +412,8 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     return boxesForLetters;
   }
 
-  void saveNumberOfAdsShown(int number) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('numberOfAdsShown', number);
-  }
-
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  ///creates an ad
-  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
-    return InterstitialAdLoader.create(
-      onAdLoaded: (InterstitialAd interstitialAd) {
-        // The ad was loaded successfully. Now you can show loaded ad
-        _interstitialAd = interstitialAd;
-      },
-      onAdFailedToLoad: (error) {
-        // Ad failed to load with AdRequestError.
-        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-      },
-    );
-  }
-
-  ///loads an ad
-  Future<void> _loadInterstitialAd() async {
-    final adLoader = await _adLoader;
-    await adLoader.loadAd(
-        adRequestConfiguration: const AdRequestConfiguration(
-            adUnitId:
-                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

@@ -17,7 +17,10 @@ import '../../domain/entities/tw_training_entity.dart';
 class TWInProcessPage extends StatefulWidget {
   final String setId;
 
-  const TWInProcessPage({super.key, required this.setId});
+  const TWInProcessPage({
+    super.key,
+    required this.setId,
+  });
 
   @override
   State<TWInProcessPage> createState() => _TWInProcessPageState();
@@ -26,16 +29,12 @@ class TWInProcessPage extends StatefulWidget {
 class _TWInProcessPageState extends State<TWInProcessPage> {
   int currentWordIndex = 0;
   Map<String, String> answers = {};
-  InterstitialAd? _interstitialAd;
-  late final Future<InterstitialAdLoader> _adLoader;
   int numberOfAdsShown = 0;
 
   @override
   void initState() {
     getNumberOfAdsShown();
     MobileAds.initialize();
-    _adLoader = _createInterstitialAdLoader();
-    _loadInterstitialAd();
     super.initState();
   }
 
@@ -125,14 +124,6 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
 
   void updateCurrentWord(List<TWTrainingEntity> words) {
     if (currentWordIndex + 1 >= words.length) {
-      if (numberOfAdsShown < 3) {
-        _loadInterstitialAd();
-        if (_interstitialAd != null) {
-          _interstitialAd?.show();
-          numberOfAdsShown++;
-          saveNumberOfAdsShown(numberOfAdsShown);
-        }
-      }
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => TWResultPage(
                 answers: answers,
@@ -243,36 +234,8 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
     );
   }
 
-  void saveNumberOfAdsShown(int number) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('numberOfAdsShown', number);
-  }
-
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  ///creates an ad
-  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
-    return InterstitialAdLoader.create(
-      onAdLoaded: (InterstitialAd interstitialAd) {
-        // The ad was loaded successfully. Now you can show loaded ad
-        _interstitialAd = interstitialAd;
-      },
-      onAdFailedToLoad: (error) {
-        // Ad failed to load with AdRequestError.
-        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-      },
-    );
-  }
-
-  ///loads an ad
-  Future<void> _loadInterstitialAd() async {
-    final adLoader = await _adLoader;
-    await adLoader.loadAd(
-        adRequestConfiguration: const AdRequestConfiguration(
-            adUnitId:
-                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

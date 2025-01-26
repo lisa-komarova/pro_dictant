@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/profile/presentation/pages/profile_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
 
 import 'features/dictionary/presentation/pages/dictionary_page.dart';
 import 'features/profile/presentation/manager/profile_bloc.dart';
@@ -18,10 +20,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentPageIndex = 1;
+  InterstitialAd? _interstitialAd;
+  late final Future<InterstitialAdLoader> _adLoader;
+  int numberOfAdsShown = 0;
 
   @override
   void initState() {
     BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
+    getNumberOfAdsShown();
+    MobileAds.initialize();
+    _adLoader = _createInterstitialAdLoader();
+    _loadInterstitialAd();
     super.initState();
   }
 
@@ -33,6 +42,14 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             currentPageIndex = index;
           });
+          if (numberOfAdsShown < 3) {
+            _loadInterstitialAd();
+            if (_interstitialAd != null) {
+              _interstitialAd?.show();
+              numberOfAdsShown++;
+              saveNumberOfAdsShown(numberOfAdsShown);
+            }
+          }
         },
         selectedIndex: currentPageIndex,
         destinations: <Widget>[
@@ -108,5 +125,38 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void saveNumberOfAdsShown(int number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('numberOfAdsShown', number);
+  }
+
+  getNumberOfAdsShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  ///creates an ad
+  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
+    return InterstitialAdLoader.create(
+      onAdLoaded: (InterstitialAd interstitialAd) {
+        // The ad was loaded successfully. Now you can show loaded ad
+        _interstitialAd = interstitialAd;
+      },
+      onAdFailedToLoad: (error) {
+        // Ad failed to load with AdRequestError.
+        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+      },
+    );
+  }
+
+  ///loads an ad
+  Future<void> _loadInterstitialAd() async {
+    final adLoader = await _adLoader;
+    await adLoader.loadAd(
+        adRequestConfiguration: const AdRequestConfiguration(
+            adUnitId:
+                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

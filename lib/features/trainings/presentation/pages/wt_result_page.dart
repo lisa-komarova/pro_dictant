@@ -11,7 +11,6 @@ class WTResultPage extends StatelessWidget {
   final Map<String, String> answers;
   final List<WTTrainingEntity> words;
   final String setId;
-
   const WTResultPage({
     super.key,
     required this.answers,

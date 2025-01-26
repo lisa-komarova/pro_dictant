@@ -16,7 +16,10 @@ import '../manager/trainings_bloc/trainings_state.dart';
 class RepeatingInProcessPage extends StatefulWidget {
   final String setId;
 
-  const RepeatingInProcessPage({super.key, required this.setId});
+  const RepeatingInProcessPage({
+    super.key,
+    required this.setId,
+  });
 
   @override
   State<RepeatingInProcessPage> createState() => _CardsInProcessPageState();
@@ -34,16 +37,11 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
   final Color _color = const Color(0xFF85977f);
-  InterstitialAd? _interstitialAd;
-  late final Future<InterstitialAdLoader> _adLoader;
   int numberOfAdsShown = 0;
 
   @override
   void initState() {
     getNumberOfAdsShown();
-    MobileAds.initialize();
-    _adLoader = _createInterstitialAdLoader();
-    _loadInterstitialAd();
     super.initState();
   }
 
@@ -120,14 +118,6 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                   wordsOnTraining.removeWhere((element) =>
                       correctAnswers.contains(element) ||
                       mistakes.contains(element));
-                  if (numberOfAdsShown < 3) {
-                    _loadInterstitialAd();
-                    if (_interstitialAd != null) {
-                      _interstitialAd?.show();
-                      numberOfAdsShown++;
-                      saveNumberOfAdsShown(numberOfAdsShown);
-                    }
-                  }
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (ctx) => RepeatingResultPage(
                             mistakes: mistakes,
@@ -219,14 +209,6 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         stillLearning.removeWhere((element) =>
                             correctAnswers.contains(element) ||
                             mistakes.contains(element));
-                        if (numberOfAdsShown < 3) {
-                          _loadInterstitialAd();
-                          if (_interstitialAd != null) {
-                            _interstitialAd?.show();
-                            numberOfAdsShown++;
-                            saveNumberOfAdsShown(numberOfAdsShown);
-                          }
-                        }
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => RepeatingResultPage(
                                   mistakes: mistakes,
@@ -293,14 +275,6 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         stillLearning.removeWhere((element) =>
                             correctAnswers.contains(element) ||
                             mistakes.contains(element));
-                        if (numberOfAdsShown < 3) {
-                          _loadInterstitialAd();
-                          if (_interstitialAd != null) {
-                            _interstitialAd?.show();
-                            numberOfAdsShown++;
-                            saveNumberOfAdsShown(numberOfAdsShown);
-                          }
-                        }
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => RepeatingResultPage(
                                   mistakes: mistakes,
@@ -367,14 +341,6 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         stillLearning.removeWhere((element) =>
                             correctAnswers.contains(element) ||
                             mistakes.contains(element));
-                        if (numberOfAdsShown < 3) {
-                          _loadInterstitialAd();
-                          if (_interstitialAd != null) {
-                            _interstitialAd?.show();
-                            numberOfAdsShown++;
-                            saveNumberOfAdsShown(numberOfAdsShown);
-                          }
-                        }
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (ctx) => RepeatingResultPage(
                                   mistakes: mistakes,
@@ -430,36 +396,8 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
     await flutterTts.speak(text);
   }
 
-  void saveNumberOfAdsShown(int number) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('numberOfAdsShown', number);
-  }
-
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  ///creates an ad
-  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
-    return InterstitialAdLoader.create(
-      onAdLoaded: (InterstitialAd interstitialAd) {
-        // The ad was loaded successfully. Now you can show loaded ad
-        _interstitialAd = interstitialAd;
-      },
-      onAdFailedToLoad: (error) {
-        // Ad failed to load with AdRequestError.
-        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-      },
-    );
-  }
-
-  ///loads an ad
-  Future<void> _loadInterstitialAd() async {
-    final adLoader = await _adLoader;
-    await adLoader.loadAd(
-        adRequestConfiguration: const AdRequestConfiguration(
-            adUnitId:
-                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
   }
 }

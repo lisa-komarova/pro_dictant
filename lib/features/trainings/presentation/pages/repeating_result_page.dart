@@ -13,12 +13,13 @@ class RepeatingResultPage extends StatelessWidget {
   final List<RepeatingTrainingEntity> learnt;
   final List<RepeatingTrainingEntity> learning;
 
-  const RepeatingResultPage(
-      {required this.mistakes,
-      super.key,
-      required this.setId,
-      required this.learnt,
-      required this.learning});
+  const RepeatingResultPage({
+    required this.mistakes,
+    super.key,
+    required this.setId,
+    required this.learnt,
+    required this.learning,
+  });
 
   @override
   Widget build(BuildContext context) {
