@@ -67,6 +67,8 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
             pos: '',
             transcription: '',
           );
+          editingController.text = '';
+          BlocProvider.of<WordsBloc>(context).add(const LoadWords());
           Navigator.of(context).push(MaterialPageRoute(
               builder: (ctx) => WordForm(word: word, isNew: true)));
         },
