@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/dictant_result_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yandex_mobileads/mobile_ads.dart';
 
 import '../../../../core/ad_widget.dart';
 import '../../domain/entities/dictant_training_entity.dart';
@@ -151,6 +150,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                               controller: wordController,
                               textInputAction: TextInputAction.go,
                               keyboardType: TextInputType.text,
+                              enableSuggestions: false,
                               style: const TextStyle(fontFamily: 'Roboto'),
                               decoration: InputDecoration(
                                 border: const OutlineInputBorder(

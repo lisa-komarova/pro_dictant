@@ -62,7 +62,7 @@
   "onLearning": "на повторении",
   "sentToLearnt": "изучено",
   "continueTraining": "продолжить тренировку",
-  "timeLeft": "до выполнения цели осталось : {time} минут",
+  "timeLeft": "до выполнения цели осталось {time} минут",
   "wordTranslation": "слово-перевод",
   "translationWord": "перевод-слово",
   "matchingWords": "соответствие",

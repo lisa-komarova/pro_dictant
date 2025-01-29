@@ -71,7 +71,7 @@
     "onLearning": "still learning",
     "sentToLearnt": "sent to learnt",
     "continueTraining": "continue training",
-    "timeLeft": "time left to complete the goal : {time} minutes",
+    "timeLeft": "time left to complete the goal {time} minutes",
     "wordTranslation": "word-translation",
     "translationWord": "translation-word",
     "matchingWords": "match the words",
