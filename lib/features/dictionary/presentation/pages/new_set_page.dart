@@ -50,7 +50,9 @@ class _NewSetPageState extends State<NewSetPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          S.of(context).newSet,
+          widget.set != null
+              ? S.of(context).editSet
+              : S.of(context).newSetTitle,
           style: GoogleFonts.hachiMaruPop(),
         ),
         centerTitle: true,

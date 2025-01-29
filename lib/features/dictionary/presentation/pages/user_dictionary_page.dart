@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
@@ -33,16 +32,16 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '',
-          style: GoogleFonts.hachiMaruPop(),
-        ),
-        centerTitle: true,
+        title: Text(S.of(context).myDictionary),
         leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: Image.asset('assets/icons/cancel.png')),
+            icon: Image.asset(
+              'assets/icons/cancel.png',
+              width: 35,
+              height: 35,
+            )),
       ),
       body: Column(
         children: [
@@ -64,7 +63,7 @@ class _UserDictionaryPageState extends State<UserDictionaryPage> {
         onPressed: () {
           final word = WordModel(
             id: const Uuid().v4(),
-            source: '',
+            source: editingController.text,
             pos: '',
             transcription: '',
           );

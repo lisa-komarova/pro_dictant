@@ -4,6 +4,8 @@
   "trainings": "тренажёры",
   "wordSets": "наборы слов",
   "newSet": "новый\nнабор",
+  "newSetTitle": "новый набор",
+  "editSet": "изменить набор",
   "enterSetName": "введите название набора",
   "update": "обновить",
   "save": "сохранить",
@@ -38,7 +40,7 @@
   "markAsNew": "хотите сбросить прогресс этого слова?",
   "newWords": "новые",
   "goal": "цель: {goal} мин",
-  "changeGoal": "Изменить цель",
+  "changeGoal": "изменить цель",
   "tenMinutes": "10 минут",
   "fifteenMinutes": "15 минут",
   "thirtyMinutes": "30 минут",
@@ -70,7 +72,7 @@
   "myDictionary": "мой словарь",
   "shouldDeleteSet": "вы уверены, что хотите удалить набор слов?",
    "currentlyLearning": "сейчас на изучении : {setName}",
-  "sendSetToTrainings" : "отправить на изучение",
-  "learntPercentage" : "выучено {learntPercentage}",
+  "sendSetToTrainings" : "отправить\nна изучение",
+  "learntPercentage" : "выучено {learntPercentage} %",
   "addNotes" : "добавить примечание к переводу"
 }

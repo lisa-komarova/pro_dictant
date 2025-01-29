@@ -47,6 +47,7 @@ class _WordFormState extends State<WordForm> {
         existingTranslations.add(widget.word.translationList[w]);
       }
     } else {
+      _sourceController.text = widget.word.source;
       _translationControllerList.add(TextEditingController());
       _notesControllerList.add(TextEditingController());
     }
@@ -184,8 +185,12 @@ class _WordFormState extends State<WordForm> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        title: const Text(
-                                            'Add notes to translation'),
+                                        title: Text(
+                                          S.of(context).addNotes,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
                                         content: TextField(
                                           controller: _notesControllerList[0],
                                           autofocus: true,
@@ -193,16 +198,16 @@ class _WordFormState extends State<WordForm> {
                                         ),
                                         actions: [
                                           TextButton(
-                                            child: Text(S.of(context).cancel),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                          TextButton(
                                             child: Text(S.of(context).add),
                                             onPressed: () {
                                               Navigator.pop(context,
                                                   _notesControllerList[0].text);
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text(S.of(context).cancel),
+                                            onPressed: () {
+                                              Navigator.pop(context);
                                             },
                                           ),
                                         ],
@@ -483,11 +488,17 @@ class _WordFormState extends State<WordForm> {
                   ),
                 GestureDetector(
                   onTap: () async {
-                    final result = await showDialog(
+                    final notes = widget.isNew
+                        ? _notesControllerList[index + 1].text
+                        : _notesControllerList[index].text;
+                    await showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text(S.of(context).addNotes),
+                          title: Text(
+                            S.of(context).addNotes,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
                           content: TextField(
                             controller: widget.isNew
                                 ? _notesControllerList[index + 1]
@@ -497,28 +508,26 @@ class _WordFormState extends State<WordForm> {
                           ),
                           actions: [
                             TextButton(
-                              child: Text(S.of(context).cancel),
+                              child: Text(S.of(context).add),
                               onPressed: () {
                                 Navigator.pop(context);
                               },
                             ),
                             TextButton(
-                              child: Text(S.of(context).add),
+                              child: Text(S.of(context).cancel),
                               onPressed: () {
-                                Navigator.pop(
-                                    context, _notesControllerList[index].text);
+                                Navigator.pop(context);
+                                if (widget.isNew) {
+                                  _notesControllerList[index + 1].text = notes;
+                                } else {
+                                  _notesControllerList[index].text = notes;
+                                }
                               },
                             ),
                           ],
                         );
                       },
                     );
-                    if (result != null) {
-                      result as String;
-                      setState(() {
-                        translations[index].notes = result;
-                      });
-                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

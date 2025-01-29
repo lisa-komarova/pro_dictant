@@ -84,10 +84,14 @@ class _DictionaryFilterButtonState extends State<DictionaryFilterButtons> {
           duration: Durations.short4,
           child: Stack(children: [
             Center(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.hachiMaruPop(color: Colors.white),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.hachiMaruPop(
+                      color: Colors.white, fontSize: 11),
+                ),
               ),
             ),
             SizedBox.expand(

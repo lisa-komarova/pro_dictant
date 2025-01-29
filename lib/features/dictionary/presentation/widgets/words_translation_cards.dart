@@ -271,15 +271,23 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         ? Flexible(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                translation.notes,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.normal,
-                                    ),
+                              child: Scrollbar(
+                                controller: scrollController,
+                                thumbVisibility: true,
+                                radius: const Radius.circular(2),
+                                child: SingleChildScrollView(
+                                  child: Text(
+                                    translation.notes,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ),
                             ),
                           )
