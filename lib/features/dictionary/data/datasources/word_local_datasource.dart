@@ -143,7 +143,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
         sets = maps.map((map) => SetModel.fromJson(map)).toList();
         return sets;
       } else {
-        throw ServerException();
+        return sets;
       }
     } on Exception catch (_) {
       throw ServerException();

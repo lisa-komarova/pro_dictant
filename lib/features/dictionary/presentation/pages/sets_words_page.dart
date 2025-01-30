@@ -19,27 +19,22 @@ class SetsWordsPage extends StatefulWidget {
 class _SetsWordsPageState extends State<SetsWordsPage> {
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (didPope) {
-        BlocProvider.of<SetBloc>(context).add(const LoadSets());
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.set.name.toUpperCase(),
-            style: GoogleFonts.hachiMaruPop(),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            onPressed: () {
-              BlocProvider.of<SetBloc>(context).add(const LoadSets());
-              Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png'),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          widget.set.name.toUpperCase(),
+          style: GoogleFonts.hachiMaruPop(),
         ),
-        body: const SetWordsList(),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            BlocProvider.of<SetBloc>(context).add(const LoadSets());
+            Navigator.of(context).pop();
+          },
+          icon: Image.asset('assets/icons/cancel.png'),
+        ),
       ),
+      body: const SetWordsList(),
     );
   }
 }

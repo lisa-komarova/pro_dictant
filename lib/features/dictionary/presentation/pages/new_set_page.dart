@@ -223,6 +223,13 @@ class _NewSetPageState extends State<NewSetPage> {
                               });
                         } else if (state is SearchedWordsLoading) {
                           return _loadingIndicator();
+                        } else if (state is SearchedWordsEmpty) {
+                          return Center(
+                            child: Text(
+                              S.of(context).noSuchWords,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
                         } else {
                           return const SizedBox();
                         }

@@ -16,6 +16,8 @@ class SetList extends StatefulWidget {
 }
 
 class _SetListState extends State<SetList> {
+  List<SetEntity> sets = [];
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SetBloc, SetsState>(builder: (context, state) {
@@ -30,14 +32,16 @@ class _SetListState extends State<SetList> {
       } else if (state is SetsLoading) {
         return _loadingIndicator();
       } else if (state is SetsLoaded) {
-        return buildSetsList(state.sets.reversed.toList());
+        if (sets.isNotEmpty) sets.clear();
+        sets.addAll(state.sets.reversed.toList());
+        return buildSetsList(sets);
       } else if (state is SetsError) {
         return Text(
           state.message,
           style: const TextStyle(color: Colors.white, fontSize: 25),
         );
       } else {
-        return const SizedBox();
+        return buildSetsList(sets);
       }
     });
   }
