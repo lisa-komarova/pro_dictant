@@ -5,7 +5,6 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yandex_mobileads/mobile_ads.dart';
 
 import '../../../../core/ad_widget.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
@@ -184,11 +183,13 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                         ),
                       ),
                       child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: AutoSizeText(
-                            suggestedAnswer.first,
-                            textAlign: TextAlign.center,
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: AutoSizeText(
+                              suggestedAnswer.first,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       ),
@@ -226,11 +227,13 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                         ),
                       ),
                       child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: AutoSizeText(
-                            suggestedAnswer.last,
-                            textAlign: TextAlign.center,
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: AutoSizeText(
+                              suggestedAnswer.last,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       ),

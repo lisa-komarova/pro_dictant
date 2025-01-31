@@ -108,7 +108,10 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<WTTraningModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id, word.id wordId from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isWT =0 ORDER by random() limit 10''');
+          '''select word.source, words_translations.translation, words_translations.id, 
+          word.id wordId from word join words_translations on word.id = 
+          words_translations.word_id where words_translations.isInDictionary =1
+           and words_translations.isWT =0 ORDER by random() limit 10''');
 
       words = maps.map((map) => WTTraningModel.fromJson(map)).toList();
 
@@ -152,7 +155,10 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<TranslationEntity> translation = [];
         final translationMap = await db!.rawQuery(
-            '''select DISTINCT * FROM words_translations WHERE word_id not in ('${words[i].wordId}') and isInDictionary = 1 ORDER by random() LIMIT 3''');
+            '''select DISTINCT * FROM words_translations WHERE word_id not 
+            in ('${words[i].wordId}') and translation not 
+            in ('${words[i].translation}') and isInDictionary = 1 ORDER by random()
+             LIMIT 3''');
         translation =
             translationMap.map((e) => TranslationModel.fromJson(e)).toList();
         words[i].suggestedTranslationList.addAll(translation);
@@ -169,7 +175,10 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<TWTraningModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isTW =0 ORDER by random() limit 10''');
+          '''select word.source, words_translations.translation, words_translations.id
+            from word join words_translations on word.id = words_translations.word_id 
+            where words_translations.isInDictionary =1 and words_translations.isTW =0 
+            ORDER by random() limit 10''');
       words = maps.map((map) => TWTraningModel.fromJson(map)).toList();
       return words;
     } on Exception catch (_) {
@@ -184,8 +193,14 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       for (int i = 0; i < words.length; i++) {
         List<WordEntity> sources = [];
-        final sourcesMap = await db!.rawQuery(
-            '''select  word.id, source, pos, transcription FROM word join words_translations on word.id = words_translations.word_id WHERE words_translations.id not in ('${words[i].id}')  and words_translations.isInDictionary=1  ORDER by random() LIMIT 3''');
+        final source = words[i].source.replaceAll("'", "''");
+        final sourcesMap = await db!
+            .rawQuery('''select  word.id, source, pos, transcription FROM word 
+            join words_translations on word.id = words_translations.word_id
+             WHERE words_translations.id not in ('${words[i].id}') 
+              and word.source not in ('$source') 
+             and words_translations.isInDictionary=1  
+             ORDER by random() LIMIT 3''');
         sources = sourcesMap.map((e) => WordModel.fromJson(e)).toList();
         words[i].suggestedSourcesList.addAll(sources);
       }
@@ -201,7 +216,11 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<MatchingTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isMatching =0 ORDER by random() limit 30''');
+          '''select distinct word.source, words_translations.translation, 
+          words_translations.id  from word join words_translations 
+          on word.id = words_translations.word_id where
+           words_translations.isInDictionary =1 and 
+           words_translations.isMatching =0 ORDER by random() limit 30''');
 
       words = maps.map((map) => MatchingTrainingModel.fromJson(map)).toList();
 
@@ -231,7 +250,11 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<DictantTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isDictant =0 ORDER by random() limit 10''');
+          '''select distinct word.source, words_translations.translation, 
+          words_translations.id  from word join words_translations
+           on word.id = words_translations.word_id where
+            words_translations.isInDictionary =1 and
+             words_translations.isDictant =0 ORDER by random() limit 10''');
 
       words = maps.map((map) => DictantTrainingModel.fromJson(map)).toList();
       return words;
@@ -259,8 +282,16 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     final db = await database;
     List<CardsTrainingModel> words = [];
     try {
-      final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation where words_translations.isInDictionary =1 and words_translations.isCards =0 and table2.isInDictionary =1 order by random() limit 30 ''');
+      final maps = await db!
+          .rawQuery('''select word.source, words_translations.translation,
+           table2.translation as wrong_translation, words_translations.id
+             from word join words_translations
+              on word.id = words_translations.word_id 
+              join words_translations as table2 on 
+              words_translations.translation != wrong_translation 
+              where words_translations.isInDictionary =1 and 
+              words_translations.isCards =0 and table2.isInDictionary =1 
+              order by random() limit 30 ''');
 
       words = maps.map((map) => CardsTrainingModel.fromJson(map)).toList();
       return words;
@@ -323,8 +354,16 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     final db = await database;
     List<CardsTrainingModel> words = [];
     try {
-      final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, table2.translation as wrong_translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join words_translations as table2 on words_translations.translation != wrong_translation join word_set on words_translations.id = word_set.word_id where words_translations.isCards =0 and table2.isInDictionary =1 and word_set.set_id = '$setId' order by random() limit 30''');
+      final maps = await db!
+          .rawQuery('''select word.source, words_translations.translation, 
+          table2.translation as wrong_translation, words_translations.id  
+          from word join words_translations 
+          on word.id = words_translations.word_id 
+          join words_translations as table2 
+          on words_translations.translation != wrong_translation 
+          join word_set on words_translations.id = word_set.word_id 
+          where words_translations.isCards =0 and table2.isInDictionary =1 
+          and word_set.set_id = '$setId' order by random() limit 30''');
 
       words = maps.map((map) => CardsTrainingModel.fromJson(map)).toList();
       return words;
@@ -340,7 +379,12 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<DictantTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on words_translations.id = word_set.word_id where word_set.set_id = '$setId' and words_translations.isDictant =0 ORDER by random() limit 10''');
+          '''select distinct word.source, words_translations.translation, 
+          words_translations.id  from word join words_translations 
+          on word.id = words_translations.word_id 
+          join word_set on words_translations.id = word_set.word_id 
+          where word_set.set_id = '$setId' 
+          and words_translations.isDictant =0 ORDER by random() limit 10''');
 
       words = maps.map((map) => DictantTrainingModel.fromJson(map)).toList();
       return words;
@@ -356,7 +400,12 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<MatchingTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId'  and words_translations.isMatching =0 ORDER by random() limit 30''');
+          '''select distinct  word.source, words_translations.translation, 
+          words_translations.id  from word join words_translations 
+          on word.id = words_translations.word_id join word_set 
+          on word_set.word_id = words_translations.id 
+          where word_set.set_id = '$setId'  
+          and words_translations.isMatching =0 ORDER by random() limit 30''');
 
       words = maps.map((map) => MatchingTrainingModel.fromJson(map)).toList();
 
@@ -372,8 +421,18 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     final db = await database;
     List<RepeatingTrainingModel> words = [];
     try {
-      final maps = await db!.rawQuery(
-          '''select word.source, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId' and words_translations.isRepeated =0 and words_translations.isCards =1  and words_translations.isTW =1 and words_translations.isWT =1  and words_translations.isMatching =1  and words_translations.isDictant =1  ORDER by random()''');
+      final maps =
+          await db!.rawQuery('''select word.source, words_translations.id  
+          from word join words_translations on 
+          word.id = words_translations.word_id join word_set 
+          on word_set.word_id = words_translations.id 
+          where word_set.set_id = '$setId' 
+          and words_translations.isRepeated =0 
+          and words_translations.isCards =1  
+          and words_translations.isTW =1 
+          and words_translations.isWT =1  
+          and words_translations.isMatching =1  
+          and words_translations.isDictant =1  ORDER by random()''');
 
       words = maps.map((map) => RepeatingTrainingModel.fromJson(map)).toList();
       return words;
@@ -387,8 +446,13 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     final db = await database;
     List<TWTraningModel> words = [];
     try {
-      final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId' and words_translations.isTW =0 ORDER by random() limit 10''');
+      final maps = await db!
+          .rawQuery('''select word.source, words_translations.translation, 
+          words_translations.id  from word join words_translations
+           on word.id = words_translations.word_id join word_set 
+           on word_set.word_id = words_translations.id where
+            word_set.set_id = '$setId' and words_translations.isTW =0 
+            ORDER by random() limit 10''');
       words = maps.map((map) => TWTraningModel.fromJson(map)).toList();
       return words;
     } on Exception catch (_) {
@@ -401,8 +465,13 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     final db = await database;
     List<WTTraningModel> words = [];
     try {
-      final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id, word.id wordId  from word join words_translations on word.id = words_translations.word_id join word_set on word_set.word_id = words_translations.id where word_set.set_id = '$setId' and words_translations.isWT =0 ORDER by random() limit 10''');
+      final maps = await db!
+          .rawQuery('''select word.source, words_translations.translation,
+           words_translations.id, word.id wordId  from word 
+           join words_translations on word.id = words_translations.word_id 
+           join word_set on word_set.word_id = words_translations.id
+            where word_set.set_id = '$setId' and words_translations.isWT =0
+             ORDER by random() limit 10''');
       words = maps.map((map) => WTTraningModel.fromJson(map)).toList();
       return words;
     } on Exception catch (_) {

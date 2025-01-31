@@ -11,7 +11,6 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_result_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yandex_mobileads/mobile_ads.dart';
 
 import '../../../../core/ad_widget.dart';
 
@@ -197,7 +196,8 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    child: Center(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: AutoSizeText(
@@ -231,13 +231,16 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: AutoSizeText(
-                        words[currentWordIndex]
-                            .suggestedTranslationList[element]
-                            .translation,
-                        textAlign: TextAlign.center,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: AutoSizeText(
+                          words[currentWordIndex]
+                              .suggestedTranslationList[element]
+                              .translation,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),

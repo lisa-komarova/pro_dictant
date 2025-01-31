@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/core/s.dart';
@@ -7,7 +6,6 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yandex_mobileads/mobile_ads.dart';
 
 import '../../../../core/ad_widget.dart';
 import 'matching_result_page.dart';
@@ -187,13 +185,14 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
           itemCount: words.length,
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(5.0),
               child: SizedBox(
-                height: 70,
+                height: 80,
                 width: 150,
                 child: OutlinedButton(
                   onPressed: () {
                     List<MatchingTrainingEntity> correctAnswerstoSend = [];
+                    List<MatchingTrainingEntity> mistakesToSend = [];
                     if (correctAnswers.contains(words[index])) {
                       return;
                     } else if (isTranslationChosenWrong) {
@@ -275,11 +274,15 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             correctAnswerstoSend.addAll(correctAnswers);
                             correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
+                            mistakesToSend.addAll(mistakes);
+                            final uniqueSources = <String>{};
+                            mistakesToSend.removeWhere(
+                                (item) => !uniqueSources.add(item.source));
                             Navigator.of(context)
                                 .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
                                           correctAnswers: correctAnswerstoSend,
-                                          mistakes: mistakes,
+                                          mistakes: mistakesToSend,
                                           setId: widget.setId,
                                         )));
                             BlocProvider.of<TrainingsBloc>(context).add(
@@ -332,13 +335,19 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: AutoSizeText(
-                        words[index].source,
-                        style: Theme.of(context).textTheme.titleMedium,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          words[index].source,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontSize: 12),
+                        ),
                       ),
                     ),
                   ),
@@ -357,13 +366,14 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
           itemCount: words.length,
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(5.0),
               child: SizedBox(
-                height: 70,
+                height: 80,
                 width: 150,
                 child: OutlinedButton(
                   onPressed: () {
                     List<MatchingTrainingEntity> correctAnswerstoSend = [];
+                    List<MatchingTrainingEntity> mistakesToSend = [];
                     if (correctAnswers.contains(words[index])) {
                       return;
                     } else if (isWordChosenWrong) {
@@ -445,11 +455,15 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             correctAnswerstoSend.addAll(correctAnswers);
                             correctAnswerstoSend.removeWhere(
                                 (element) => mistakes.contains(element));
+                            mistakesToSend.addAll(mistakes);
+                            final uniqueSources = <String>{};
+                            mistakesToSend.removeWhere(
+                                (item) => !uniqueSources.add(item.source));
                             Navigator.of(context)
                                 .pushReplacement(MaterialPageRoute(
                                     builder: (ctx) => MatchingResultPage(
                                           correctAnswers: correctAnswerstoSend,
-                                          mistakes: mistakes,
+                                          mistakes: mistakesToSend,
                                           setId: widget.setId,
                                         )));
                             BlocProvider.of<TrainingsBloc>(context).add(
@@ -503,12 +517,19 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: AutoSizeText(
-                        words[index].translation,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          words[index].translation,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontSize: 12),
+                        ),
                       ),
                     ),
                   ),

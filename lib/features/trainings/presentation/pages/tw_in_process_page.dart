@@ -176,11 +176,14 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: AutoSizeText(
-                        words[currentWordIndex].source,
-                        textAlign: TextAlign.center,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: AutoSizeText(
+                          words[currentWordIndex].source,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
@@ -208,13 +211,16 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: AutoSizeText(
-                        words[currentWordIndex]
-                            .suggestedSourcesList[element]
-                            .source,
-                        textAlign: TextAlign.center,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: AutoSizeText(
+                          words[currentWordIndex]
+                              .suggestedSourcesList[element]
+                              .source,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
