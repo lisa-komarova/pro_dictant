@@ -145,7 +145,7 @@ class _SetWordsListState extends State<SetWordsList> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: const Color(0xb3d9c3ac),
+                        color: const Color(0x6bd9c3ac),
                       ),
                       height: 50,
                       child: Center(
