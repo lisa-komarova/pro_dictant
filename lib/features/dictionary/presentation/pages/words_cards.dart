@@ -8,31 +8,31 @@ import 'package:pro_dictant/features/dictionary/domain/entities/translation_enti
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
-import 'package:pro_dictant/features/dictionary/presentation/pages/word_form_page.dart';
 
-class WordTranslationCards extends StatefulWidget {
-  final WordEntity word;
+class WordsCardsPage extends StatefulWidget {
+  final List<WordEntity> words;
+  final int index;
 
-  const WordTranslationCards({required this.word, super.key});
+  const WordsCardsPage({required this.words, super.key, required this.index});
 
   @override
-  State<WordTranslationCards> createState() => _WordTranslationCardsState();
+  State<WordsCardsPage> createState() => _WordsCardsPageState();
 }
 
-class _WordTranslationCardsState extends State<WordTranslationCards>
+class _WordsCardsPageState extends State<WordsCardsPage>
     with TickerProviderStateMixin {
   late PageController _pageViewController;
   final _scrollController = ScrollController();
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
   Color _color = const Color(0xFF85977f);
-  int _currentPageIndex = 0;
+  late int _currentPageIndex;
 
   @override
   void initState() {
     super.initState();
-    sortTranslationList(widget.word);
-    _pageViewController = PageController();
+    _currentPageIndex = widget.index;
+    _pageViewController = PageController(initialPage: _currentPageIndex);
   }
 
   @override
@@ -44,47 +44,55 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Flexible(
-          flex: 7,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: <Widget>[
-              PageView(
-                controller: _pageViewController,
-                onPageChanged: _handlePageViewChanged,
-                children: <Widget>[
-                  for (var element in widget.word.translationList)
-                    buildTranslastionCard(_scrollController, context, element),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Flexible(
-          flex: 2,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              children: [
-                _buildAWordButton(
-                    title: S.of(context).learn, color: const Color(0xFFB70E0E)),
-                _buildAWordButton(
-                    title: S.of(context).alreadyKnow,
-                    color: const Color(0xFF85977f)),
-                _buildAWordButton(
-                    title: S.of(context).changeWord,
-                    color: const Color(0xFFd9c3ac)),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              return Navigator.of(context).pop();
+            },
+            icon: Image.asset('assets/icons/cancel.png')),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Flexible(
+            flex: 7,
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: <Widget>[
+                PageView(
+                  controller: _pageViewController,
+                  onPageChanged: _handlePageViewChanged,
+                  children: <Widget>[
+                    for (var element in widget.words)
+                      buildTranslastionCard(
+                          _scrollController, context, element),
+                  ],
+                ),
               ],
             ),
           ),
-        ),
-        // SizedBox(
-        //   height: 300,
-        // )
-      ],
+          Flexible(
+            flex: 2,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                children: [
+                  _buildAWordButton(
+                      title: S.of(context).learn,
+                      color: const Color(0xFFB70E0E)),
+                  _buildAWordButton(
+                      title: S.of(context).alreadyKnow,
+                      color: const Color(0xFF85977f)),
+                ],
+              ),
+            ),
+          ),
+          // SizedBox(
+          //   height: 300,
+          // )
+        ],
+      ),
     );
   }
 
@@ -102,18 +110,10 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
           onTap: () {
             if (title == S.of(context).learn) {
               _showSendToLearningDialog(
-                  context, widget.word, _currentPageIndex);
+                  context, widget.words[_currentPageIndex]);
             }
             if (title == S.of(context).alreadyKnow) {
-              _showSendToLearntDialog(context, widget.word, _currentPageIndex);
-            }
-            if (title == S.of(context).changeWord) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (ctx) => WordForm(
-                  word: widget.word,
-                  isNew: false,
-                ),
-              ));
+              _showSendToLearntDialog(context, widget.words[_currentPageIndex]);
             }
           },
           child: Container(
@@ -141,7 +141,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
   }
 
   Widget buildTranslastionCard(ScrollController scrollController,
-      BuildContext context, TranslationEntity translation) {
+      BuildContext context, WordEntity word) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
@@ -163,7 +163,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: buildWordsProgressImage(translation),
+                    child: buildWordsProgressImage(word.translationList.first),
                   ),
                 ],
               ),
@@ -179,7 +179,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                           setState(() {
                             _color = const Color(0xFF243120);
                           });
-                          speak(widget.word.source);
+                          speak(word.source);
                         },
                         child: AnimatedContainer(
                           duration: const Duration(seconds: 1),
@@ -206,7 +206,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                                 thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
-                                  child: Text(widget.word.source,
+                                  child: Text(word.source,
                                       textAlign: TextAlign.center,
                                       style: Theme.of(context)
                                           .textTheme
@@ -215,11 +215,11 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                               ),
                             ),
                           ),
-                          widget.word.pos.isNotEmpty
+                          word.pos.isNotEmpty
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: AutoSizeText(
-                                    widget.word.pos,
+                                    word.pos,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -232,12 +232,12 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         ],
                       ),
                     ),
-                    widget.word.transcription.isNotEmpty
+                    word.transcription.isNotEmpty
                         ? Flexible(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                widget.word.transcription,
+                                word.transcription,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleSmall!
@@ -257,14 +257,14 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                           thumbVisibility: true,
                           radius: const Radius.circular(2),
                           child: SingleChildScrollView(
-                            child: Text(translation.translation,
+                            child: Text(word.translationList.first.translation,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.titleLarge),
                           ),
                         ),
                       ),
                     ),
-                    translation.notes.isNotEmpty
+                    word.translationList.first.notes.isNotEmpty
                         ? Flexible(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -274,7 +274,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
                                   child: Text(
-                                    translation.notes,
+                                    word.translationList.first.notes,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -295,11 +295,12 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (translation.isInDictionary == 1)
+                  if (word.translationList.first.isInDictionary == 1)
                     Padding(
                       padding: const EdgeInsets.all(8),
                       child: GestureDetector(
-                        onTap: () => _showDialog(context, translation, true),
+                        onTap: () => _showDialog(
+                            context, word.translationList.first, true),
                         child: Image.asset(
                           'assets/icons/delete.png',
                           width: 35,
@@ -307,13 +308,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         ),
                       ),
                     ),
-                  if (translation.isInDictionary == 0)
+                  if (word.translationList.first.isInDictionary == 0)
                     Padding(
                       padding: const EdgeInsets.only(
                           left: 8, right: 8, bottom: 8, top: 8),
                       child: GestureDetector(
                         onTap: () => _showDialogDelete(
-                            context, translation, widget.word),
+                            context, word.translationList.first, word),
                         child: Image.asset(
                           'assets/icons/delete.png',
                           width: 35,
@@ -321,13 +322,15 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         ),
                       ),
                     ),
-                  if (translation.isInDictionary == 0) const Spacer(),
-                  if (translation.isInDictionary == 0)
+                  if (word.translationList.first.isInDictionary == 0)
+                    const Spacer(),
+                  if (word.translationList.first.isInDictionary == 0)
                     Padding(
                       padding: const EdgeInsets.only(
                           left: 8, right: 8, bottom: 8, top: 8),
                       child: GestureDetector(
-                        onTap: () => _showDialog(context, translation, false),
+                        onTap: () => _showDialog(
+                            context, word.translationList.first, false),
                         child: Image.asset(
                           'assets/icons/add.png',
                           width: 35,
@@ -487,7 +490,9 @@ Future<void> _showDialogDelete(
 }
 
 Future<void> _showSendToLearntDialog(
-    BuildContext context, WordEntity word, int index) {
+  BuildContext context,
+  WordEntity word,
+) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -503,15 +508,15 @@ Future<void> _showSendToLearntDialog(
             ),
             child: Text(S.of(context).yes),
             onPressed: () {
-              word.translationList[index].isInDictionary = 1;
-              word.translationList[index].isTW = 1;
-              word.translationList[index].isWT = 1;
-              word.translationList[index].isMatching = 1;
-              word.translationList[index].isCards = 1;
-              word.translationList[index].isDictant = 1;
-              word.translationList[index].isRepeated = 1;
+              word.translationList[0].isInDictionary = 1;
+              word.translationList[0].isTW = 1;
+              word.translationList[0].isWT = 1;
+              word.translationList[0].isMatching = 1;
+              word.translationList[0].isCards = 1;
+              word.translationList[0].isDictant = 1;
+              word.translationList[0].isRepeated = 1;
               BlocProvider.of<WordsBloc>(context)
-                  .add(UpdateTranslation(word.translationList[index]));
+                  .add(UpdateTranslation(word.translationList[0]));
               Navigator.of(context).pop();
               Navigator.of(context).pop(word);
             },
@@ -531,8 +536,7 @@ Future<void> _showSendToLearntDialog(
   );
 }
 
-Future<void> _showSendToLearningDialog(
-    BuildContext context, WordEntity word, int index) {
+Future<void> _showSendToLearningDialog(BuildContext context, WordEntity word) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -548,19 +552,19 @@ Future<void> _showSendToLearningDialog(
             ),
             child: Text(S.of(context).yes),
             onPressed: () {
-              word.translationList[index].isInDictionary = 1;
-              word.translationList[index].isTW = 0;
-              word.translationList[index].isWT = 0;
-              word.translationList[index].isMatching = 0;
-              word.translationList[index].isCards = 0;
-              word.translationList[index].isDictant = 0;
-              word.translationList[index].isRepeated = 0;
-              if (word.translationList[index].dateAddedToDictionary == "") {
-                word.translationList[index].dateAddedToDictionary =
+              word.translationList[0].isInDictionary = 1;
+              word.translationList[0].isTW = 0;
+              word.translationList[0].isWT = 0;
+              word.translationList[0].isMatching = 0;
+              word.translationList[0].isCards = 0;
+              word.translationList[0].isDictant = 0;
+              word.translationList[0].isRepeated = 0;
+              if (word.translationList[0].dateAddedToDictionary == "") {
+                word.translationList[0].dateAddedToDictionary =
                     DateTime.now().toString();
               }
               BlocProvider.of<WordsBloc>(context)
-                  .add(UpdateTranslation(word.translationList[index]));
+                  .add(UpdateTranslation(word.translationList[0]));
               Navigator.of(context).pop();
               Navigator.of(context).pop(word);
             },

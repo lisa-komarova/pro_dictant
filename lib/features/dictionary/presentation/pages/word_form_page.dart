@@ -388,7 +388,6 @@ class _WordFormState extends State<WordForm> {
                                   .pushReplacement(MaterialPageRoute(
                                       builder: (ctx) => WordsDetails(
                                             word: widget.word,
-                                            isFromSet: false,
                                           )));
                             }
                           }

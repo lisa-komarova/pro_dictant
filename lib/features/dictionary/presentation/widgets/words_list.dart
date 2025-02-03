@@ -169,7 +169,6 @@ class _WordsListState extends State<WordsList> {
                   await Navigator.of(context).push(MaterialPageRoute(
                       builder: (ctx) => WordsDetails(
                             word: words[index],
-                            isFromSet: false,
                           )));
                 },
                 child: Row(
