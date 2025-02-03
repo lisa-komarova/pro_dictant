@@ -103,6 +103,7 @@ class SetBloc extends Bloc<SetsEvent, SetsState> {
 
   FutureOr<void> _onUpdateSetEvent(
       UpdateSet event, Emitter<SetsState> emit) async {
+    emit(SetLoading());
     await updateSet(event.set, event.toAdd, event.toDelete);
     emit(SetLoaded(set: event.set));
   }

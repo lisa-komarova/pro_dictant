@@ -71,6 +71,7 @@
   "repeatWords": "повторение",
   "myDictionary": "мой словарь",
   "shouldDeleteSet": "вы уверены, что хотите удалить набор слов?",
+  "shouldExit" : "вы уверены, что хотите выйти?",
    "currentlyLearning": "сейчас на изучении : {setName}",
   "sendSetToTrainings" : "отправить\nна изучение",
   "learntPercentage" : "выучено {learntPercentage} %",

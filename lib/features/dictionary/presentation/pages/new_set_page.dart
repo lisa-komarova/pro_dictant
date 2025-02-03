@@ -47,284 +47,325 @@ class _NewSetPageState extends State<NewSetPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.set != null
-              ? S.of(context).editSet
-              : S.of(context).newSetTitle,
-          style: GoogleFonts.hachiMaruPop(),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-      ),
-      body: Column(children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            height: 50,
-            child: TextField(
-              controller: _nameController,
-              maxLines: null,
-              keyboardType: TextInputType.text,
-              onChanged: (_) {
-                setState(() {});
+    return PopScope(
+      canPop: false, // prevent back
+      onPopInvoked: (bool didPop) async {
+        // This can be async and you can check your condition
+        if (!didPop) {
+          final backNavigationAllowed = await showDialog<bool>(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Text(S.of(context).shouldExit),
+                  actions: <Widget>[
+                    TextButton(
+                        style: TextButton.styleFrom(
+                          textStyle: Theme.of(context).textTheme.labelLarge,
+                          foregroundColor: const Color(0xFFB70E0E),
+                        ),
+                        child: Text(S.of(context).yes),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        }),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        textStyle: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      child: Text(S.of(context).cancel),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                  ],
+                );
+              });
+          if (backNavigationAllowed != null) {
+            if (backNavigationAllowed) {
+              // Manually navigate back
+              if (mounted) Navigator.of(context).pop();
+            }
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.set != null
+                ? S.of(context).editSet
+                : S.of(context).newSetTitle,
+            style: GoogleFonts.hachiMaruPop(),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
               },
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.only(
-                  left: 30,
+              icon: Image.asset('assets/icons/cancel.png')),
+        ),
+        body: Column(children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 50,
+              child: TextField(
+                controller: _nameController,
+                maxLines: null,
+                keyboardType: TextInputType.text,
+                onChanged: (_) {
+                  setState(() {});
+                },
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(
+                    left: 30,
+                  ),
+                  border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderSide: BorderSide(
+                        color: Color(0xFFd9c3ac),
+                        width: 3,
+                      )),
+                  hintText: S.of(context).enterSetName,
+                  hintStyle: const TextStyle(fontSize: 11),
                 ),
-                border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    borderSide: BorderSide(
-                      color: Color(0xFFd9c3ac),
-                      width: 3,
-                    )),
-                hintText: S.of(context).enterSetName,
-                hintStyle: TextStyle(fontSize: 11),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            height: 50,
-            child: TextField(
-              controller: _searchController,
-              maxLines: null,
-              style: GoogleFonts.hachiMaruPop(),
-              cursorHeight: 0,
-              cursorWidth: 0,
-              focusNode: myFocusNode,
-              onChanged: (searchText) {
-                if (searchText == '') {
-                  isSearchShown = false;
-                } else {
-                  BlocProvider.of<WordsBloc>(context)
-                      .add(SearchWordsForASet(searchText));
-                  setState(() {
-                    isSearchShown = true;
-                  });
-                }
-              },
-              onTap: () {
-                if (_searchController.text.isEmpty) {
-                  myFocusNode.requestFocus();
-                }
-              },
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _searchController.text.isEmpty
-                      ? Image.asset(
-                          'assets/icons/search.png',
-                          width: 24,
-                          height: 24,
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            _searchController.text = '';
-                            myFocusNode.unfocus();
-                            setState(() {
-                              isSearchShown = false;
-                            });
-                          },
-                          child: Image.asset(
-                            'assets/icons/cancel.png',
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 50,
+              child: TextField(
+                controller: _searchController,
+                maxLines: null,
+                style: GoogleFonts.hachiMaruPop(),
+                cursorHeight: 0,
+                cursorWidth: 0,
+                focusNode: myFocusNode,
+                onChanged: (searchText) {
+                  if (searchText == '') {
+                    isSearchShown = false;
+                  } else {
+                    BlocProvider.of<WordsBloc>(context)
+                        .add(SearchWordsForASet(searchText));
+                    setState(() {
+                      isSearchShown = true;
+                    });
+                  }
+                },
+                onTap: () {
+                  if (_searchController.text.isEmpty) {
+                    myFocusNode.requestFocus();
+                  }
+                },
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _searchController.text.isEmpty
+                        ? Image.asset(
+                            'assets/icons/search.png',
                             width: 24,
                             height: 24,
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              _searchController.text = '';
+                              myFocusNode.unfocus();
+                              setState(() {
+                                isSearchShown = false;
+                              });
+                            },
+                            child: Image.asset(
+                              'assets/icons/cancel.png',
+                              width: 24,
+                              height: 24,
+                            ),
                           ),
-                        ),
-                ),
-                contentPadding: const EdgeInsets.only(
-                  left: 30,
-                ),
-                focusedBorder: OutlineInputBorder(
+                  ),
+                  contentPadding: const EdgeInsets.only(
+                    left: 30,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Color(0xFFd9c3ac), width: 2),
+                      borderRadius: BorderRadius.circular(35)),
+                  enabledBorder: OutlineInputBorder(
                     borderSide:
                         const BorderSide(color: Color(0xFFd9c3ac), width: 2),
-                    borderRadius: BorderRadius.circular(35)),
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Color(0xFFd9c3ac), width: 2),
-                  borderRadius: BorderRadius.circular(35),
+                    borderRadius: BorderRadius.circular(35),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Expanded(
-          child: Stack(children: [
-            buildWordsList(),
-            isSearchShown
-                ? SingleChildScrollView(
-                    child: SizedBox(
-                      height: 170,
-                      child: BlocBuilder<WordsBloc, WordsState>(
-                          builder: (context, state) {
-                        if (state is SearchedWordsLoaded) {
-                          return ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: state.words.length,
-                              itemBuilder: (ctx, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 5.0, left: 5, right: 5),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        if (wordsInSet
-                                                .contains(state.words[index]) !=
-                                            true) {
-                                          wordsInSet.insert(
-                                              0, state.words[index]);
-                                        }
-                                        isSearchShown = false;
-                                        _searchController.text = '';
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color: const Color(0xFFffffff)),
-                                      height: 50,
-                                      child: Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 5.0,
-                                              bottom: 5.0,
-                                              right: 5.0,
-                                              left: 10),
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              '${state.words[index].source} - ${state.words[index].translationList.first.translation}',
-                                              textAlign: TextAlign.start,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
+          Expanded(
+            child: Stack(children: [
+              buildWordsList(),
+              isSearchShown
+                  ? SingleChildScrollView(
+                      child: SizedBox(
+                        height: 170,
+                        child: BlocBuilder<WordsBloc, WordsState>(
+                            builder: (context, state) {
+                          if (state is SearchedWordsLoaded) {
+                            return ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: state.words.length,
+                                itemBuilder: (ctx, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 5.0, left: 5, right: 5),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          if (wordsInSet.contains(
+                                                  state.words[index]) !=
+                                              true) {
+                                            wordsInSet.insert(
+                                                0, state.words[index]);
+                                          }
+                                          isSearchShown = false;
+                                          _searchController.text = '';
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            color: const Color(0xFFffffff)),
+                                        height: 50,
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 5.0,
+                                                bottom: 5.0,
+                                                right: 5.0,
+                                                left: 10),
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                '${state.words[index].source} - ${state.words[index].translationList.first.translation}',
+                                                textAlign: TextAlign.start,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              });
-                        } else if (state is SearchedWordsLoading) {
-                          return _loadingIndicator();
-                        } else if (state is SearchedWordsEmpty) {
-                          return Center(
-                            child: Text(
-                              S.of(context).noSuchWords,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        } else {
-                          return const SizedBox();
-                        }
-                      }),
-                    ),
-                  )
-                : const SizedBox(),
-          ]),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GestureDetector(
-            onTap: () {
-              if (_nameController.text == '') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(S.of(context).enterSetName)));
-              } else {
-                if (widget.set != null) {
-                  SetEntity set = SetEntity(
-                    id: widget.set!.id,
-                    name: _nameController.text,
-                    isAddedToDictionary: widget.set!.isAddedToDictionary,
-                  );
-                  final List<WordEntity> wordsInSetToAdd = [];
-                  final List<WordEntity> wordsInSetToDelete = [];
-                  if (wordsInSet.length > widget.set!.wordsInSet.length) {
-                    for (int i = 0; i < wordsInSet.length; i++) {
-                      if (widget.set!.wordsInSet.contains(wordsInSet[i]) &&
-                          !wordsInSet.contains(wordsInSet[i])) {
-                        wordsInSetToDelete.add(wordsInSet[i]);
-                      }
-                      if (!widget.set!.wordsInSet.contains(wordsInSet[i]) &&
-                          wordsInSet.contains(wordsInSet[i])) {
-                        wordsInSetToAdd.add(wordsInSet[i]);
-                      }
-                    }
-                  } else {
-                    for (int i = 0; i < widget.set!.wordsInSet.length; i++) {
-                      if (widget.set!.wordsInSet
-                              .contains(widget.set!.wordsInSet[i]) &&
-                          !wordsInSet.contains(widget.set!.wordsInSet[i])) {
-                        wordsInSetToDelete.add(widget.set!.wordsInSet[i]);
-                      }
-                      if (!widget.set!.wordsInSet
-                              .contains(widget.set!.wordsInSet[i]) &&
-                          wordsInSet.contains(widget.set!.wordsInSet[i])) {
-                        wordsInSetToAdd.add(widget.set!.wordsInSet[i]);
-                      }
-                    }
-                  }
-                  set.wordsInSet.addAll(wordsInSet);
-                  BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                      set: set,
-                      toAdd: wordsInSetToAdd,
-                      toDelete: wordsInSetToDelete));
-                  Navigator.of(context).pop();
+                                  );
+                                });
+                          } else if (state is SearchedWordsLoading) {
+                            return _loadingIndicator();
+                          } else if (state is SearchedWordsEmpty) {
+                            return Center(
+                              child: Text(
+                                S.of(context).noSuchWords,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        }),
+                      ),
+                    )
+                  : const SizedBox(),
+            ]),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              onTap: () {
+                if (_nameController.text == '') {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(S.of(context).enterSetName)));
                 } else {
-                  SetEntity set = SetEntity(
-                      id: const Uuid().v4(),
+                  if (widget.set != null) {
+                    SetEntity set = SetEntity(
+                      id: widget.set!.id,
                       name: _nameController.text,
-                      isAddedToDictionary: 0);
-                  set.wordsInSet.addAll(wordsInSet);
-                  BlocProvider.of<SetBloc>(context).add(AddSet(set: set));
-                  Navigator.of(context).pop();
+                      isAddedToDictionary: widget.set!.isAddedToDictionary,
+                    );
+                    final List<WordEntity> wordsInSetToAdd = [];
+                    final List<WordEntity> wordsInSetToDelete = [];
+                    if (wordsInSet.length > widget.set!.wordsInSet.length) {
+                      for (int i = 0; i < wordsInSet.length; i++) {
+                        if (widget.set!.wordsInSet.contains(wordsInSet[i]) &&
+                            !wordsInSet.contains(wordsInSet[i])) {
+                          wordsInSetToDelete.add(wordsInSet[i]);
+                        }
+                        if (!widget.set!.wordsInSet.contains(wordsInSet[i]) &&
+                            wordsInSet.contains(wordsInSet[i])) {
+                          wordsInSetToAdd.add(wordsInSet[i]);
+                        }
+                      }
+                    } else {
+                      for (int i = 0; i < widget.set!.wordsInSet.length; i++) {
+                        if (widget.set!.wordsInSet
+                                .contains(widget.set!.wordsInSet[i]) &&
+                            !wordsInSet.contains(widget.set!.wordsInSet[i])) {
+                          wordsInSetToDelete.add(widget.set!.wordsInSet[i]);
+                        }
+                        if (!widget.set!.wordsInSet
+                                .contains(widget.set!.wordsInSet[i]) &&
+                            wordsInSet.contains(widget.set!.wordsInSet[i])) {
+                          wordsInSetToAdd.add(widget.set!.wordsInSet[i]);
+                        }
+                      }
+                    }
+                    set.wordsInSet.addAll(wordsInSet);
+                    BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                        set: set,
+                        toAdd: wordsInSetToAdd,
+                        toDelete: wordsInSetToDelete));
+                    Navigator.of(context).pop();
+                  } else {
+                    SetEntity set = SetEntity(
+                        id: const Uuid().v4(),
+                        name: _nameController.text,
+                        isAddedToDictionary: 0);
+                    set.wordsInSet.addAll(wordsInSet);
+                    BlocProvider.of<SetBloc>(context).add(AddSet(set: set));
+                    Navigator.of(context).pop();
+                  }
                 }
-              }
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: _nameController.text == ''
-                      ? const Color(0xFFFFFFFF)
-                      : const Color(0xFF85977f)),
-              height: 50,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: FittedBox(
-                    child: Text(
-                      widget.set != null
-                          ? S.of(context).update
-                          : S.of(context).save,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.hachiMaruPop(
-                          color: _nameController.text == ''
-                              ? const Color(0xFF7A7A7A)
-                              : const Color(0xFFFFFFFF)),
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: _nameController.text == ''
+                        ? const Color(0xFFFFFFFF)
+                        : const Color(0xFF85977f)),
+                height: 50,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: FittedBox(
+                      child: Text(
+                        widget.set != null
+                            ? S.of(context).update
+                            : S.of(context).save,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.hachiMaruPop(
+                            color: _nameController.text == ''
+                                ? const Color(0xFF7A7A7A)
+                                : const Color(0xFFFFFFFF)),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 

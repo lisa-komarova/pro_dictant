@@ -99,22 +99,26 @@ class _SetWordsListState extends State<SetWordsList> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context)
-                          ..pop()
-                          ..pushReplacement(MaterialPageRoute(
-                              builder: (ctx) => TrainingsPage(
-                                    goal: state.statistics.goal,
-                                    setId: setEntity.id,
-                                    setName: setEntity.name,
-                                    isTodayCompleted:
-                                        state.statistics.isTodayCompleted,
-                                  )));
-                      },
+                      onTap: selectedWords.isNotEmpty
+                          ? null
+                          : () {
+                              Navigator.of(context)
+                                ..pop()
+                                ..pushReplacement(MaterialPageRoute(
+                                    builder: (ctx) => TrainingsPage(
+                                          goal: state.statistics.goal,
+                                          setId: setEntity.id,
+                                          setName: setEntity.name,
+                                          isTodayCompleted:
+                                              state.statistics.isTodayCompleted,
+                                        )));
+                            },
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: const Color(0xFF85977f),
+                          color: selectedWords.isNotEmpty
+                              ? const Color(0x6bd9c3ac)
+                              : const Color(0xFF85977f),
                         ),
                         height: 50,
                         child: Center(
@@ -303,18 +307,22 @@ class _SetWordsListState extends State<SetWordsList> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
-                onTap: () {
-                  if (setEntity.id.isNotEmpty) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (ctx) => NewSetPage(
-                              set: setEntity,
-                            )));
-                  }
-                },
+                onTap: selectedWords.isNotEmpty
+                    ? null
+                    : () {
+                        if (setEntity.id.isNotEmpty) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => NewSetPage(
+                                    set: setEntity,
+                                  )));
+                        }
+                      },
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFF85977f),
+                    color: selectedWords.isNotEmpty
+                        ? const Color(0x6bd9c3ac)
+                        : const Color(0xFF85977f),
                   ),
                   height: 50,
                   width: 60,

@@ -80,6 +80,7 @@
     "repeatWords": "repeat words",
     "myDictionary": "my dictionary",
     "shouldDeleteSet": "are you sure you want to delete this set of words?",
+    "shouldExit" : "are you sure you want to leave?",
     "currentlyLearning": "currently learning : {setName}",
     "sendSetToTrainings" : "send to training",
     "learntPercentage" : "{learntPercentage} % learned",
