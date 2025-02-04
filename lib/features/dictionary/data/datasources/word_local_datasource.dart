@@ -311,6 +311,7 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
 
   @override
   Future<List<WordModel>> filterWordsInDict(String query) async {
+    query = query.replaceAll('-', ' ');
     final db = await instance.database;
     List<WordModel> words = [];
     var maps = await db!.query(
