@@ -9,17 +9,18 @@ import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 
-class WordsCardsPage extends StatefulWidget {
+class SetWordsCardsPage extends StatefulWidget {
   final List<WordEntity> words;
   final int index;
 
-  const WordsCardsPage({required this.words, super.key, required this.index});
+  const SetWordsCardsPage(
+      {required this.words, super.key, required this.index});
 
   @override
-  State<WordsCardsPage> createState() => _WordsCardsPageState();
+  State<SetWordsCardsPage> createState() => _SetWordsCardsPageState();
 }
 
-class _WordsCardsPageState extends State<WordsCardsPage>
+class _SetWordsCardsPageState extends State<SetWordsCardsPage>
     with TickerProviderStateMixin {
   late PageController _pageViewController;
   final _scrollController = ScrollController();
@@ -309,20 +310,6 @@ class _WordsCardsPageState extends State<WordsCardsPage>
                       ),
                     ),
                   if (word.translationList.first.isInDictionary == 0)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8, right: 8, bottom: 8, top: 8),
-                      child: GestureDetector(
-                        onTap: () => _showDialogDelete(
-                            context, word.translationList.first, word),
-                        child: Image.asset(
-                          'assets/icons/delete.png',
-                          width: 35,
-                          height: 35,
-                        ),
-                      ),
-                    ),
-                  if (word.translationList.first.isInDictionary == 0)
                     const Spacer(),
                   if (word.translationList.first.isInDictionary == 0)
                     Padding(
@@ -445,141 +432,100 @@ class _WordsCardsPageState extends State<WordsCardsPage>
       word.translationList.insert(0, element);
     }
   }
-}
 
-Future<void> _showDialogDelete(
-    BuildContext context, TranslationEntity translation, WordEntity word) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Text(
-          S.of(context).removeWordPermanently,
-        ),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: const Color(0xFFB70E0E),
-            ),
-            child: Text(S.of(context).removeWord),
-            onPressed: () {
-              if (word.translationList.length == 1) {
-                BlocProvider.of<WordsBloc>(context).add(DeleteWord(word));
-              } else {
+  Future<void> _showSendToLearntDialog(
+    BuildContext context,
+    WordEntity word,
+  ) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            S.of(context).markAsLearnt,
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
+              ),
+              child: Text(S.of(context).yes),
+              onPressed: () {
+                word.translationList[0].isInDictionary = 1;
+                word.translationList[0].isTW = 1;
+                word.translationList[0].isWT = 1;
+                word.translationList[0].isMatching = 1;
+                word.translationList[0].isCards = 1;
+                word.translationList[0].isDictant = 1;
+                word.translationList[0].isRepeated = 1;
                 BlocProvider.of<WordsBloc>(context)
-                    .add(DeleteTranslation(translation));
-              }
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
+                    .add(UpdateTranslation(word.translationList[0]));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(word);
+              },
             ),
-            child: Text(S.of(context).cancel),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(S.of(context).cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-Future<void> _showSendToLearntDialog(
-  BuildContext context,
-  WordEntity word,
-) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Text(
-          S.of(context).markAsLearnt,
-        ),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: const Color(0xFFB70E0E),
-            ),
-            child: Text(S.of(context).yes),
-            onPressed: () {
-              word.translationList[0].isInDictionary = 1;
-              word.translationList[0].isTW = 1;
-              word.translationList[0].isWT = 1;
-              word.translationList[0].isMatching = 1;
-              word.translationList[0].isCards = 1;
-              word.translationList[0].isDictant = 1;
-              word.translationList[0].isRepeated = 1;
-              BlocProvider.of<WordsBloc>(context)
-                  .add(UpdateTranslation(word.translationList[0]));
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(word);
-            },
+  Future<void> _showSendToLearningDialog(
+      BuildContext context, WordEntity word) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            S.of(context).markAsNew,
           ),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
+              ),
+              child: Text(S.of(context).yes),
+              onPressed: () {
+                word.translationList[0].isInDictionary = 1;
+                word.translationList[0].isTW = 0;
+                word.translationList[0].isWT = 0;
+                word.translationList[0].isMatching = 0;
+                word.translationList[0].isCards = 0;
+                word.translationList[0].isDictant = 0;
+                word.translationList[0].isRepeated = 0;
+                if (word.translationList[0].dateAddedToDictionary == "") {
+                  word.translationList[0].dateAddedToDictionary =
+                      DateTime.now().toString();
+                }
+                BlocProvider.of<WordsBloc>(context)
+                    .add(UpdateTranslation(word.translationList[0]));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(word);
+              },
             ),
-            child: Text(S.of(context).cancel),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<void> _showSendToLearningDialog(BuildContext context, WordEntity word) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Text(
-          S.of(context).markAsNew,
-        ),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: const Color(0xFFB70E0E),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(S.of(context).cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-            child: Text(S.of(context).yes),
-            onPressed: () {
-              word.translationList[0].isInDictionary = 1;
-              word.translationList[0].isTW = 0;
-              word.translationList[0].isWT = 0;
-              word.translationList[0].isMatching = 0;
-              word.translationList[0].isCards = 0;
-              word.translationList[0].isDictant = 0;
-              word.translationList[0].isRepeated = 0;
-              if (word.translationList[0].dateAddedToDictionary == "") {
-                word.translationList[0].dateAddedToDictionary =
-                    DateTime.now().toString();
-              }
-              BlocProvider.of<WordsBloc>(context)
-                  .add(UpdateTranslation(word.translationList[0]));
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(word);
-            },
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-            ),
-            child: Text(S.of(context).cancel),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
+          ],
+        );
+      },
+    );
+  }
 }

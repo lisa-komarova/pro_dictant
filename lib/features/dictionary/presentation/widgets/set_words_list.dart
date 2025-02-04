@@ -11,7 +11,7 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/s
 import 'package:pro_dictant/features/dictionary/presentation/manager/sets_bloc/set_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.dart';
-import 'package:pro_dictant/features/dictionary/presentation/pages/words_cards.dart';
+import 'package:pro_dictant/features/dictionary/presentation/pages/set_words_cards_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page.dart';
 
 import '../../../profile/presentation/manager/profile_bloc.dart';
@@ -387,7 +387,7 @@ class _SetWordsListState extends State<SetWordsList> {
                     } else {
                       FocusManager.instance.primaryFocus?.unfocus();
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => WordsCardsPage(
+                          builder: (ctx) => SetWordsCardsPage(
                                 words: words,
                                 index: index,
                               )));
