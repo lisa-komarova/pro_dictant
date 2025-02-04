@@ -392,18 +392,20 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                   toDelete ? S.of(context).removeWord : S.of(context).addWord),
               onPressed: () {
                 if (toDelete) {
-                  BlocProvider.of<WordsBloc>(context)
-                      .add(DeleteWordFromDictionary(translation));
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  //TODO resfresh list
+                  setState(() {
+                    BlocProvider.of<WordsBloc>(context)
+                        .add(DeleteWordFromDictionary(translation));
+                    Navigator.of(context).pop();
+                  });
                 } else {
-                  translation.isInDictionary = 1;
-                  translation.dateAddedToDictionary = DateTime.now().toString();
-                  BlocProvider.of<WordsBloc>(context)
-                      .add(UpdateTranslation(translation));
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  setState(() {
+                    translation.isInDictionary = 1;
+                    translation.dateAddedToDictionary =
+                        DateTime.now().toString();
+                    BlocProvider.of<WordsBloc>(context)
+                        .add(UpdateTranslation(translation));
+                    Navigator.of(context).pop();
+                  });
                 }
               },
             ),
@@ -452,17 +454,18 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
               ),
               child: Text(S.of(context).yes),
               onPressed: () {
-                word.translationList[0].isInDictionary = 1;
-                word.translationList[0].isTW = 1;
-                word.translationList[0].isWT = 1;
-                word.translationList[0].isMatching = 1;
-                word.translationList[0].isCards = 1;
-                word.translationList[0].isDictant = 1;
-                word.translationList[0].isRepeated = 1;
-                BlocProvider.of<WordsBloc>(context)
-                    .add(UpdateTranslation(word.translationList[0]));
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(word);
+                setState(() {
+                  word.translationList[0].isInDictionary = 1;
+                  word.translationList[0].isTW = 1;
+                  word.translationList[0].isWT = 1;
+                  word.translationList[0].isMatching = 1;
+                  word.translationList[0].isCards = 1;
+                  word.translationList[0].isDictant = 1;
+                  word.translationList[0].isRepeated = 1;
+                  BlocProvider.of<WordsBloc>(context)
+                      .add(UpdateTranslation(word.translationList[0]));
+                  Navigator.of(context).pop();
+                });
               },
             ),
             TextButton(
@@ -497,21 +500,22 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
               ),
               child: Text(S.of(context).yes),
               onPressed: () {
-                word.translationList[0].isInDictionary = 1;
-                word.translationList[0].isTW = 0;
-                word.translationList[0].isWT = 0;
-                word.translationList[0].isMatching = 0;
-                word.translationList[0].isCards = 0;
-                word.translationList[0].isDictant = 0;
-                word.translationList[0].isRepeated = 0;
-                if (word.translationList[0].dateAddedToDictionary == "") {
-                  word.translationList[0].dateAddedToDictionary =
-                      DateTime.now().toString();
-                }
-                BlocProvider.of<WordsBloc>(context)
-                    .add(UpdateTranslation(word.translationList[0]));
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(word);
+                setState(() {
+                  word.translationList[0].isInDictionary = 1;
+                  word.translationList[0].isTW = 0;
+                  word.translationList[0].isWT = 0;
+                  word.translationList[0].isMatching = 0;
+                  word.translationList[0].isCards = 0;
+                  word.translationList[0].isDictant = 0;
+                  word.translationList[0].isRepeated = 0;
+                  if (word.translationList[0].dateAddedToDictionary == "") {
+                    word.translationList[0].dateAddedToDictionary =
+                        DateTime.now().toString();
+                  }
+                  BlocProvider.of<WordsBloc>(context)
+                      .add(UpdateTranslation(word.translationList[0]));
+                  Navigator.of(context).pop();
+                });
               },
             ),
             TextButton(
