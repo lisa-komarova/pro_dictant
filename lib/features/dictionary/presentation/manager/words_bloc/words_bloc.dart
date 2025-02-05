@@ -107,7 +107,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
           isLearnt: false,
         ));
       } else {
-        add(FetchTranslationsForWords(words, false, false, false));
+        add(FetchTranslationsForWords(words, false, false, false, false));
         // emit(
         //   WordsLoaded(
         //       words: words, isNew: false, isLearning: false, isLearnt: false),
@@ -120,7 +120,8 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
       FetchTranslationsForWords event, Emitter<WordsState> emit) async {
     emit(WordsLoading());
 
-    final failureOrWord = await fetchTranslationsForWords(event.words);
+    final failureOrWord =
+        await fetchTranslationsForWords(event.words, event.shouldSort);
 
     failureOrWord
         .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
@@ -180,8 +181,13 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
           isLearnt: event.isLearnt,
         ));
       } else {
-        add(FetchTranslationsForWords(
-            words, event.isNew, event.isLearning, event.isLearnt));
+        if (event.isNew || event.isLearning || event.isLearnt) {
+          add(FetchTranslationsForWords(
+              words, event.isNew, event.isLearning, event.isLearnt, false));
+        } else {
+          add(FetchTranslationsForWords(
+              words, event.isNew, event.isLearning, event.isLearnt, true));
+        }
       }
     });
   }

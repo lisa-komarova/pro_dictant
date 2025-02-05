@@ -8,7 +8,8 @@ class FetchTranslationsForWords {
 
   FetchTranslationsForWords({required this.wordRepository});
 
-  Future<Either<Failure, List<WordEntity>>> call(List<WordEntity> words) async {
-    return await wordRepository.fetchTranslationsForWords(words);
+  Future<Either<Failure, List<WordEntity>>> call(
+      List<WordEntity> words, bool shouldSort) async {
+    return await wordRepository.fetchTranslationsForWords(words, shouldSort);
   }
 }

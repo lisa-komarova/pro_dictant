@@ -297,6 +297,11 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     final db = await database;
     for (int i = 0; i < word.translationList.length; i++) {
       await db!.delete(
+        'word_set',
+        where: 'word_id = ?',
+        whereArgs: [word.translationList[i].id],
+      );
+      await db!.delete(
         tableTranslations,
         where: 'id = ?',
         whereArgs: [word.translationList[i].id],

@@ -33,9 +33,6 @@ class WordRepositoryImpl extends WordRepository {
     try {
       if (query.isNotEmpty) {
         wordsInDict = await localDataSource.filterWordsInDict(query);
-        // if (wordsInDict.isEmpty) {
-        //   wordsInDict = await localDataSource.searchWordsInTranslation(query);
-        // }
       } else if (isNew) {
         wordsInDict = await localDataSource.getNewWords();
       } else if (isLearning) {
@@ -138,7 +135,7 @@ class WordRepositoryImpl extends WordRepository {
 
   @override
   Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWords(
-      List<WordEntity> words) async {
+      List<WordEntity> words, bool shouldSort) async {
     try {
       List<WordModel> wordsModels = [];
       for (var element in words) {
@@ -150,9 +147,26 @@ class WordRepositoryImpl extends WordRepository {
       }
       final wordsWithTranslations =
           await localDataSource.fetchTranslationsForWords(wordsModels);
+      if (shouldSort) sortWordsWithTranslations(wordsWithTranslations);
       return Right(wordsWithTranslations);
     } on ServerException {
       return Left(ServerFailure());
+    }
+  }
+
+  void sortWordsWithTranslations(List<WordModel> wordsWithTranslations) {
+    List<WordModel> inDictList = [];
+    for (int i = 0; i < wordsWithTranslations.length; i++) {
+      wordsWithTranslations[i].translationList.forEach((translation) {
+        if (translation.isInDictionary == 1) {
+          inDictList.add(wordsWithTranslations[i]);
+        }
+      });
+    }
+    wordsWithTranslations
+        .removeWhere((element) => inDictList.contains(element));
+    for (var element in inDictList) {
+      wordsWithTranslations.insert(0, element);
     }
   }
 
@@ -206,6 +220,7 @@ class WordRepositoryImpl extends WordRepository {
       }
       final wordsWithTranslations = await localDataSource
           .fetchTranslationsForSearchedWordsInSet(wordsModels);
+      sortWordsWithTranslations(wordsWithTranslations);
       return Right(wordsWithTranslations);
     } on ServerException {
       return Left(ServerFailure());

@@ -9,7 +9,7 @@ abstract class WordRepository {
   Future<Either<Failure, List<WordEntity>>> fetchWordById(String id);
 
   Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWords(
-      List<WordEntity> words);
+      List<WordEntity> words, bool shouldSort);
 
   Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWordsInSet(
       List<WordEntity> words, String setId);

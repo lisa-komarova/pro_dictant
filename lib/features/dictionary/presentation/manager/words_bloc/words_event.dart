@@ -27,9 +27,10 @@ class FetchTranslationsForWords extends WordsEvent {
   final bool isNew;
   final bool isLearning;
   final bool isLearnt;
+  final bool shouldSort;
 
   const FetchTranslationsForWords(
-      this.words, this.isNew, this.isLearning, this.isLearnt);
+      this.words, this.isNew, this.isLearning, this.isLearnt, this.shouldSort);
 }
 
 class FetchTranslationsForSearchedWords extends WordsEvent {
