@@ -91,8 +91,14 @@ class _SetListState extends State<SetList> {
                     onTap: () async {
                       BlocProvider.of<SetBloc>(context).add(
                           FetchTranslationsForWordsInSets(set: sets[index]));
-                      await Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => SetsWordsPage(set: sets[index])));
+                      SetEntity setToReplace = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (ctx) => const SetsWordsPage()));
+                      if (setToReplace != null) {
+                        setState(() {
+                          sets[index] = setToReplace;
+                        });
+                      }
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
