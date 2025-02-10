@@ -91,8 +91,8 @@ class _SetListState extends State<SetList> {
                     onTap: () async {
                       BlocProvider.of<SetBloc>(context).add(
                           FetchTranslationsForWordsInSets(set: sets[index]));
-                      SetEntity setToReplace = await Navigator.of(context).push(
-                          MaterialPageRoute(
+                      SetEntity? setToReplace = await Navigator.of(context)
+                          .push(MaterialPageRoute(
                               builder: (ctx) => const SetsWordsPage()));
                       if (setToReplace != null) {
                         setState(() {
@@ -174,9 +174,7 @@ class _SetListState extends State<SetList> {
               ),
               child: Text(S.of(context).cancel),
               onPressed: () {
-                setState(() {
-                  sets.insert(index, set);
-                });
+                setState(() {});
                 Navigator.of(context).pop();
               },
             ),

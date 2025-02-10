@@ -6,7 +6,6 @@ import 'package:pro_dictant/features/dictionary/domain/entities/translation_enti
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
-import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
 import 'package:uuid/uuid.dart';
 
 class WordForm extends StatefulWidget {
@@ -384,11 +383,7 @@ class _WordFormState extends State<WordForm> {
                               }
                               widget.word.translationList.clear();
                               widget.word.translationList.addAll(translations);
-                              Navigator.of(context)
-                                  .pushReplacement(MaterialPageRoute(
-                                      builder: (ctx) => WordsDetails(
-                                            word: widget.word,
-                                          )));
+                              Navigator.of(context).pop(widget.word);
                             }
                           }
                         },

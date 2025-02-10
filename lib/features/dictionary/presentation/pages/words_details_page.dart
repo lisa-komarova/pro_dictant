@@ -13,16 +13,24 @@ class WordsDetails extends StatefulWidget {
 class _WordsDetailsState extends State<WordsDetails> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              return Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-      ),
-      body: WordTranslationCards(
-        word: widget.word,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPope) {
+        if (!didPope) {
+          Navigator.of(context).pop(widget.word);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                return Navigator.of(context).pop(widget.word);
+              },
+              icon: Image.asset('assets/icons/cancel.png')),
+        ),
+        body: WordTranslationCards(
+          word: widget.word,
+        ),
       ),
     );
   }

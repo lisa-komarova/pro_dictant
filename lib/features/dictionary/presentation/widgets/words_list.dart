@@ -166,10 +166,19 @@ class _WordsListState extends State<WordsList> {
                   FocusManager.instance.primaryFocus?.unfocus();
                   //widget.editingController.text = '';
                   //BlocProvider.of<WordsBloc>(context).add(LoadWords());
-                  await Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => WordsDetails(
-                            word: words[index],
-                          )));
+                  final result =
+                      await Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => WordsDetails(
+                                word: words[index],
+                              )));
+                  if (result != null && result == 'delete') {
+                    widget.editingController.text = '';
+                  } else if (result != null) {
+                    setState(() {
+                      words[index] = result;
+                      widget.editingController.text = '';
+                    });
+                  }
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,

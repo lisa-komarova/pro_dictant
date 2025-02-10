@@ -155,12 +155,21 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
       for (int i = 0; i < words.length; i++) {
         List<TranslationEntity> translation = [];
         final translationMap = await db!.rawQuery(
-            '''select DISTINCT * FROM words_translations WHERE word_id not 
+            ''' select DISTINCT * FROM words_translations join word on words_translations.word_id = word.id WHERE word_id not 
             in ('${words[i].wordId}') and translation not 
-            in ('${words[i].translation}') and isInDictionary = 1 ORDER by random()
+            in ('${words[i].translation}') and word.pos = (SELECT pos from word where id = '${words[i].wordId}' ) and isInDictionary = 1 ORDER by random()
              LIMIT 3''');
         translation =
             translationMap.map((e) => TranslationModel.fromJson(e)).toList();
+        if (translation.length < 3) {
+          final translationMap = await db!.rawQuery(
+              ''' select DISTINCT * FROM words_translations join word on words_translations.word_id = word.id WHERE word_id not 
+            in ('${words[i].wordId}') and translation not 
+            in ('${words[i].translation}') and word.pos = (SELECT pos from word where id = '${words[i].wordId}' )  ORDER by random()
+             LIMIT 3''');
+          translation =
+              translationMap.map((e) => TranslationModel.fromJson(e)).toList();
+        }
         words[i].suggestedTranslationList.addAll(translation);
       }
       return words;
@@ -199,9 +208,19 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
             join words_translations on word.id = words_translations.word_id
              WHERE words_translations.id not in ('${words[i].id}') 
               and word.source not in ('$source') 
-             and words_translations.isInDictionary=1  
+             and words_translations.isInDictionary = 1  and word.pos = (SELECT pos from word where source = '$source')
              ORDER by random() LIMIT 3''');
         sources = sourcesMap.map((e) => WordModel.fromJson(e)).toList();
+        if (sources.length < 3) {
+          final sourcesMap = await db!.rawQuery(
+              '''select  word.id, source, pos, transcription FROM word 
+            join words_translations on word.id = words_translations.word_id
+             WHERE words_translations.id not in ('${words[i].id}') 
+              and word.source not in ('$source') 
+               and word.pos = (SELECT pos from word where source = '$source')
+             ORDER by random() LIMIT 3''');
+          sources = sourcesMap.map((e) => WordModel.fromJson(e)).toList();
+        }
         words[i].suggestedSourcesList.addAll(sources);
       }
       return words;

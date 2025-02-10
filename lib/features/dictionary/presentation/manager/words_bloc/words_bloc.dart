@@ -256,7 +256,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   FutureOr<void> _onUpdateTranslationEvent(
       UpdateTranslation event, Emitter<WordsState> emit) async {
     await updateTranslation(event.translation);
-    add(const LoadWords());
+    //add(const LoadWords());
   }
 
   FutureOr<void> _onAddWordEvent(

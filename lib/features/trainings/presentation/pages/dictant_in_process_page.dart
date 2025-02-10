@@ -177,9 +177,12 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
                               onTap: () {
-                                if (wordController.text.replaceAll(' ', '') ==
+                                if (wordController.text
+                                        .toLowerCase()
+                                        .replaceAll(' ', '') ==
                                     words[currentWordIndex]
                                         .source
+                                        .toLowerCase()
                                         .replaceAll(' ', '')) {
                                   if (!mistakes
                                       .contains(words[currentWordIndex])) {

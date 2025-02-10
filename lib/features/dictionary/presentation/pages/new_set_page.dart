@@ -407,7 +407,9 @@ class _NewSetPageState extends State<NewSetPage> {
                 ],
               ),
               onDismissed: (DismissDirection direction) {
-                wordsInSet.remove(wordsInSet[index]);
+                setState(() {
+                  wordsInSet.remove(wordsInSet[index]);
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,

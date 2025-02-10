@@ -27,11 +27,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
   var isPronounceSelected = false;
   Color _color = const Color(0xFF85977f);
   int _currentPageIndex = 0;
+  late WordEntity word;
 
   @override
   void initState() {
     super.initState();
-    sortTranslationList(widget.word);
+    word = widget.word;
+    sortTranslationList(word);
     _pageViewController = PageController();
   }
 
@@ -56,7 +58,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 controller: _pageViewController,
                 onPageChanged: _handlePageViewChanged,
                 children: <Widget>[
-                  for (var element in widget.word.translationList)
+                  for (var element in word.translationList)
                     buildTranslastionCard(_scrollController, context, element),
                 ],
               ),
@@ -99,21 +101,26 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GestureDetector(
-          onTap: () {
+          onTap: () async {
             if (title == S.of(context).learn) {
-              _showSendToLearningDialog(
-                  context, widget.word, _currentPageIndex);
+              _showSendToLearningDialog(context, word, _currentPageIndex);
             }
             if (title == S.of(context).alreadyKnow) {
-              _showSendToLearntDialog(context, widget.word, _currentPageIndex);
+              _showSendToLearntDialog(context, word, _currentPageIndex);
             }
             if (title == S.of(context).changeWord) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
+              WordEntity? wordToReplace =
+                  await Navigator.of(context).push(MaterialPageRoute(
                 builder: (ctx) => WordForm(
-                  word: widget.word,
+                  word: word,
                   isNew: false,
                 ),
               ));
+              if (wordToReplace != null) {
+                setState(() {
+                  word = wordToReplace;
+                });
+              }
             }
           },
           child: Container(
@@ -179,7 +186,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                           setState(() {
                             _color = const Color(0xFF243120);
                           });
-                          speak(widget.word.source);
+                          speak(word.source);
                         },
                         child: AnimatedContainer(
                           duration: const Duration(seconds: 1),
@@ -206,7 +213,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                                 thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
-                                  child: Text(widget.word.source,
+                                  child: Text(word.source,
                                       textAlign: TextAlign.center,
                                       style: Theme.of(context)
                                           .textTheme
@@ -215,11 +222,11 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                               ),
                             ),
                           ),
-                          widget.word.pos.isNotEmpty
+                          word.pos.isNotEmpty
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: AutoSizeText(
-                                    widget.word.pos,
+                                    word.pos,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -232,12 +239,12 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         ],
                       ),
                     ),
-                    widget.word.transcription.isNotEmpty
+                    word.transcription.isNotEmpty
                         ? Flexible(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                widget.word.transcription,
+                                word.transcription,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleSmall!
@@ -312,8 +319,8 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                       padding: const EdgeInsets.only(
                           left: 8, right: 8, bottom: 8, top: 8),
                       child: GestureDetector(
-                        onTap: () => _showDialogDelete(
-                            context, translation, widget.word),
+                        onTap: () =>
+                            _showDialogDelete(context, translation, word),
                         child: Image.asset(
                           'assets/icons/delete.png',
                           width: 35,
@@ -406,7 +413,6 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                       .add(DeleteWordFromDictionary(translation));
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
-                  //TODO resfresh list
                 } else {
                   translation.isInDictionary = 1;
                   translation.dateAddedToDictionary = DateTime.now().toString();
@@ -463,12 +469,15 @@ Future<void> _showDialogDelete(
             onPressed: () {
               if (word.translationList.length == 1) {
                 BlocProvider.of<WordsBloc>(context).add(DeleteWord(word));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop('delete');
               } else {
+                word.translationList.remove(translation);
                 BlocProvider.of<WordsBloc>(context)
                     .add(DeleteTranslation(translation));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(word);
               }
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
             },
           ),
           TextButton(

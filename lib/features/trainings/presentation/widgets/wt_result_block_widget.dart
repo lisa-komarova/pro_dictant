@@ -79,11 +79,7 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
                             height: 15,
                             color: const Color(0xFFB70E0E),
                           )
-                        : Image.asset(
-                            'assets/icons/add.png',
-                            width: 15,
-                            height: 15,
-                          )),
+                        : null),
               ],
             ),
           ),
