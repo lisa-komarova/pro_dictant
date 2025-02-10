@@ -110,7 +110,12 @@ class _WordsListState extends State<WordsList> {
                 isLearningSelected: state.isLearning,
                 isLearntSelected: state.isLearnt,
               ),
-              buildWordsList(state.words.toSet().toList()),
+              buildWordsList(
+                state.words,
+                state.isNew,
+                state.isLearning,
+                state.isLearnt,
+              ),
             ],
           ),
         );
@@ -136,48 +141,89 @@ class _WordsListState extends State<WordsList> {
     );
   }
 
-  Expanded buildWordsList(List<WordEntity> words) {
+  Expanded buildWordsList(
+    List<WordEntity> wordsToBuild,
+    bool isNew,
+    bool isLearning,
+    bool isLearnt,
+  ) {
     return Expanded(
       child: RefreshIndicator(
         onRefresh: _refreshList,
         child: ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
-            itemCount: words.length,
+            itemCount: wordsToBuild.length,
             itemBuilder: (context, index) {
               var translation = '';
-              final isInDictionary = words[index]
+              final isInDictionary = wordsToBuild[index]
                   .translationList
                   .where((element) => element.isInDictionary == 1)
                   .toList()
                   .length;
-              if (words[index].translationList.isNotEmpty) {
+              if (wordsToBuild[index].translationList.isNotEmpty) {
                 translation = isInDictionary > 0
-                    ? words[index]
+                    ? wordsToBuild[index]
                         .translationList
                         .where((element) => element.isInDictionary == 1)
                         .toList()
                         .first
                         .translation
-                    : words[index].translationList.first.translation;
+                    : wordsToBuild[index].translationList.first.translation;
               }
               return GestureDetector(
                 onTap: () async {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  //widget.editingController.text = '';
-                  //BlocProvider.of<WordsBloc>(context).add(LoadWords());
                   final result =
                       await Navigator.of(context).push(MaterialPageRoute(
                           builder: (ctx) => WordsDetails(
-                                word: words[index],
+                                word: wordsToBuild[index],
                               )));
                   if (result != null && result == 'delete') {
                     widget.editingController.text = '';
                   } else if (result != null) {
-                    setState(() {
-                      words[index] = result;
-                      widget.editingController.text = '';
-                    });
+                    if (result is WordEntity) {
+                      setState(() {
+                        wordsToBuild[index] = result;
+                        widget.editingController.text = '';
+                      });
+                    } else if (result is Map) {
+                      if (result.values.first == 'sendToLearnt' && isNew) {
+                        setState(() {
+                          wordsToBuild[index] = result.keys.first;
+                          wordsToBuild.remove(result.keys.first);
+                        });
+                      }
+                      if (result.values.first == 'sendToLearnt' && isLearning) {
+                        setState(() {
+                          wordsToBuild[index] = result.keys.first;
+                          wordsToBuild.remove(result.keys.first);
+                        });
+                      }
+                      if (result.values.first == 'sendToLearnt' && isLearnt) {
+                        setState(() {
+                          wordsToBuild[index] = result.keys.first;
+                        });
+                      }
+                      if (result.values.first == 'sendToLearning' && isNew) {
+                        setState(() {
+                          wordsToBuild[index] = result.keys.first;
+                          wordsToBuild.remove(result.keys.first);
+                        });
+                      }
+                      if (result.values.first == 'sendToLearning' &&
+                          isLearning) {
+                        setState(() {
+                          wordsToBuild[index] = result.keys.first;
+                        });
+                      }
+                      if (result.values.first == 'sendToLearning' && isLearnt) {
+                        setState(() {
+                          wordsToBuild[index] = result.keys.first;
+                          wordsToBuild.remove(result.keys.first);
+                        });
+                      }
+                    }
                   }
                 },
                 child: Row(
@@ -187,8 +233,8 @@ class _WordsListState extends State<WordsList> {
                       child: Column(
                         children: [
                           ListTile(
-                            title:
-                                Text("${words[index].source} - $translation"),
+                            title: Text(
+                                "${wordsToBuild[index].source} - $translation"),
                           ),
                           Image.asset(
                             'assets/icons/divider.png',

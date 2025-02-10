@@ -476,7 +476,7 @@ Future<void> _showDialogDelete(
                 BlocProvider.of<WordsBloc>(context)
                     .add(DeleteTranslation(translation));
                 Navigator.of(context).pop();
-                Navigator.of(context).pop(word);
+                //Navigator.of(context).pop(word);
               }
             },
           ),
@@ -513,6 +513,10 @@ Future<void> _showSendToLearntDialog(
             child: Text(S.of(context).yes),
             onPressed: () {
               word.translationList[index].isInDictionary = 1;
+              if (word.translationList[index].dateAddedToDictionary == "") {
+                word.translationList[index].dateAddedToDictionary =
+                    DateTime.now().toString();
+              }
               word.translationList[index].isTW = 1;
               word.translationList[index].isWT = 1;
               word.translationList[index].isMatching = 1;
@@ -522,7 +526,7 @@ Future<void> _showSendToLearntDialog(
               BlocProvider.of<WordsBloc>(context)
                   .add(UpdateTranslation(word.translationList[index]));
               Navigator.of(context).pop();
-              Navigator.of(context).pop(word);
+              Navigator.of(context).pop({word: 'sendToLearnt'});
             },
           ),
           TextButton(
@@ -571,7 +575,7 @@ Future<void> _showSendToLearningDialog(
               BlocProvider.of<WordsBloc>(context)
                   .add(UpdateTranslation(word.translationList[index]));
               Navigator.of(context).pop();
-              Navigator.of(context).pop(word);
+              Navigator.of(context).pop({word: 'sendToLearning'});
             },
           ),
           TextButton(
