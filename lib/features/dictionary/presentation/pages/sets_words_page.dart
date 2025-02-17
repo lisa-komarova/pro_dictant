@@ -30,11 +30,11 @@ class SetsWordsPage extends StatefulWidget {
 class _SetsWordsPageState extends State<SetsWordsPage> {
   List<WordEntity> selectedWords = [];
   bool isSelectionMode = false;
+  List<TranslationEntity> wordsTranslations = [];
+  int learntPercentage = 0;
 
   @override
   Widget build(BuildContext context) {
-    List<TranslationEntity> wordsTranslations = [];
-    int learntPercentage = 0;
     SetEntity setEntity = SetEntity(id: '', name: '', isAddedToDictionary: 0);
     return BlocBuilder<SetBloc, SetsState>(builder: (context, state) {
       if (state is SetLoading) {
@@ -46,8 +46,8 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
             wordsTranslations
                 .add(setEntity.wordsInSet[i].translationList.first);
           }
-          learntPercentage = computeLearntPercentage(
-              setEntity, wordsTranslations, learntPercentage);
+          learntPercentage =
+              computeLearntPercentage(setEntity, wordsTranslations);
         }
         return PopScope(
           canPop: false,
@@ -80,8 +80,8 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
     });
   }
 
-  int computeLearntPercentage(SetEntity setEntity,
-      List<TranslationEntity> wordsTranslations, int learntPercentage) {
+  int computeLearntPercentage(
+      SetEntity setEntity, List<TranslationEntity> wordsTranslations) {
     int learntCount = 0;
     int learnt100percent;
     learnt100percent = wordsTranslations.length * 6;
@@ -411,11 +411,23 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                       }
                     } else {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => SetWordsCardsPage(
-                                words: words,
-                                index: index,
-                              )));
+                      final updatePercentage =
+                          await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => SetWordsCardsPage(
+                                    words: words,
+                                    index: index,
+                                  )));
+                      if (updatePercentage != null) {
+                        wordsTranslations.clear();
+                        for (int i = 0; i < setEntity.wordsInSet.length; i++) {
+                          wordsTranslations.add(
+                              setEntity.wordsInSet[i].translationList.first);
+                        }
+                        setState(() {
+                          learntPercentage = computeLearntPercentage(
+                              setEntity, wordsTranslations);
+                        });
+                      }
                     }
                   },
                   child: Row(

@@ -49,8 +49,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Flexible(
-          flex: 7,
+        Expanded(
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: <Widget>[
@@ -65,22 +64,19 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
             ],
           ),
         ),
-        Flexible(
-          flex: 2,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              children: [
-                _buildAWordButton(
-                    title: S.of(context).learn, color: const Color(0xFFB70E0E)),
-                _buildAWordButton(
-                    title: S.of(context).alreadyKnow,
-                    color: const Color(0xFF85977f)),
-                _buildAWordButton(
-                    title: S.of(context).changeWord,
-                    color: const Color(0xFFd9c3ac)),
-              ],
-            ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Row(
+            children: [
+              _buildAWordButton(
+                  title: S.of(context).learn, color: const Color(0xFFB70E0E)),
+              _buildAWordButton(
+                  title: S.of(context).alreadyKnow,
+                  color: const Color(0xFF85977f)),
+              _buildAWordButton(
+                  title: S.of(context).changeWord,
+                  color: const Color(0xFFd9c3ac)),
+            ],
           ),
         ),
         // SizedBox(
@@ -154,7 +150,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
       child: SingleChildScrollView(
         controller: scrollController,
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.6,
+          height: MediaQuery.of(context).size.height * 0.7,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -176,11 +172,12 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
               ),
               Expanded(
                   child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Flexible(
+                      flex: 2,
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
@@ -201,6 +198,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                       ),
                     ),
                     Flexible(
+                      flex: 3,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -223,40 +221,44 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                             ),
                           ),
                           word.pos.isNotEmpty
-                              ? Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: AutoSizeText(
-                                    word.pos,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12),
+                              ? Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: AutoSizeText(
+                                      word.pos,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                          word.transcription.isNotEmpty
+                              ? Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      word.transcription,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                    ),
                                   ),
                                 )
                               : const SizedBox.shrink(),
                         ],
                       ),
                     ),
-                    word.transcription.isNotEmpty
-                        ? Flexible(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                word.transcription,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
                     Flexible(
+                      flex: 2,
                       child: Padding(
                         padding: const EdgeInsets.only(right: 2),
                         child: Scrollbar(
@@ -273,6 +275,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                     ),
                     translation.notes.isNotEmpty
                         ? Flexible(
+                            flex: 1,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Scrollbar(

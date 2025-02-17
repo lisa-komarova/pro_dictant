@@ -24,6 +24,9 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
     with TickerProviderStateMixin {
   late PageController _pageViewController;
   final _scrollController = ScrollController();
+  final _scrollControllerSource = ScrollController();
+  final _scrollControllerTranslation = ScrollController();
+  final _scrollControllerNotes = ScrollController();
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
   Color _color = const Color(0xFF85977f);
@@ -45,37 +48,40 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              return Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Flexible(
-            flex: 7,
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: <Widget>[
-                PageView(
-                  controller: _pageViewController,
-                  onPageChanged: _handlePageViewChanged,
-                  children: <Widget>[
-                    for (var element in widget.words)
-                      buildTranslastionCard(
-                          _scrollController, context, element),
-                  ],
-                ),
-              ],
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPope) {
+        if (!didPope) {
+          Navigator.of(context).pop('update');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                return Navigator.of(context).pop('update');
+              },
+              icon: Image.asset('assets/icons/cancel.png')),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  PageView(
+                    controller: _pageViewController,
+                    onPageChanged: _handlePageViewChanged,
+                    children: <Widget>[
+                      for (var element in widget.words)
+                        buildTranslastionCard(context, element),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          Flexible(
-            flex: 2,
-            child: Align(
+            Align(
               alignment: Alignment.bottomCenter,
               child: Row(
                 children: [
@@ -88,11 +94,11 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                 ],
               ),
             ),
-          ),
-          // SizedBox(
-          //   height: 300,
-          // )
-        ],
+            // SizedBox(
+            //   height: 300,
+            // )
+          ],
+        ),
       ),
     );
   }
@@ -141,14 +147,13 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
     );
   }
 
-  Widget buildTranslastionCard(ScrollController scrollController,
-      BuildContext context, WordEntity word) {
+  Widget buildTranslastionCard(BuildContext context, WordEntity word) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
-        controller: scrollController,
+        controller: _scrollController,
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.6,
+          height: MediaQuery.of(context).size.height * 0.7,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -170,11 +175,12 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
               ),
               Expanded(
                   child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Flexible(
+                      flex: 2,
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
@@ -195,18 +201,20 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                       ),
                     ),
                     Flexible(
+                      flex: 3,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Flexible(
+                          Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(right: 2),
                               child: Scrollbar(
-                                controller: scrollController,
+                                controller: _scrollControllerSource,
                                 thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
+                                  controller: _scrollControllerSource,
                                   child: Text(word.source,
                                       textAlign: TextAlign.center,
                                       style: Theme.of(context)
@@ -217,47 +225,52 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                             ),
                           ),
                           word.pos.isNotEmpty
-                              ? Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: AutoSizeText(
-                                    word.pos,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12),
+                              ? Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: AutoSizeText(
+                                      word.pos,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12),
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                          word.transcription.isNotEmpty
+                              ? Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Text(
+                                      word.transcription,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                    ),
                                   ),
                                 )
                               : const SizedBox.shrink(),
                         ],
                       ),
                     ),
-                    word.transcription.isNotEmpty
-                        ? Flexible(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                word.transcription,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
                     Flexible(
+                      flex: 2,
                       child: Padding(
                         padding: const EdgeInsets.only(right: 2),
                         child: Scrollbar(
-                          controller: scrollController,
+                          controller: _scrollControllerTranslation,
                           thumbVisibility: true,
                           radius: const Radius.circular(2),
                           child: SingleChildScrollView(
+                            controller: _scrollControllerTranslation,
                             child: Text(word.translationList.first.translation,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.titleLarge),
@@ -267,13 +280,15 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                     ),
                     word.translationList.first.notes.isNotEmpty
                         ? Flexible(
+                            flex: 1,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Scrollbar(
-                                controller: scrollController,
+                                controller: _scrollControllerNotes,
                                 thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
+                                  controller: _scrollControllerNotes,
                                   child: Text(
                                     word.translationList.first.notes,
                                     style: Theme.of(context)

@@ -472,7 +472,11 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   @override
   Future<void> deleteTranslation(TranslationModel translation) async {
     final db = await database;
-
+    await db!.delete(
+      'word_set',
+      where: 'word_id = ?',
+      whereArgs: [translation.id],
+    );
     await db!.delete(
       tableTranslations,
       where: 'id = ?',

@@ -28,7 +28,7 @@ class _BannerAdvertisementState extends State<BannerAdvertisement> {
 
   _createBanner() {
     return BannerAd(
-        adUnitId: 'demo-banner-yandex',
+        adUnitId: 'R-M-13553505-1',
         // or 'demo-banner-yandex'
         adSize: _getAdSize(),
         adRequest: const AdRequest(),

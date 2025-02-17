@@ -84,5 +84,6 @@
     "currentlyLearning": "currently learning : {setName}",
     "sendSetToTrainings" : "send to training",
     "learntPercentage" : "{learntPercentage} % learned",
-    "addNotes" : "add notes to translation"
+    "addNotes" : "add notes to translation",
+    "noInternetConnection" : "please check internet connection ˙◠˙"
 }

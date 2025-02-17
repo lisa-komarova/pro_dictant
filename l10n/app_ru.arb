@@ -75,5 +75,6 @@
    "currentlyLearning": "сейчас на изучении : {setName}",
   "sendSetToTrainings" : "отправить\nна изучение",
   "learntPercentage" : "выучено {learntPercentage} %",
-  "addNotes" : "добавить примечание к переводу"
+  "addNotes" : "добавить примечание к переводу",
+  "noInternetConnection" : "пожалуйста, проверьте подключение к интернету ˙◠˙"
 }

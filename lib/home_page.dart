@@ -157,6 +157,6 @@ class _HomePageState extends State<HomePage> {
     await adLoader.loadAd(
         adRequestConfiguration: const AdRequestConfiguration(
             adUnitId:
-                'demo-interstitial-yandex')); // for debug you can use 'demo-interstitial-yandex'
+                'R-M-13553505-2')); // for debug you can use 'demo-interstitial-yandex'
   }
 }
