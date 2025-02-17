@@ -181,6 +181,9 @@ class _WordsListState extends State<WordsList> {
                               )));
                   if (result != null && result == 'delete') {
                     widget.editingController.text = '';
+                  }
+                  if (result != null && result == 'added') {
+                    widget.editingController.text = '';
                   } else if (result != null) {
                     if (result is WordEntity) {
                       setState(() {

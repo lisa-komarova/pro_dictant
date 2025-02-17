@@ -415,14 +415,15 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                   BlocProvider.of<WordsBloc>(context)
                       .add(DeleteWordFromDictionary(translation));
                   Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop('delete');
                 } else {
                   translation.isInDictionary = 1;
                   translation.dateAddedToDictionary = DateTime.now().toString();
                   BlocProvider.of<WordsBloc>(context)
                       .add(UpdateTranslation(translation));
+                  BlocProvider.of<WordsBloc>(context).add(LoadWords());
                   Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop('added');
                 }
               },
             ),
@@ -451,147 +452,147 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
       word.translationList.insert(0, element);
     }
   }
-}
 
-Future<void> _showDialogDelete(
-    BuildContext context, TranslationEntity translation, WordEntity word) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Text(
-          S.of(context).removeWordPermanently,
-        ),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: const Color(0xFFB70E0E),
+  Future<void> _showDialogDelete(
+      BuildContext context, TranslationEntity translation, WordEntity word) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            S.of(context).removeWordPermanently,
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
+              ),
+              child: Text(S.of(context).removeWord),
+              onPressed: () {
+                if (word.translationList.length == 1) {
+                  BlocProvider.of<WordsBloc>(context).add(DeleteWord(word));
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop('delete');
+                } else {
+                  word.translationList.remove(translation);
+                  BlocProvider.of<WordsBloc>(context)
+                      .add(DeleteTranslation(translation));
+                  Navigator.of(context).pop();
+                  //Navigator.of(context).pop(word);
+                }
+              },
             ),
-            child: Text(S.of(context).removeWord),
-            onPressed: () {
-              if (word.translationList.length == 1) {
-                BlocProvider.of<WordsBloc>(context).add(DeleteWord(word));
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(S.of(context).cancel),
+              onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pop('delete');
-              } else {
-                word.translationList.remove(translation);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showSendToLearntDialog(
+      BuildContext context, WordEntity word, int index) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            S.of(context).markAsLearnt,
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
+              ),
+              child: Text(S.of(context).yes),
+              onPressed: () {
+                word.translationList[index].isInDictionary = 1;
+                if (word.translationList[index].dateAddedToDictionary == "") {
+                  word.translationList[index].dateAddedToDictionary =
+                      DateTime.now().toString();
+                }
+                word.translationList[index].isTW = 1;
+                word.translationList[index].isWT = 1;
+                word.translationList[index].isMatching = 1;
+                word.translationList[index].isCards = 1;
+                word.translationList[index].isDictant = 1;
+                word.translationList[index].isRepeated = 1;
                 BlocProvider.of<WordsBloc>(context)
-                    .add(DeleteTranslation(translation));
+                    .add(UpdateTranslation(word.translationList[index]));
                 Navigator.of(context).pop();
-                //Navigator.of(context).pop(word);
-              }
-            },
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
+                Navigator.of(context).pop({word: 'sendToLearnt'});
+              },
             ),
-            child: Text(S.of(context).cancel),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(S.of(context).cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-Future<void> _showSendToLearntDialog(
-    BuildContext context, WordEntity word, int index) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Text(
-          S.of(context).markAsLearnt,
-        ),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: const Color(0xFFB70E0E),
-            ),
-            child: Text(S.of(context).yes),
-            onPressed: () {
-              word.translationList[index].isInDictionary = 1;
-              if (word.translationList[index].dateAddedToDictionary == "") {
-                word.translationList[index].dateAddedToDictionary =
-                    DateTime.now().toString();
-              }
-              word.translationList[index].isTW = 1;
-              word.translationList[index].isWT = 1;
-              word.translationList[index].isMatching = 1;
-              word.translationList[index].isCards = 1;
-              word.translationList[index].isDictant = 1;
-              word.translationList[index].isRepeated = 1;
-              BlocProvider.of<WordsBloc>(context)
-                  .add(UpdateTranslation(word.translationList[index]));
-              Navigator.of(context).pop();
-              Navigator.of(context).pop({word: 'sendToLearnt'});
-            },
+  Future<void> _showSendToLearningDialog(
+      BuildContext context, WordEntity word, int index) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            S.of(context).markAsNew,
           ),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
+              ),
+              child: Text(S.of(context).yes),
+              onPressed: () {
+                word.translationList[index].isInDictionary = 1;
+                word.translationList[index].isTW = 0;
+                word.translationList[index].isWT = 0;
+                word.translationList[index].isMatching = 0;
+                word.translationList[index].isCards = 0;
+                word.translationList[index].isDictant = 0;
+                word.translationList[index].isRepeated = 0;
+                if (word.translationList[index].dateAddedToDictionary == "") {
+                  word.translationList[index].dateAddedToDictionary =
+                      DateTime.now().toString();
+                }
+                BlocProvider.of<WordsBloc>(context)
+                    .add(UpdateTranslation(word.translationList[index]));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop({word: 'sendToLearning'});
+              },
             ),
-            child: Text(S.of(context).cancel),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-Future<void> _showSendToLearningDialog(
-    BuildContext context, WordEntity word, int index) {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Text(
-          S.of(context).markAsNew,
-        ),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-              foregroundColor: const Color(0xFFB70E0E),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(S.of(context).cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-            child: Text(S.of(context).yes),
-            onPressed: () {
-              word.translationList[index].isInDictionary = 1;
-              word.translationList[index].isTW = 0;
-              word.translationList[index].isWT = 0;
-              word.translationList[index].isMatching = 0;
-              word.translationList[index].isCards = 0;
-              word.translationList[index].isDictant = 0;
-              word.translationList[index].isRepeated = 0;
-              if (word.translationList[index].dateAddedToDictionary == "") {
-                word.translationList[index].dateAddedToDictionary =
-                    DateTime.now().toString();
-              }
-              BlocProvider.of<WordsBloc>(context)
-                  .add(UpdateTranslation(word.translationList[index]));
-              Navigator.of(context).pop();
-              Navigator.of(context).pop({word: 'sendToLearning'});
-            },
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-            ),
-            child: Text(S.of(context).cancel),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
+          ],
+        );
+      },
+    );
+  }
 }
