@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "com.lvcorporation.pro_dictant"
     compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
+    ndkVersion "25.1.8937393"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

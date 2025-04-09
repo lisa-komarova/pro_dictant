@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
@@ -11,6 +12,7 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_result_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
 
@@ -31,12 +33,16 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
   Map<String, String> answers = {};
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
+  late int correctSoundId;
+  late int wrongSoundId;
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
+  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    initSounds();
     super.initState();
   }
 
@@ -148,7 +154,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                 setId: widget.setId,
               )));
       List<String> toUpdate = [];
-      answers.forEach((key, value) {
+      answers.forEach((key, value) async {
         String correctAnswer = words
             .where((element) => element.id == key)
             .toList()
@@ -156,6 +162,9 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
             .translation;
         if (correctAnswer == value) {
           toUpdate.add(key);
+          await pool.play(correctSoundId);
+        } else {
+          await pool.play(wrongSoundId);
         }
       });
       BlocProvider.of<TrainingsBloc>(context)
@@ -184,9 +193,10 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                   width: MediaQuery.of(context).size.width,
                   height: 50,
                   child: FilledButton(
-                    onPressed: () {
+                    onPressed: () async {
                       answers[words[currentWordIndex].id] =
                           words[currentWordIndex].translation;
+                      await pool.play(correctSoundId);
                       updateCurrentWord(words);
                     },
                     style: ElevatedButton.styleFrom(
@@ -217,11 +227,12 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                   width: MediaQuery.of(context).size.width,
                   height: 50,
                   child: FilledButton(
-                    onPressed: () {
+                    onPressed: () async {
                       answers[words[currentWordIndex].id] =
                           words[currentWordIndex]
                               .suggestedTranslationList[element]
                               .translation;
+                      await pool.play(wrongSoundId);
                       updateCurrentWord(words);
                     },
                     style: ElevatedButton.styleFrom(
@@ -270,5 +281,18 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  void initSounds() async {
+    correctSoundId = await rootBundle
+        .load("assets/sounds/correct.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
+    wrongSoundId = await rootBundle
+        .load("assets/sounds/wrong.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
   }
 }

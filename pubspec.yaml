@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+2
+version: 1.0.0+5
 
 environment:
   sdk: '>=3.2.2 <4.0.0'
@@ -53,15 +53,17 @@ dependencies:
   shared_preferences: ^2.2.3
   path: ^1.8.3
   bloc_concurrency: ^0.2.5
-  yandex_mobileads: ^7.7.0
+  yandex_mobileads: ^7.9.1
   flutter_native_splash: ^2.3.11
+  soundpool: ^2.4.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/splash_image.png
+  image: assets/splash_logo.png
+  branding: assets/splash_branding.png
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -106,6 +108,9 @@ flutter:
     - assets/icons/repetition.png
     - assets/icons/add.png
     - assets/icons/hint.png
+    - assets/sounds/correct.mp3
+    - assets/sounds/wrong.mp3
+    - assets/sounds/neutral.mp3
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

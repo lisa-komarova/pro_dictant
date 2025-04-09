@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/matching_training_entity.dart';
@@ -6,6 +7,7 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
 import 'matching_result_page.dart';
@@ -47,10 +49,14 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   List<MatchingTrainingEntity> currentTranslationList = [];
   List<MatchingTrainingEntity> mistakes = [];
   int numberOfAdsShown = 0;
+  late int correctSoundId;
+  late int wrongSoundId;
+  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    initSounds();
     super.initState();
   }
 
@@ -190,7 +196,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                 height: 80,
                 width: 150,
                 child: OutlinedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     List<MatchingTrainingEntity> correctAnswerstoSend = [];
                     List<MatchingTrainingEntity> mistakesToSend = [];
                     if (correctAnswers.contains(words[index])) {
@@ -203,6 +209,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       currentAnswer.add(words[index]);
                       if (isWordChosen &&
                           currentAnswer[0].id == currentAnswer[1].id) {
+                        await pool.play(correctSoundId);
                         setState(() {
                           currentAnswer.clear();
                           isWordChosen = false;
@@ -292,6 +299,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           //colors[index] = Colors.green;
                         });
                       } else {
+                        await pool.play(wrongSoundId);
                         isWordChosen = false;
                         isWordChosenWrong = true;
                         currentAnswer.remove(words[index]);
@@ -371,7 +379,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                 height: 80,
                 width: 150,
                 child: OutlinedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     List<MatchingTrainingEntity> correctAnswerstoSend = [];
                     List<MatchingTrainingEntity> mistakesToSend = [];
                     if (correctAnswers.contains(words[index])) {
@@ -384,6 +392,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       currentAnswer.insert(0, words[index]);
                       if (isTranslationChosen &&
                           currentAnswer[0].id == currentAnswer[1].id) {
+                        await pool.play(correctSoundId);
                         setState(() {
                           currentAnswer.clear();
                           isWordChosen = false;
@@ -473,6 +482,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           //colors[index + 5] = Colors.green;
                         });
                       } else {
+                        await pool.play(wrongSoundId);
                         isTranslationChosen = false;
                         isTranslationChosenWrong = true;
                         currentAnswer.remove(words[index]);
@@ -543,5 +553,18 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  void initSounds() async {
+    correctSoundId = await rootBundle
+        .load("assets/sounds/correct.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
+    wrongSoundId = await rootBundle
+        .load("assets/sounds/wrong.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
   }
 }

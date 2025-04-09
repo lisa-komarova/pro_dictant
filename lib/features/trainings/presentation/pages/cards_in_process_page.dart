@@ -1,10 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
@@ -33,10 +35,14 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
   var isPronounceSelected = false;
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
+  late int correctSoundId;
+  late int wrongSoundId;
+  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    initSounds();
     super.initState();
   }
 
@@ -158,15 +164,17 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                   child: SizedBox(
                     height: 100,
                     child: FilledButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (currentWordIndex + 1 >= words.length) {
                           finishWorkout();
                           return;
                         } else {
                           if (suggestedAnswer.first ==
                               words[currentWordIndex].translation) {
+                            await pool.play(correctSoundId);
                             correctAnswers.add(words[currentWordIndex]);
                           } else {
+                            await pool.play(wrongSoundId);
                             mistakes.add(words[currentWordIndex]);
                           }
                           setState(() {
@@ -203,14 +211,16 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                   child: SizedBox(
                     height: 100,
                     child: FilledButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (currentWordIndex + 1 >= words.length) {
                           finishWorkout();
                         } else {
                           if (suggestedAnswer.last ==
                               words[currentWordIndex].translation) {
+                            await pool.play(correctSoundId);
                             correctAnswers.add(words[currentWordIndex]);
                           } else {
+                            await pool.play(wrongSoundId);
                             mistakes.add(words[currentWordIndex]);
                           }
                           setState(() {
@@ -281,5 +291,18 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  void initSounds() async {
+    correctSoundId = await rootBundle
+        .load("assets/sounds/correct.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
+    wrongSoundId = await rootBundle
+        .load("assets/sounds/wrong.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
   }
 }

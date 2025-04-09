@@ -1,10 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/dictant_result_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
 import '../../domain/entities/dictant_training_entity.dart';
@@ -39,9 +41,13 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   Color focusBorderColor = const Color(0xff5e6b5a);
   final wordController = TextEditingController();
   int numberOfAdsShown = 0;
+  late int correctSoundId;
+  late int wrongSoundId;
+  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
 
   @override
   void initState() {
+    initSounds();
     getNumberOfAdsShown();
     super.initState();
   }
@@ -176,7 +182,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 if (wordController.text
                                         .toLowerCase()
                                         .replaceAll(' ', '') ==
@@ -186,6 +192,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                         .replaceAll(' ', '')) {
                                   if (!mistakes
                                       .contains(words[currentWordIndex])) {
+                                    await pool.play(correctSoundId);
                                     correctAnswers.add(words[currentWordIndex]);
                                     focusBorderColor = const Color(0xFF85977f);
                                   }
@@ -200,6 +207,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                           const Color(0xFFB70E0E);
                                     });
                                   } else {
+                                    await pool.play(wrongSoundId);
                                     wordController.text = '';
                                     updateCurrentWord();
                                   }
@@ -371,7 +379,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
       boxesForLetters.add(Padding(
         padding: const EdgeInsets.all(4.0),
         child: GestureDetector(
-          onTap: () {
+          onTap: () async {
             if (correctAnswer[currentLetterIndex] == suggestedLetters[index]) {
               setState(() {
                 colors[index] = const Color(0xFF85977f);
@@ -380,6 +388,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               if (currentLetterIndex == correctAnswer.length) {
                 updateCurrentWord();
                 if (!mistakes.contains(word)) {
+                  await pool.play(correctSoundId);
                   correctAnswers.add(word);
                 }
               }
@@ -394,6 +403,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
 
               if (attempts == maxAttempts) {
                 mistakes.add(word);
+                await pool.play(wrongSoundId);
                 updateCurrentWord();
               }
             }
@@ -418,5 +428,18 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  void initSounds() async {
+    correctSoundId = await rootBundle
+        .load("assets/sounds/correct.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
+    wrongSoundId = await rootBundle
+        .load("assets/sounds/wrong.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
   }
 }

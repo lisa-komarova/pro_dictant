@@ -1,11 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/repeating_result_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yandex_mobileads/mobile_ads.dart';
+import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
 import '../../domain/entities/repeating_entity.dart';
@@ -38,10 +39,15 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
   var isPronounceSelected = false;
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
+  late int correctSoundId;
+  late int wrongSoundId;
+  late int neutralSoundId;
+  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    initSounds();
     super.initState();
   }
 
@@ -202,7 +208,8 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         colorPositive = const Color(0xFFd9c3ac);
                       });
                     },
-                    onTap: () {
+                    onTap: () async {
+                      await pool.play(correctSoundId);
                       correctAnswers.add(words[currentWordIndex]);
                       if (currentWordIndex + 1 >= words.length) {
                         stillLearning.addAll(words);
@@ -269,7 +276,8 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         colorNeutral = const Color(0xFFd9c3ac);
                       });
                     },
-                    onTap: () {
+                    onTap: () async {
+                      await pool.play(neutralSoundId);
                       if (currentWordIndex + 1 >= words.length) {
                         stillLearning.addAll(words);
                         stillLearning.removeWhere((element) =>
@@ -334,7 +342,8 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
                         colorNegative = const Color(0xFFd9c3ac);
                       });
                     },
-                    onTap: () {
+                    onTap: () async {
+                      await pool.play(wrongSoundId);
                       mistakes.add(words[currentWordIndex]);
                       if (currentWordIndex + 1 >= words.length) {
                         stillLearning.addAll(words);
@@ -399,5 +408,23 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  void initSounds() async {
+    correctSoundId = await rootBundle
+        .load("assets/sounds/correct.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
+    wrongSoundId = await rootBundle
+        .load("assets/sounds/wrong.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
+    neutralSoundId = await rootBundle
+        .load("assets/sounds/neutral.mp3")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
   }
 }
