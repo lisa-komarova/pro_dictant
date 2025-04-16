@@ -68,10 +68,12 @@ class RepeatingResultPage extends StatelessWidget {
                                 return Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      mistakes[index].source,
-                                      style: const TextStyle(
-                                          color: Color(0xFFB70E0E)),
+                                    SingleChildScrollView(
+                                      child: Text(
+                                        mistakes[index].source,
+                                        style: const TextStyle(
+                                            color: Color(0xFFB70E0E)),
+                                      ),
                                     ),
                                     Image.asset(
                                       'assets/icons/divider.png',
@@ -103,10 +105,12 @@ class RepeatingResultPage extends StatelessWidget {
                               itemBuilder: (ctx, index) {
                                 return Column(
                                   children: [
-                                    Text(
-                                      learnt[index].source,
-                                      style: const TextStyle(
-                                          color: Color(0xFF85977f)),
+                                    SingleChildScrollView(
+                                      child: Text(
+                                        learnt[index].source,
+                                        style: const TextStyle(
+                                            color: Color(0xFF85977f)),
+                                      ),
                                     ),
                                     Image.asset(
                                       'assets/icons/divider.png',
@@ -138,10 +142,12 @@ class RepeatingResultPage extends StatelessWidget {
                               itemBuilder: (ctx, index) {
                                 return Column(
                                   children: [
-                                    Text(
-                                      learning[index].source,
-                                      style: const TextStyle(
-                                          color: Color(0xFFC0A183)),
+                                    SingleChildScrollView(
+                                      child: Text(
+                                        learning[index].source,
+                                        style: const TextStyle(
+                                            color: Color(0xFFC0A183)),
+                                      ),
                                     ),
                                     Image.asset(
                                       'assets/icons/divider.png',

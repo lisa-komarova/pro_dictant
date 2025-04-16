@@ -39,84 +39,108 @@ class DictantResultPage extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            child: Text(
-                              S.of(context).rightAnswers,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0x6BD9C3AC),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              child: Text(
+                                S.of(context).rightAnswers,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: correctAnswers.length,
-                                itemBuilder: (ctx, index) {
-                                  return Column(
-                                    children: [
-                                      Text(
-                                        '${correctAnswers[index].source} - ${correctAnswers[index].translation}',
-                                        style: const TextStyle(
-                                            color: Color(0xFF85977f)),
-                                      ),
-                                      Image.asset(
-                                        'assets/icons/divider.png',
-                                        width: 15,
-                                        height: 15,
-                                      ),
-                                    ],
-                                  );
-                                }),
-                          ),
-                        ],
+                            Expanded(
+                              child: ListView.builder(
+                                  itemCount: correctAnswers.length,
+                                  itemBuilder: (ctx, index) {
+                                    return Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: SingleChildScrollView(
+                                            child: Text(
+                                              '${correctAnswers[index].source} - ${correctAnswers[index].translation}',
+                                              style: const TextStyle(
+                                                  color: Color(0xFF85977f)),
+                                            ),
+                                          ),
+                                        ),
+                                        Image.asset(
+                                          'assets/icons/divider.png',
+                                          width: 15,
+                                          height: 15,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            child: Text(
-                              S.of(context).mistakes,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0x6BD9C3AC),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              child: Text(
+                                S.of(context).mistakes,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: mistakes.length,
-                                itemBuilder: (ctx, index) {
-                                  return Column(
-                                    children: [
-                                      Text(
-                                        '${mistakes[index].source} - ${mistakes[index].translation}',
-                                        style: const TextStyle(
-                                            color: Color(0xFFB70E0E)),
-                                      ),
-                                      Image.asset(
-                                        'assets/icons/divider.png',
-                                        width: 15,
-                                        height: 15,
-                                      ),
-                                    ],
-                                  );
-                                }),
-                          ),
-                        ],
+                            Expanded(
+                              child: ListView.builder(
+                                  itemCount: mistakes.length,
+                                  itemBuilder: (ctx, index) {
+                                    return Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: SingleChildScrollView(
+                                            child: Text(
+                                              '${mistakes[index].source} - ${mistakes[index].translation}',
+                                              style: const TextStyle(
+                                                  color: Color(0xFFB70E0E)),
+                                            ),
+                                          ),
+                                        ),
+                                        Image.asset(
+                                          'assets/icons/divider.png',
+                                          width: 15,
+                                          height: 15,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

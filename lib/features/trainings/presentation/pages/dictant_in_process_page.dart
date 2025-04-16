@@ -150,27 +150,31 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                 children: [
                   !isHintSelected
                       ? Flexible(
-                          child: SizedBox(
-                            height: 80,
-                            child: TextFormField(
-                              controller: wordController,
-                              textInputAction: TextInputAction.go,
-                              keyboardType: TextInputType.text,
-                              enableSuggestions: false,
-                              style: const TextStyle(fontFamily: 'Roboto'),
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFFd9c3ac),
-                                    width: 3,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: SizedBox(
+                              height: 80,
+                              child: TextFormField(
+                                controller: wordController,
+                                textInputAction: TextInputAction.go,
+                                keyboardType: TextInputType.text,
+                                enableSuggestions: false,
+                                style: const TextStyle(fontFamily: 'Roboto'),
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFFd9c3ac),
+                                      width: 3,
+                                    ),
                                   ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: focusBorderColor, width: 3.0),
-                                  borderRadius: BorderRadius.circular(15.0),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: focusBorderColor, width: 3.0),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
                                 ),
                               ),
                             ),
