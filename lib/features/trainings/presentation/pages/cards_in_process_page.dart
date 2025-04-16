@@ -166,6 +166,14 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                     child: FilledButton(
                       onPressed: () async {
                         if (currentWordIndex + 1 >= words.length) {
+                          if (suggestedAnswer.first ==
+                              words[currentWordIndex].translation) {
+                            await pool.play(correctSoundId);
+                            correctAnswers.add(words[currentWordIndex]);
+                          } else {
+                            await pool.play(wrongSoundId);
+                            mistakes.add(words[currentWordIndex]);
+                          }
                           finishWorkout();
                           return;
                         } else {
@@ -213,7 +221,16 @@ class _CardsInProcessPageState extends State<CardsInProcessPage>
                     child: FilledButton(
                       onPressed: () async {
                         if (currentWordIndex + 1 >= words.length) {
+                          if (suggestedAnswer.last ==
+                              words[currentWordIndex].translation) {
+                            await pool.play(correctSoundId);
+                            correctAnswers.add(words[currentWordIndex]);
+                          } else {
+                            await pool.play(wrongSoundId);
+                            mistakes.add(words[currentWordIndex]);
+                          }
                           finishWorkout();
+                          return;
                         } else {
                           if (suggestedAnswer.last ==
                               words[currentWordIndex].translation) {

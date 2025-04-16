@@ -40,11 +40,9 @@ class WTResultPage extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
+                  color: Colors.transparent,
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       ...buildAnswers(),
                     ],
