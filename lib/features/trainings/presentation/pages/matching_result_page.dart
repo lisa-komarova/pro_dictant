@@ -39,98 +39,119 @@ class MatchingResultPage extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            child: Text(
-                              S.of(context).rightAnswers,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0x6BD9C3AC),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              child: Text(
+                                S.of(context).rightAnswers,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: correctAnswers.length,
-                                itemBuilder: (ctx, index) {
-                                  return Column(
-                                    children: [
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: Padding(
+                            Expanded(
+                              child: ListView.builder(
+                                  itemCount: correctAnswers.length,
+                                  itemBuilder: (ctx, index) {
+                                    return Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
-                                          child: Text(
-                                            correctAnswers[index].source,
-                                            style: const TextStyle(
-                                                color: Color(0xFF85977f)),
+                                          child: SingleChildScrollView(
+                                            child: Text(
+                                              correctAnswers[index].source +
+                                                  ' -\n' +
+                                                  correctAnswers[index]
+                                                      .translation,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  color: Color(0xFF85977f)),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Image.asset(
-                                        'assets/icons/divider.png',
-                                        width: 15,
-                                        height: 15,
-                                      ),
-                                    ],
-                                  );
-                                }),
-                          ),
-                        ],
+                                        Image.asset(
+                                          'assets/icons/divider.png',
+                                          width: 15,
+                                          height: 15,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            child: Text(
-                              S.of(context).mistakes,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0x6BD9C3AC),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              child: Text(
+                                S.of(context).mistakes,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: mistakes.length,
-                                itemBuilder: (ctx, index) {
-                                  return Column(
-                                    children: [
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: Padding(
+                            Expanded(
+                              child: ListView.builder(
+                                  itemCount: mistakes.length,
+                                  itemBuilder: (ctx, index) {
+                                    return Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
-                                          child: Text(
-                                            mistakes[index].source,
-                                            style: const TextStyle(
-                                                color: Color(0xFFB70E0E)),
+                                          child: SingleChildScrollView(
+                                            child: Text(
+                                              mistakes[index].source +
+                                                  ' -\n' +
+                                                  mistakes[index].translation,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  color: Color(0xFFB70E0E)),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Image.asset(
-                                        'assets/icons/divider.png',
-                                        width: 15,
-                                        height: 15,
-                                      ),
-                                    ],
-                                  );
-                                }),
-                          ),
-                        ],
+                                        Image.asset(
+                                          'assets/icons/divider.png',
+                                          width: 15,
+                                          height: 15,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
           ),

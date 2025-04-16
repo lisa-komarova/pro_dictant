@@ -344,18 +344,12 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                     ),
                   ),
                   child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          words[index].source,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(fontSize: 12),
-                        ),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        words[index].source,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                   ),
@@ -528,18 +522,12 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                     ),
                   ),
                   child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          words[index].translation,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(fontSize: 12),
-                        ),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        words[index].translation,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                   ),
