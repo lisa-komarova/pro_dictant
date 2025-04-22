@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_bloc.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_event.dart';
@@ -14,7 +13,6 @@ import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/platform/network_info.dart';
 import 'cards_in_process_page.dart';
 import 'dictant_in_process_page.dart';
 import 'matching_in_process_page.dart';
@@ -45,21 +43,22 @@ class _TrainingsPageState extends State<TrainingsPage>
   late final AppLifecycleListener _listener;
   final List<String> _states = <String>[];
   late AppLifecycleState? _state;
-  NetworkInfoImp networkInfo = NetworkInfoImp(InternetConnectionChecker());
-  bool isConnected = true;
+
+  // NetworkInfoImp networkInfo = NetworkInfoImp(InternetConnectionChecker());
+  // bool isConnected = true;
   int numberOfAdsShown = 0;
 
-  @override
-  void didChangeDependencies() {
-    checkInternet();
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   checkInternet();
+  //   super.didChangeDependencies();
+  // }
 
   @override
   void initState() {
     getTime();
     getNumberOfAdsShown();
-    checkInternet();
+    //checkInternet();
     if (!widget.isTodayCompleted) {
       _ticker = createTicker((elapsed) {
         sessionTime = elapsed;
@@ -80,21 +79,21 @@ class _TrainingsPageState extends State<TrainingsPage>
 
     super.initState();
     _state = SchedulerBinding.instance.lifecycleState;
-    networkInfo.connectionChecker.onStatusChange
-        .listen((InternetConnectionStatus status) {
-      switch (status) {
-        case InternetConnectionStatus.connected:
-          setState(() {
-            isConnected = true;
-          });
-          break;
-        case InternetConnectionStatus.disconnected:
-          setState(() {
-            isConnected = false;
-          });
-          break;
-      }
-    });
+    // networkInfo.connectionChecker.onStatusChange
+    //     .listen((InternetConnectionStatus status) {
+    //   switch (status) {
+    //     case InternetConnectionStatus.connected:
+    //       setState(() {
+    //         isConnected = true;
+    //       });
+    //       break;
+    //     case InternetConnectionStatus.disconnected:
+    //       setState(() {
+    //         isConnected = false;
+    //       });
+    //       break;
+    //   }
+    // });
     _listener = AppLifecycleListener(
       onResume: () {
         getTime();
@@ -161,222 +160,215 @@ class _TrainingsPageState extends State<TrainingsPage>
       body: SafeArea(
         child: Center(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: (isConnected || (numberOfAdsShown >= 3))
-                ? Column(
-                    children: [
-                      SizedBox(
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, right: 10, top: 10),
-                          child: !widget.isTodayCompleted
-                              ? AutoSizeText(
-                                  timeLeft.inMinutes == widget.goal
-                                      ? ""
-                                      : S
-                                          .of(context)
-                                          .timeLeft(timeLeft.inMinutes + 1),
-                                  textAlign: TextAlign.center,
-                                )
-                              : null,
-                        ),
-                      ),
-                      (widget.setName.isNotEmpty)
-                          ? SizedBox(
-                              height: 50,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Center(
-                                  child: AutoSizeText(
-                                    S
-                                        .of(context)
-                                        .currentlyLearning(widget.setName),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
+              height: MediaQuery.of(context).size.height,
+              child:
+                  //(isConnected || (numberOfAdsShown >= 3)) ?
+                  Column(
+                children: [
+                  SizedBox(
+                    height: 50,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(left: 10.0, right: 10, top: 10),
+                      child: !widget.isTodayCompleted
+                          ? AutoSizeText(
+                              timeLeft.inMinutes == widget.goal
+                                  ? ""
+                                  : S
+                                      .of(context)
+                                      .timeLeft(timeLeft.inMinutes + 1),
+                              textAlign: TextAlign.center,
                             )
-                          : SizedBox(
-                              height: 50,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Center(
-                                  child: AutoSizeText(
-                                    S.of(context).currentlyLearning(
-                                        S.of(context).myDictionary),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                            ),
-                      Flexible(
-                        child: GridView.count(
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
-                          crossAxisCount: 2,
-                          childAspectRatio: aspectRatio,
-                          shrinkWrap: true,
-                          children: <Widget>[
-                            GestureDetector(
-                              child: TrainingCard(
-                                trainingName: S.of(context).wordTranslation,
-                                imageName: 'word-t',
-                              ),
-                              onTap: () {
-                                if (widget.setId.isNotEmpty) {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      FetchSetWordsForWtTRainings(
-                                          widget.setId));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => WTInProcessPage(
-                                            setId: widget.setId,
-                                          )));
-                                } else {
-                                  BlocProvider.of<TrainingsBloc>(context)
-                                      .add(const FetchWordsForWtTRainings());
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => const WTInProcessPage(
-                                            setId: '',
-                                          )));
-                                }
-                              },
-                            ),
-                            GestureDetector(
-                              child: TrainingCard(
-                                trainingName: S.of(context).translationWord,
-                                imageName: 't-word',
-                              ),
-                              onTap: () {
-                                if (widget.setId.isNotEmpty) {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      FetchSetWordsForTwTRainings(
-                                          widget.setId));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => TWInProcessPage(
-                                            setId: widget.setId,
-                                          )));
-                                } else {
-                                  BlocProvider.of<TrainingsBloc>(context)
-                                      .add(const FetchWordsForTwTRainings());
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => const TWInProcessPage(
-                                            setId: '',
-                                          )));
-                                }
-                              },
-                            ),
-                            GestureDetector(
-                              child: TrainingCard(
-                                trainingName: S.of(context).matchingWords,
-                                imageName: 'word_matching',
-                              ),
-                              onTap: () {
-                                if (widget.setId.isNotEmpty) {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      FetchSetWordsForMatchingTRainings(
-                                          widget.setId));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => MatchingInProcessPage(
-                                            setId: widget.setId,
-                                          )));
-                                } else {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      const FetchWordsForMatchingTRainings());
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) =>
-                                          const MatchingInProcessPage(
-                                            setId: '',
-                                          )));
-                                }
-                              },
-                            ),
-                            GestureDetector(
-                              child: TrainingCard(
-                                trainingName: S.of(context).wordCards,
-                                imageName: 'sprint',
-                              ),
-                              onTap: () {
-                                if (widget.setId.isNotEmpty) {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      FetchSetWordsForCardsTRainings(
-                                          widget.setId));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => CardsInProcessPage(
-                                            setId: widget.setId,
-                                          )));
-                                } else {
-                                  BlocProvider.of<TrainingsBloc>(context)
-                                      .add(const FetchWordsForCardsTRainings());
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) =>
-                                          const CardsInProcessPage(
-                                            setId: '',
-                                          )));
-                                }
-                              },
-                            ),
-                            GestureDetector(
-                              child: TrainingCard(
-                                trainingName: S.of(context).dictant,
-                                imageName: 'dictant',
-                              ),
-                              onTap: () {
-                                if (widget.setId.isNotEmpty) {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      FetchSetWordsForDictantTRainings(
-                                          widget.setId));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => DictantInProcessPage(
-                                            setId: widget.setId,
-                                          )));
-                                } else {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      const FetchWordsForDictantTRainings());
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) =>
-                                          const DictantInProcessPage(
-                                            setId: '',
-                                          )));
-                                }
-                              },
-                            ),
-                            GestureDetector(
-                              child: TrainingCard(
-                                trainingName: S.of(context).repeatWords,
-                                imageName: 'repetition',
-                              ),
-                              onTap: () {
-                                if (widget.setId.isNotEmpty) {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      FetchSetWordsForRepeatingTRainings(
-                                          widget.setId));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => RepeatingInProcessPage(
-                                            setId: widget.setId,
-                                          )));
-                                } else {
-                                  BlocProvider.of<TrainingsBloc>(context).add(
-                                      const FetchWordsForRepeatingTRainings());
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) =>
-                                          const RepeatingInProcessPage(
-                                            setId: '',
-                                          )));
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: Text(
-                      S.of(context).noInternetConnection,
+                          : null,
                     ),
                   ),
-          ),
+                  (widget.setName.isNotEmpty)
+                      ? SizedBox(
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Center(
+                              child: AutoSizeText(
+                                S.of(context).currentlyLearning(widget.setName),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox(
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Center(
+                              child: AutoSizeText(
+                                S.of(context).currentlyLearning(
+                                    S.of(context).myDictionary),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                  Flexible(
+                    child: GridView.count(
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      crossAxisCount: 2,
+                      childAspectRatio: aspectRatio,
+                      shrinkWrap: true,
+                      children: <Widget>[
+                        GestureDetector(
+                          child: TrainingCard(
+                            trainingName: S.of(context).wordTranslation,
+                            imageName: 'word-t',
+                          ),
+                          onTap: () {
+                            if (widget.setId.isNotEmpty) {
+                              BlocProvider.of<TrainingsBloc>(context).add(
+                                  FetchSetWordsForWtTRainings(widget.setId));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => WTInProcessPage(
+                                        setId: widget.setId,
+                                      )));
+                            } else {
+                              BlocProvider.of<TrainingsBloc>(context)
+                                  .add(const FetchWordsForWtTRainings());
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => const WTInProcessPage(
+                                        setId: '',
+                                      )));
+                            }
+                          },
+                        ),
+                        GestureDetector(
+                          child: TrainingCard(
+                            trainingName: S.of(context).translationWord,
+                            imageName: 't-word',
+                          ),
+                          onTap: () {
+                            if (widget.setId.isNotEmpty) {
+                              BlocProvider.of<TrainingsBloc>(context).add(
+                                  FetchSetWordsForTwTRainings(widget.setId));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => TWInProcessPage(
+                                        setId: widget.setId,
+                                      )));
+                            } else {
+                              BlocProvider.of<TrainingsBloc>(context)
+                                  .add(const FetchWordsForTwTRainings());
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => const TWInProcessPage(
+                                        setId: '',
+                                      )));
+                            }
+                          },
+                        ),
+                        GestureDetector(
+                          child: TrainingCard(
+                            trainingName: S.of(context).matchingWords,
+                            imageName: 'word_matching',
+                          ),
+                          onTap: () {
+                            if (widget.setId.isNotEmpty) {
+                              BlocProvider.of<TrainingsBloc>(context).add(
+                                  FetchSetWordsForMatchingTRainings(
+                                      widget.setId));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => MatchingInProcessPage(
+                                        setId: widget.setId,
+                                      )));
+                            } else {
+                              BlocProvider.of<TrainingsBloc>(context)
+                                  .add(const FetchWordsForMatchingTRainings());
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => const MatchingInProcessPage(
+                                        setId: '',
+                                      )));
+                            }
+                          },
+                        ),
+                        GestureDetector(
+                          child: TrainingCard(
+                            trainingName: S.of(context).wordCards,
+                            imageName: 'sprint',
+                          ),
+                          onTap: () {
+                            if (widget.setId.isNotEmpty) {
+                              BlocProvider.of<TrainingsBloc>(context).add(
+                                  FetchSetWordsForCardsTRainings(widget.setId));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => CardsInProcessPage(
+                                        setId: widget.setId,
+                                      )));
+                            } else {
+                              BlocProvider.of<TrainingsBloc>(context)
+                                  .add(const FetchWordsForCardsTRainings());
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => const CardsInProcessPage(
+                                        setId: '',
+                                      )));
+                            }
+                          },
+                        ),
+                        GestureDetector(
+                          child: TrainingCard(
+                            trainingName: S.of(context).dictant,
+                            imageName: 'dictant',
+                          ),
+                          onTap: () {
+                            if (widget.setId.isNotEmpty) {
+                              BlocProvider.of<TrainingsBloc>(context).add(
+                                  FetchSetWordsForDictantTRainings(
+                                      widget.setId));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => DictantInProcessPage(
+                                        setId: widget.setId,
+                                      )));
+                            } else {
+                              BlocProvider.of<TrainingsBloc>(context)
+                                  .add(const FetchWordsForDictantTRainings());
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => const DictantInProcessPage(
+                                        setId: '',
+                                      )));
+                            }
+                          },
+                        ),
+                        GestureDetector(
+                          child: TrainingCard(
+                            trainingName: S.of(context).repeatWords,
+                            imageName: 'repetition',
+                          ),
+                          onTap: () {
+                            if (widget.setId.isNotEmpty) {
+                              BlocProvider.of<TrainingsBloc>(context).add(
+                                  FetchSetWordsForRepeatingTRainings(
+                                      widget.setId));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => RepeatingInProcessPage(
+                                        setId: widget.setId,
+                                      )));
+                            } else {
+                              BlocProvider.of<TrainingsBloc>(context)
+                                  .add(const FetchWordsForRepeatingTRainings());
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) =>
+                                      const RepeatingInProcessPage(
+                                        setId: '',
+                                      )));
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+              // : Center(
+              //     child: Text(
+              //       S.of(context).noInternetConnection,
+              //     ),
+              //   ),
+              ),
         ),
       ),
     );
@@ -415,7 +407,7 @@ class _TrainingsPageState extends State<TrainingsPage>
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
   }
 
-  void checkInternet() async {
-    isConnected = await networkInfo.isConnected;
-  }
+// void checkInternet() async {
+//   isConnected = await networkInfo.isConnected;
+// }
 }
