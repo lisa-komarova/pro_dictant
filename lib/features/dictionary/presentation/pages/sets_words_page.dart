@@ -8,6 +8,7 @@ import 'package:pro_dictant/features/dictionary/presentation/pages/set_words_car
 
 import '../../../../core/s.dart';
 import '../../../profile/presentation/manager/profile_bloc.dart';
+import '../../../profile/presentation/manager/profile_event.dart';
 import '../../../profile/presentation/manager/profile_state.dart';
 import '../../../trainings/presentation/pages/trainings_page.dart';
 import '../../domain/entities/translation_entity.dart';
@@ -220,7 +221,7 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (setEntity.isAddedToDictionary == 1) {
                       if (selectedWords.isNotEmpty) {
                         List<TranslationEntity> selectedTranslations = [];
@@ -273,6 +274,7 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                         BlocProvider.of<WordsBloc>(context).add(
                             AddWordsFromSetToDictionary(
                                 words: selectedTranslations));
+
                         BlocProvider.of<SetBloc>(context).add(UpdateSet(
                             set: setEntity,
                             toAdd: const [],
@@ -286,7 +288,6 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                       } else {
                         BlocProvider.of<WordsBloc>(context).add(
                             AddWordsFromSetToDictionary(words: translations));
-
                         BlocProvider.of<SetBloc>(context).add(UpdateSet(
                             set: setEntity,
                             toAdd: const [],
@@ -301,6 +302,9 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                         setEntity.isAddedToDictionary = 1;
                       });
                     }
+                    await Future.delayed(Duration(seconds: 10));
+                    BlocProvider.of<ProfileBloc>(context)
+                        .add(const LoadStatistics());
                   },
                   child: Container(
                     decoration: BoxDecoration(

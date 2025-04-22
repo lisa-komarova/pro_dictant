@@ -9,6 +9,9 @@ import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 
+import '../../../profile/presentation/manager/profile_bloc.dart';
+import '../../../profile/presentation/manager/profile_event.dart';
+
 class SetWordsCardsPage extends StatefulWidget {
   final List<WordEntity> words;
   final int index;
@@ -422,6 +425,8 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                     Navigator.of(context).pop();
                   });
                 }
+                BlocProvider.of<ProfileBloc>(context)
+                    .add(const LoadStatistics());
               },
             ),
             TextButton(

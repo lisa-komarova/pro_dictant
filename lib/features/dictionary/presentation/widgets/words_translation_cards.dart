@@ -10,6 +10,9 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_event.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/word_form_page.dart';
 
+import '../../../profile/presentation/manager/profile_bloc.dart';
+import '../../../profile/presentation/manager/profile_event.dart';
+
 class WordTranslationCards extends StatefulWidget {
   final WordEntity word;
 
@@ -414,6 +417,8 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 if (toDelete) {
                   BlocProvider.of<WordsBloc>(context)
                       .add(DeleteWordFromDictionary(translation));
+                  BlocProvider.of<ProfileBloc>(context)
+                      .add(const LoadStatistics());
                   Navigator.of(context).pop();
                   Navigator.of(context).pop('delete');
                 } else {
@@ -425,6 +430,8 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                   Navigator.of(context).pop();
                   Navigator.of(context).pop('added');
                 }
+                BlocProvider.of<ProfileBloc>(context)
+                    .add(const LoadStatistics());
               },
             ),
             TextButton(
