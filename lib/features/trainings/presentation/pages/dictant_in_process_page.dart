@@ -89,6 +89,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               onPressed: () {
                 wordController.text = '';
                 setState(() {
+                  attempts = 0;
                   isHintSelected = true;
                 });
               },
@@ -203,18 +204,18 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                   wordController.text = '';
                                   updateCurrentWord();
                                 } else {
-                                  if (!mistakes
-                                      .contains(words[currentWordIndex])) {
+                                  if (attempts + 1 < maxAttempts - 1) {
                                     setState(() {
-                                      mistakes.add(words[currentWordIndex]);
+                                      attempts++;
                                       focusBorderColor =
                                           const Color(0xFFB70E0E);
                                     });
                                   } else {
                                     await pool.play(wrongSoundId);
-                                    wordController.text = '';
+                                    mistakes.add(words[currentWordIndex]);
                                     updateCurrentWord();
                                   }
+                                  wordController.text = '';
                                 }
                               },
                               child: Container(
@@ -271,15 +272,15 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           .add(UpdateWordsForDictantTRainings(correctAnswers));
       return;
     }
+    focusBorderColor = const Color(0xFF85977f);
+    isHintSelected = false;
+    correctAnswer = '';
+    suggestedLetters = [];
+    currentLetterIndex = 0;
+    attempts = 0;
+    colors = [];
     setState(() {
       currentWordIndex++;
-      focusBorderColor = const Color(0xFF85977f);
-      isHintSelected = false;
-      correctAnswer = '';
-      suggestedLetters = [];
-      currentLetterIndex = 0;
-      attempts = 0;
-      colors = [];
     });
   }
 

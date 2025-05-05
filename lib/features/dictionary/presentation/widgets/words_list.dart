@@ -188,7 +188,6 @@ class _WordsListState extends State<WordsList> {
                     if (result is WordEntity) {
                       setState(() {
                         wordsToBuild[index] = result;
-                        widget.editingController.text = '';
                       });
                     } else if (result is Map) {
                       if (result.values.first == 'sendToLearnt' && isNew) {
