@@ -33,6 +33,7 @@ import '../../../domain/usecases/delete_word.dart' as usecase12;
 import '../../../domain/usecases/fetch_word_by_source.dart' as usecase5;
 import '../../../domain/usecases/remove_words_in_set_from_dictionary.dart'
     as usecase13;
+import '../../../domain/usecases/search_translation_online.dart' as usecase14;
 
 const serverFailureMessage = 'Server Failure';
 
@@ -53,6 +54,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
   final usecase11.AddWordsInSetToDictionary addWordsFromSetToDictionary;
   final usecase12.DeleteWord deleteWord;
   final usecase13.RemoveWordsInSetFromDictionary removeWordsInSetFromDictionary;
+  final usecase14.SearchTranslationOnline searchTranslationOnline;
 
   WordsBloc({
     required this.loadWords,
@@ -70,6 +72,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     required this.addWordsFromSetToDictionary,
     required this.deleteWord,
     required this.removeWordsInSetFromDictionary,
+    required this.searchTranslationOnline,
   }) : super(WordsLoading()) {
     on<LoadWords>(_onLoadWordsEvent, transformer: restartable());
     on<FilterWords>(_onFilterWordsEvent, transformer: restartable());
@@ -89,6 +92,7 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
     on<AddWordsFromSetToDictionary>(_onAddWordsFromSetToDictionaryEvent);
     on<DeleteWord>(_onDeleteWordEvent);
     on<RemoveWordsInSetFromDictionary>(_onRemoveWordsInSetFromDictionaryEvent);
+    on<SearchTranslationOnline>(_onSearchTranslationOnlineEvent);
   }
 
   FutureOr<void> _onLoadWordsEvent(
@@ -188,6 +192,29 @@ class WordsBloc extends Bloc<WordsEvent, WordsState> {
           add(FetchTranslationsForWords(
               words, event.isNew, event.isLearning, event.isLearnt, true));
         }
+      }
+    });
+  }
+
+  FutureOr<void> _onSearchTranslationOnlineEvent(
+      SearchTranslationOnline event, Emitter<WordsState> emit) async {
+    emit(WordsLoading());
+
+    final failureOrWord = await searchTranslationOnline(event.wordQuery);
+
+    failureOrWord
+        .fold((error) => emit(WordsError(message: _mapFailureToMessage(error))),
+            (words) async {
+      if (words.isEmpty) {
+        emit(WordsEmpty(
+          isNew: false,
+          isLearning: false,
+          isLearnt: false,
+        ));
+      } else {
+        emit(SearchedWordsLoadedRemotely(
+          words: words,
+        ));
       }
     });
   }

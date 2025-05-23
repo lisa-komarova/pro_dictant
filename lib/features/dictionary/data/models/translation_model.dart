@@ -1,4 +1,5 @@
 import 'package:pro_dictant/features/dictionary/domain/entities/translation_entity.dart';
+import 'package:uuid/uuid.dart';
 
 const String tableTranslations = 'words_translations';
 
@@ -93,6 +94,23 @@ class TranslationModel extends TranslationEntity {
             json[TranslationFields.dateAddedToDictionary] == null
                 ? ''
                 : json[TranslationFields.dateAddedToDictionary] as String,
+      );
+
+  static TranslationModel fromRemoteJson(
+          Map<String, Object?> json, String wordId) =>
+      TranslationModel(
+        id: const Uuid().v4(),
+        wordId: wordId,
+        translation: json['text'] as String,
+        notes: '',
+        isInDictionary: 0,
+        isTW: 0,
+        isWT: 0,
+        isMatching: 0,
+        isCards: 0,
+        isDictant: 0,
+        isRepeated: 0,
+        dateAddedToDictionary: '',
       );
 
   @override

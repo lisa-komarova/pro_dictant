@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/
 import 'package:pro_dictant/features/dictionary/presentation/manager/words_bloc/words_state.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/user_set_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/words_details_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../manager/sets_bloc/set_bloc.dart';
 import '../manager/sets_bloc/set_event.dart';
@@ -22,6 +24,28 @@ class WordsList extends StatefulWidget {
 }
 
 class _WordsListState extends State<WordsList> {
+  late bool isInternetConnected;
+
+  @override
+  void initState() {
+    checkInternet();
+    InternetConnection().onStatusChange.listen((InternetStatus status) {
+      switch (status) {
+        case InternetStatus.connected:
+          setState(() {
+            isInternetConnected = true;
+          });
+          break;
+        case InternetStatus.disconnected:
+          setState(() {
+            isInternetConnected = false;
+          });
+          break;
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WordsBloc, WordsState>(builder: (context, state) {
@@ -44,10 +68,55 @@ class _WordsListState extends State<WordsList> {
                             style: Theme.of(context).textTheme.titleLarge,
                             textAlign: TextAlign.center,
                           )
-                        : Text(
-                            S.of(context).noSuchWords,
-                            style: Theme.of(context).textTheme.titleLarge,
-                            textAlign: TextAlign.center,
+                        : Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  S.of(context).noSuchWords,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
+                                  child: FilledButton(
+                                    onPressed: () {
+                                      BlocProvider.of<WordsBloc>(context).add(
+                                          SearchTranslationOnline(
+                                              widget.editingController.text));
+                                      _showTranslations(context,
+                                          widget.editingController.text);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFd9c3ac),
+                                      foregroundColor: Colors.black,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0, vertical: 10),
+                                      child: Text(
+                                        S.of(context).translateOnline,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                     const SizedBox(
                       height: 20,
@@ -97,7 +166,7 @@ class _WordsListState extends State<WordsList> {
                 isLearningSelected: false,
                 isLearntSelected: false,
               ),
-              _loadingIndicator(),
+              Expanded(child: _loadingIndicator()),
             ],
           ),
         );
@@ -131,12 +200,10 @@ class _WordsListState extends State<WordsList> {
   }
 
   Widget _loadingIndicator() {
-    return const Expanded(
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
@@ -259,5 +326,184 @@ class _WordsListState extends State<WordsList> {
       widget.editingController.text = '';
     });
     BlocProvider.of<WordsBloc>(context).add(const LoadWords());
+  }
+
+  Future<void> _showTranslations(BuildContext context, String word) {
+    return showDialog<void>(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: SizedBox(
+            height: 30,
+            child: Text(
+              word,
+              style: Theme.of(context).textTheme.titleMedium,
+              overflow: TextOverflow.fade,
+            ),
+          ),
+          content: isInternetConnected
+              ? SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: BlocBuilder<WordsBloc, WordsState>(
+                      builder: (context, state) {
+                    if (state is WordsEmpty) {
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    S.of(context).couldntTranslate,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (state is WordsLoading) {
+                      return SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: _loadingIndicator());
+                    } else if (state is SearchedWordsLoadedRemotely) {
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              width: double.maxFinite,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: state.words.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    String translations = '';
+                                    state.words[index].translationList
+                                        .forEach((element) {
+                                      translations +=
+                                          '${element.translation}, ';
+                                    });
+                                    return Column(
+                                      children: [
+                                        ListTile(
+                                          title: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SingleChildScrollView(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                child: Text(
+                                                  "${index + 1}. ${state.words[index].pos} ",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium,
+                                                  //textDirection: TextDirection.ltr,
+                                                ),
+                                              ),
+                                              state.words[index].transcription
+                                                      .isNotEmpty
+                                                  ? SingleChildScrollView(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(3.0),
+                                                        child: Text(
+                                                          "     [${state.words[index].transcription}]",
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .titleSmall,
+                                                          //textDirection: TextDirection.ltr,
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : SizedBox.shrink(),
+                                              Text(
+                                                "$translations",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Image.asset(
+                                          'assets/icons/divider.png',
+                                          width: 15,
+                                          height: 15,
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              launchUrl(Uri.parse(
+                                  'https://tech.yandex.com/dictionary/'));
+                            },
+                            child: Text(
+                              S.of(context).yandexSource,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          )
+                        ],
+                      );
+                    } else if (state is WordsError) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 15),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  }),
+                )
+              : SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Center(
+                      child: Text(
+                        S.of(context).noInternetConnection,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                  ),
+                ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: Text(S.of(context).cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.editingController.text = '';
+                BlocProvider.of<WordsBloc>(context).add(LoadWords());
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void checkInternet() async {
+    isInternetConnected = await InternetConnection().hasInternetAccess;
   }
 }

@@ -18,6 +18,14 @@ class FilterWords extends WordsEvent {
   const FilterWords(this.wordQuery, this.isNew, this.isLearning, this.isLearnt);
 }
 
+class SearchTranslationOnline extends WordsEvent {
+  final String wordQuery;
+
+  const SearchTranslationOnline(
+    this.wordQuery,
+  );
+}
+
 class LoadWords extends WordsEvent {
   const LoadWords();
 }

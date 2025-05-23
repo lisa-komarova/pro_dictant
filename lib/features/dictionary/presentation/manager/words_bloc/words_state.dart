@@ -35,6 +35,17 @@ class WordsLoaded extends WordsState {
   List<Object> get props => [words];
 }
 
+class SearchedWordsLoadedRemotely extends WordsState {
+  final List<WordEntity> words;
+
+  const SearchedWordsLoadedRemotely({
+    required this.words,
+  });
+
+  @override
+  List<Object> get props => [words];
+}
+
 class WordsError extends WordsState {
   final String message;
 

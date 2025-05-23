@@ -85,5 +85,8 @@
     "sendSetToTrainings" : "send to training",
     "learntPercentage" : "{learntPercentage} % learned",
     "addNotes" : "add notes to translation",
-    "noInternetConnection" : "please check internet connection ˙◠˙"
+    "noInternetConnection" : "please check internet connection ˙◠˙",
+    "translateOnline" : "translate in Yandex",
+    "yandexSource" : "Powered by Yandex.Dictionary",
+    "couldntTranslate" : "sorry, couldn't translate this word ˙◠˙"
 }

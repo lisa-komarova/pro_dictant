@@ -20,6 +20,7 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_translatio
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_word_by_source.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_words_for_sets.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/remove_words_in_set_from_dictionary.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/search_translation_online.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/search_words_for_a_set.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/update_translation.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/update_word.dart';
@@ -85,7 +86,8 @@ Future<void> init() async {
         addTranslation: sl(),
         addWordsFromSetToDictionary: sl(),
         removeWordsInSetFromDictionary: sl(),
-        deleteWord: sl()),
+        deleteWord: sl(),
+        searchTranslationOnline: sl()),
   );
   sl.registerFactory(() => SetBloc(
         loadSets: sl(),
@@ -244,6 +246,9 @@ Future<void> init() async {
         wordRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchTranslationsForSearchedWordsInSet(
+        wordRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => SearchTranslationOnline(
         wordRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchStatistics(

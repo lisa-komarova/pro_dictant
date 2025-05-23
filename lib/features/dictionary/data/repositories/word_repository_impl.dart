@@ -278,4 +278,15 @@ class WordRepositoryImpl extends WordRepository {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<WordEntity>>> searchTranslationOnline(
+      String query) async {
+    try {
+      final words = await remoteDataSource.searchWord(query);
+      return Right(words);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
 }

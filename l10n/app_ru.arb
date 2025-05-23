@@ -76,5 +76,8 @@
   "sendSetToTrainings" : "отправить\nна изучение",
   "learntPercentage" : "выучено {learntPercentage} %",
   "addNotes" : "добавить примечание к переводу",
-  "noInternetConnection" : "пожалуйста, проверьте подключение к интернету ˙◠˙"
+  "noInternetConnection" : "пожалуйста, проверьте подключение к интернету ˙◠˙",
+  "translateOnline" : "перевести в Yandex",
+  "yandexSource" : "Powered by Yandex.Dictionary",
+  "couldntTranslate" : "извините, не получилось перевести ˙◠˙"
 }

@@ -1,3 +1,6 @@
+import 'package:pro_dictant/features/dictionary/data/models/translation_model.dart';
+import 'package:uuid/uuid.dart';
+
 import '../../domain/entities/word_entity.dart';
 
 const String tableWords = 'word';
@@ -42,6 +45,23 @@ class WordModel extends WordEntity {
         pos: json[WordsFields.pos] as String,
         transcription: json[WordsFields.transcription] as String,
       );
+
+  static WordModel fromRemoteJson(Map<String, Object?> json) {
+    String wordId = const Uuid().v4();
+    var translationsJson = json['tr'] as List<dynamic>? ?? [];
+    var translations = translationsJson
+        .map((t) => TranslationModel.fromRemoteJson(t, wordId))
+        .toList();
+
+    final word = WordModel(
+      id: wordId,
+      source: json['text'] as String? ?? '',
+      pos: json['pos'] as String? ?? '',
+      transcription: json['ts'] as String? ?? '',
+    );
+    word.translationList.addAll(translations);
+    return word;
+  }
 
   @override
   List<Object?> get props => [

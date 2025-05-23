@@ -14,20 +14,27 @@ class WordRemoteDatasourceImpl implements WordRemoteDatasource {
   WordRemoteDatasourceImpl({required this.client});
 
   @override
-  Future<List<WordModel>> searchWord(String query) => _getWordFromUrl(
-      '''https://dictionary.yandex.net/api/v1/dicservice.json/lookup?
-      key=dict.1.1.20240604T075331Z.10377594721cb484.
-      05fe0e4b76923b5b6fd28ab5b8763ee6772f698c&
-      lang=en-ru&text=$query''');
+  Future<List<WordModel>> searchWord(String query) async {
+    final baseUrl =
+        'https://dictionary.yandex.net/api/v1/dicservice.json/lookup';
 
-  Future<List<WordModel>> _getWordFromUrl(String url) async {
-    final response = await client
-        .get(Uri.parse(url), headers: {'Content-Type': 'application/json'});
+    final queryParams = {
+      'key':
+          'dict.1.1.20240604T075331Z.10377594721cb484.05fe0e4b76923b5b6fd28ab5b8763ee6772f698c',
+      'lang': 'en-ru',
+      'text': query
+    };
+
+    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+    final response = await client.get(uri);
     if (response.statusCode == 200) {
-      final persons = json.decode(response.body);
-      return (persons['results'] as List)
-          .map((person) => WordModel.fromJson(person))
+      final words = json.decode(response.body);
+      return (words['def'] as List)
+          .map((word) => WordModel.fromRemoteJson(word))
           .toList();
+    }
+    if (response.statusCode == 413) {
+      throw ServerException();
     } else {
       throw ServerException();
     }
