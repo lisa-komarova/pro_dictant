@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class S {
+  static const locale = Locale('ru');
+
   static const supportedLocales = [Locale('en'), Locale('ru')];
+
+  static AppLocalizations of(BuildContext context) =>
+      AppLocalizations.of(context);
 
   static const localizationDelegates = <LocalizationsDelegate>[
     GlobalWidgetsLocalizations.delegate,
@@ -11,7 +16,4 @@ class S {
     GlobalCupertinoLocalizations.delegate,
     AppLocalizations.delegate,
   ];
-
-  static AppLocalizations of(BuildContext context) =>
-      AppLocalizations.of(context);
 }

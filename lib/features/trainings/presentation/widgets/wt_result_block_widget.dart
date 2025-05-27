@@ -37,6 +37,7 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
                 decoration: BoxDecoration(
                     color: Color(0x6BD9C3AC),
                     borderRadius: BorderRadius.circular(25)),
+                padding: EdgeInsets.symmetric(horizontal: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -46,12 +47,15 @@ class _WTResultBlockWidgetState extends State<WTResultBlockWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Flexible(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 10.0, bottom: 2),
-                              child: Text(
-                                widget.source,
-                                textAlign: TextAlign.start,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 10.0, bottom: 2),
+                                child: Text(
+                                  widget.source,
+                                  textAlign: TextAlign.start,
+                                ),
                               ),
                             ),
                           ),
