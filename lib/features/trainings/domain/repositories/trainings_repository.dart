@@ -3,6 +3,7 @@ import 'package:pro_dictant/core/error/failure.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 
 import '../entities/cards_training_entity.dart';
+import '../entities/combo_training_entity.dart';
 import '../entities/dictant_training_entity.dart';
 import '../entities/matching_training_entity.dart';
 import '../entities/repeating_entity.dart';
@@ -15,7 +16,8 @@ abstract class TrainingsRepository {
       String setId);
 
   Future<Either<Failure, List<TWTrainingEntity>>> fetchWordsForTWTraining();
-
+  Future<Either<Failure, List<ComboTrainingEntity>>>
+      fetchWordsForComboTraining();
   Future<Either<Failure, List<TWTrainingEntity>>> fetchSetWordsForTWTraining(
       String setId);
 
@@ -65,4 +67,9 @@ abstract class TrainingsRepository {
 
   Future<Either<Failure, List<TWTrainingEntity>>>
       addSuggestedSourcesToWordsInTW(List<TWTrainingEntity> words);
+
+  Future<Either<Failure, void>> updateWordsForComboTraining(
+      {required String wtIdstoUpdate,
+      required String twIdstoUpdate,
+      required String dictantIdstoUpdate});
 }

@@ -13,6 +13,7 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_
     as usecase5;
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_wt_training.dart'
     as usecase1;
+import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_combo_trainings.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_matching_training.dart'
     as usecase8;
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_tw_trainings.dart'
@@ -28,6 +29,7 @@ import '../../../domain/use_cases/fetch_set_words_for_matching_training.dart';
 import '../../../domain/use_cases/fetch_set_words_for_repeating_training.dart';
 import '../../../domain/use_cases/fetch_set_words_for_wt_training.dart';
 import '../../../domain/use_cases/fetch_words_for_cards_training.dart';
+import '../../../domain/use_cases/fetch_words_for_combo_training.dart';
 import '../../../domain/use_cases/fetch_words_for_dictant_training.dart';
 import '../../../domain/use_cases/fetch_words_for_repeating_training.dart';
 import '../../../domain/use_cases/update_words_for_cards_training.dart';
@@ -59,6 +61,8 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   final FetchSetWordsForCardsTraining fetchSetWordsForCardsTraining;
   final FetchSetWordsForDictantTraining fetchSetWordsForDictantTraining;
   final FetchSetWordsForRepeatingTraining fetchSetWordsForRepeatingTraining;
+  final FetchWordsForComboTraining fetchWordsForComboTraining;
+  final UpdateWordsForComboTraining updateWordsForComboTraining;
 
   TrainingsBloc({
     required this.fetchWordsForWtTraining,
@@ -81,6 +85,8 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     required this.fetchSetWordsForDictantTraining,
     required this.fetchSetWordsForRepeatingTraining,
     required this.fetchSetWordsForCardsTraining,
+    required this.fetchWordsForComboTraining,
+    required this.updateWordsForComboTraining,
   }) : super(TrainingLoading()) {
     on<FetchWordsForWtTRainings>(_onFetchWordsForWtTRainingsEvent);
     on<FetchWordsForTwTRainings>(_onFetchWordsForTwTRainingsEvent);
@@ -109,13 +115,36 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
     on<UpdateWordsForCardsTRainings>(_onUpdateWordsForCardsTRainingsEvent);
     on<UpdateWordsForRepeatingTRainings>(
         _onUpdateWordsForRepeatingTRainingsEvent);
+    on<FetchWordsForComboTRainings>(_onFetchWordsForComboTRainingsEvent);
+    on<UpdateWordsForComboTRainings>(_onUpdateWordsForComboTRainingsEvent);
   }
 
   FutureOr<void> _onFetchWordsForWtTRainingsEvent(
       FetchWordsForWtTRainings event, Emitter<TrainingsState> emit) async {
     emit(TrainingLoading());
 
-    final failureOrWords = await fetchWordsForWtTraining();
+    if (event.words.isNotEmpty) {
+      add(AddSuggestedTranslationsToWordsInWT(event.words));
+    } else {
+      final failureOrWords = await fetchWordsForWtTraining();
+
+      failureOrWords.fold(
+          (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+          (words) {
+        if (words.isEmpty) {
+          emit(TrainingEmpty());
+        } else {
+          add(AddSuggestedTranslationsToWordsInWT(words));
+        }
+      });
+    }
+  }
+
+  FutureOr<void> _onFetchWordsForComboTRainingsEvent(
+      FetchWordsForComboTRainings event, Emitter<TrainingsState> emit) async {
+    emit(TrainingLoading());
+
+    final failureOrWords = await fetchWordsForComboTraining();
 
     failureOrWords.fold(
         (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
@@ -123,7 +152,7 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
       if (words.isEmpty) {
         emit(TrainingEmpty());
       } else {
-        add(AddSuggestedTranslationsToWordsInWT(words));
+        emit(ComboTrainingLoaded(words: words));
       }
     });
   }
@@ -260,17 +289,21 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
       FetchWordsForDictantTRainings event, Emitter<TrainingsState> emit) async {
     emit(TrainingLoading());
 
-    final failureOrWords = await fetchWordsForDictantTraining();
+    if (event.words.isNotEmpty) {
+      emit(DictantTrainingLoaded(words: event.words));
+    } else {
+      final failureOrWords = await fetchWordsForDictantTraining();
 
-    failureOrWords.fold(
-        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
-        (words) {
-      if (words.isEmpty) {
-        emit(TrainingEmpty());
-      } else {
-        emit(DictantTrainingLoaded(words: words));
-      }
-    });
+      failureOrWords.fold(
+          (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+          (words) {
+        if (words.isEmpty) {
+          emit(TrainingEmpty());
+        } else {
+          emit(DictantTrainingLoaded(words: words));
+        }
+      });
+    }
   }
 
   FutureOr<void> _onFetchSetWordsForDictantTRainingsEvent(
@@ -296,18 +329,21 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   FutureOr<void> _onFetchWordsForTwTRainingsEvent(
       FetchWordsForTwTRainings event, Emitter<TrainingsState> emit) async {
     emit(TrainingLoading());
+    if (event.words.isNotEmpty) {
+      add(AddSuggestedSourcesToWordsInTW(event.words));
+    } else {
+      final failureOrWords = await fetchWordsForTwTRainings();
 
-    final failureOrWords = await fetchWordsForTwTRainings();
-
-    failureOrWords.fold(
-        (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
-        (words) {
-      if (words.isEmpty) {
-        emit(TrainingEmpty());
-      } else {
-        add(AddSuggestedSourcesToWordsInTW(words));
-      }
-    });
+      failureOrWords.fold(
+          (error) => emit(TrainingError(message: _mapFailureToMessage(error))),
+          (words) {
+        if (words.isEmpty) {
+          emit(TrainingEmpty());
+        } else {
+          add(AddSuggestedSourcesToWordsInTW(words));
+        }
+      });
+    }
   }
 
   FutureOr<void> _onFetchSetWordsForTwTRainingsEvent(
@@ -335,6 +371,14 @@ class TrainingsBloc extends Bloc<TrainingsEvent, TrainingsState> {
   FutureOr<void> _onUpdateWordsForTwTRainingsEvent(
       UpdateWordsForTwTRainings event, Emitter<TrainingsState> emit) async {
     await updateWordsForTWTraining(event.toUpdate);
+  }
+
+  FutureOr<void> _onUpdateWordsForComboTRainingsEvent(
+      UpdateWordsForComboTRainings event, Emitter<TrainingsState> emit) async {
+    await updateWordsForComboTraining(
+        wtIdstoUpdate: event.wtIdstoUpdate,
+        twIdstoUpdate: event.twIdstoUpdate,
+        dictantIdstoUpdate: event.dictantIdstoUpdate);
   }
 
   FutureOr<void> _onUpdateWordsForMatchingTRainingsEvent(

@@ -93,6 +93,7 @@ class _CardsInProcessPageState extends State<RepeatingInProcessPage> {
   }
 
   Widget _buildWordCard(List<RepeatingTrainingEntity> words) {
+    if (currentWordIndex >= words.length) return SizedBox();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

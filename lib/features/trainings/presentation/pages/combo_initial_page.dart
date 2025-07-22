@@ -4,38 +4,38 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
+import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
+import '../../domain/entities/combo_training_entity.dart';
+import '../../domain/entities/wt_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
 import 'cards_result_page.dart';
 
-class CardsInProcessPage extends StatefulWidget {
-  final String setId;
-  const CardsInProcessPage({
+class ComboInitialPage extends StatefulWidget {
+  const ComboInitialPage({
     super.key,
-    required this.setId,
   });
 
   @override
-  State<CardsInProcessPage> createState() => _CardsInProcessPageState();
+  State<ComboInitialPage> createState() => _ComboInitialPageState();
 }
 
-class _CardsInProcessPageState extends State<CardsInProcessPage> {
+class _ComboInitialPageState extends State<ComboInitialPage> {
   int currentWordIndex = 0;
-  List<String> suggestedAnswer = [];
-  List<CardsTrainingEntity> correctAnswers = [];
-  List<CardsTrainingEntity> mistakes = [];
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
-  late int correctSoundId;
-  late int wrongSoundId;
+  final List<ComboTrainingEntity> wordsToLearn = [];
+  late int learnSoundId;
+  late int passSoundId;
   Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
 
   @override
@@ -67,7 +67,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
             );
           } else if (state is TrainingLoading) {
             return _loadingIndicator();
-          } else if (state is CardsTrainingLoaded) {
+          } else if (state is ComboTrainingLoaded) {
             return _buildWordCard(state.words);
           } else {
             return const SizedBox();
@@ -86,13 +86,8 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
     );
   }
 
-  Widget _buildWordCard(List<CardsTrainingEntity> words) {
+  Widget _buildWordCard(List<ComboTrainingEntity> words) {
     if (currentWordIndex >= words.length) return SizedBox();
-    if (suggestedAnswer.isEmpty) {
-      suggestedAnswer.add(words[currentWordIndex].translation);
-      suggestedAnswer.add(words[currentWordIndex].wrongTranslation);
-      suggestedAnswer.shuffle();
-    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -113,7 +108,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
         Flexible(
           flex: 2,
           child: Text(
-            '${currentWordIndex + 1}/${words.length}',
+            '${wordsToLearn.length + 1}/${words.length >= 5 ? 5 : words.length}',
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -141,21 +136,37 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
           ),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                words[currentWordIndex].source,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
+              child: Column(
+                children: [
+                  Text(
+                    words[currentWordIndex].source,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Text(
+                        words[currentWordIndex].translation,
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
         Flexible(
           flex: 4,
-          child: Column(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
@@ -166,29 +177,16 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                     child: FilledButton(
                       onPressed: () async {
                         if (currentWordIndex + 1 >= words.length) {
-                          if (suggestedAnswer.first ==
-                              words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            await pool.play(wrongSoundId);
-                            mistakes.add(words[currentWordIndex]);
-                          }
-                          finishWorkout();
+                          finishWorkout(wordsToLearn);
                           return;
-                        } else {
-                          if (suggestedAnswer.first ==
-                              words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            await pool.play(wrongSoundId);
-                            mistakes.add(words[currentWordIndex]);
-                          }
-                          setState(() {
-                            currentWordIndex++;
-                            suggestedAnswer = [];
-                          });
+                        }
+                        await pool.play(passSoundId);
+                        setState(() {
+                          currentWordIndex++;
+                        });
+                        if (wordsToLearn.length >= 5) {
+                          finishWorkout(wordsToLearn);
+                          return;
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -203,7 +201,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: AutoSizeText(
-                              suggestedAnswer.first,
+                              S.of(context).pass,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -220,30 +218,18 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                     height: 100,
                     child: FilledButton(
                       onPressed: () async {
+                        wordsToLearn.add(words[currentWordIndex]);
+                        await pool.play(learnSoundId);
                         if (currentWordIndex + 1 >= words.length) {
-                          if (suggestedAnswer.last ==
-                              words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            await pool.play(wrongSoundId);
-                            mistakes.add(words[currentWordIndex]);
-                          }
-                          finishWorkout();
+                          finishWorkout(wordsToLearn);
                           return;
-                        } else {
-                          if (suggestedAnswer.last ==
-                              words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            await pool.play(wrongSoundId);
-                            mistakes.add(words[currentWordIndex]);
-                          }
-                          setState(() {
-                            currentWordIndex++;
-                            suggestedAnswer = [];
-                          });
+                        }
+                        setState(() {
+                          currentWordIndex++;
+                        });
+                        if (wordsToLearn.length >= 5) {
+                          finishWorkout(wordsToLearn);
+                          return;
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -258,7 +244,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: AutoSizeText(
-                              suggestedAnswer.last,
+                              S.of(context).learn,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -281,21 +267,24 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
     );
   }
 
-  void finishWorkout() {
-    final wordsSet = correctAnswers.map((e) => e.id).toSet();
-    Set<String> mistakesSet = mistakes.map((e) => e.id).toSet();
-    correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
-    mistakes.retainWhere((element) => mistakesSet.remove(element.id));
-    mistakesSet = mistakes.map((e) => e.id).toSet();
-    correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (ctx) => CardsResultPage(
-              correctAnswers: correctAnswers,
-              mistakes: mistakes,
-              setId: widget.setId,
-            )));
+  void finishWorkout(List<ComboTrainingEntity> wordsToLearn) {
+    final List<WTTrainingEntity> wtWords = [];
+    for (var word in wordsToLearn) {
+      wtWords.add(WTTrainingEntity(
+          id: word.id,
+          wordId: word.wordId,
+          source: word.source,
+          translation: word.translation));
+    }
+    wtWords.shuffle();
+
     BlocProvider.of<TrainingsBloc>(context)
-        .add(UpdateWordsForCardsTRainings(correctAnswers));
+        .add(FetchWordsForWtTRainings(words: wtWords));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (ctx) => const WTInProcessPage(
+              setId: '',
+              isCombo: true,
+            )));
   }
 
   Future<void> speak(String text) async {
@@ -311,13 +300,13 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
   }
 
   void initSounds() async {
-    correctSoundId = await rootBundle
+    learnSoundId = await rootBundle
         .load("assets/sounds/correct.mp3")
         .then((ByteData soundData) {
       return pool.load(soundData);
     });
-    wrongSoundId = await rootBundle
-        .load("assets/sounds/wrong.mp3")
+    passSoundId = await rootBundle
+        .load("assets/sounds/neutral.mp3")
         .then((ByteData soundData) {
       return pool.load(soundData);
     });

@@ -30,14 +30,17 @@ class RepeatingResultPage extends StatelessWidget {
               return Navigator.of(context).pop();
             },
             icon: Image.asset('assets/icons/cancel.png')),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: Text(
+            S.of(context).results,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
       ),
       body: Center(
           child: Column(
         children: [
-          Text(
-            S.of(context).results,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20.0),

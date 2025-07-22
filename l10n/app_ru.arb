@@ -68,6 +68,7 @@
   "matchingWords": "соответствие",
   "wordCards": "карточки",
   "dictant": "диктант",
+  "combo": "комбо",
   "repeatWords": "повторение",
   "myDictionary": "мой словарь",
   "shouldDeleteSet": "вы уверены, что хотите удалить набор слов?",
@@ -79,5 +80,6 @@
   "noInternetConnection" : "пожалуйста, проверьте подключение к интернету ˙◠˙",
   "translateOnline" : "перевести в Yandex",
   "yandexSource" : "Powered by Yandex.Dictionary",
-  "couldntTranslate" : "извините, не получилось перевести ˙◠˙"
+  "couldntTranslate" : "извините, не получилось перевести ˙◠˙",
+  "pass" : "пропустить"
 }

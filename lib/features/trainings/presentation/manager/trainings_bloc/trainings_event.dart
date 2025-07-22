@@ -15,7 +15,9 @@ abstract class TrainingsEvent extends Equatable {
 }
 
 class FetchWordsForWtTRainings extends TrainingsEvent {
-  const FetchWordsForWtTRainings();
+  final bool isCombo;
+  final List<WTTrainingEntity> words;
+  const FetchWordsForWtTRainings({this.isCombo = false, this.words = const []});
 }
 
 class FetchWordsForMatchingTRainings extends TrainingsEvent {
@@ -23,11 +25,16 @@ class FetchWordsForMatchingTRainings extends TrainingsEvent {
 }
 
 class FetchWordsForTwTRainings extends TrainingsEvent {
-  const FetchWordsForTwTRainings();
+  final bool isCombo;
+  final List<TWTrainingEntity> words;
+  const FetchWordsForTwTRainings({this.isCombo = false, this.words = const []});
 }
 
 class FetchWordsForDictantTRainings extends TrainingsEvent {
-  const FetchWordsForDictantTRainings();
+  final bool isCombo;
+  final List<DictantTrainingEntity> words;
+  const FetchWordsForDictantTRainings(
+      {this.isCombo = false, this.words = const []});
 }
 
 class FetchWordsForRepeatingTRainings extends TrainingsEvent {
@@ -54,6 +61,10 @@ class FetchSetWordsForTwTRainings extends TrainingsEvent {
   final String setId;
 
   const FetchSetWordsForTwTRainings(this.setId);
+}
+
+class FetchWordsForComboTRainings extends TrainingsEvent {
+  const FetchWordsForComboTRainings();
 }
 
 class FetchSetWordsForDictantTRainings extends TrainingsEvent {
@@ -84,6 +95,16 @@ class UpdateWordsForTwTRainings extends TrainingsEvent {
   final List<String> toUpdate;
 
   const UpdateWordsForTwTRainings(this.toUpdate);
+}
+
+class UpdateWordsForComboTRainings extends TrainingsEvent {
+  final String wtIdstoUpdate;
+  final String twIdstoUpdate;
+  final String dictantIdstoUpdate;
+  const UpdateWordsForComboTRainings(
+      {required this.wtIdstoUpdate,
+      required this.twIdstoUpdate,
+      required this.dictantIdstoUpdate});
 }
 
 class UpdateWordsForMatchingTRainings extends TrainingsEvent {

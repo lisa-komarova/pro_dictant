@@ -36,6 +36,7 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/add_suggested_tr
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_dictant_training.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_matching_training.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/fetch_words_for_wt_training.dart';
+import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_combo_trainings.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_tw_trainings.dart';
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_wt_trainings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,12 +59,14 @@ import 'features/trainings/domain/use_cases/fetch_set_words_for_repeating_traini
 import 'features/trainings/domain/use_cases/fetch_set_words_for_tw_training.dart';
 import 'features/trainings/domain/use_cases/fetch_set_words_for_wt_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_cards_training.dart';
+import 'features/trainings/domain/use_cases/fetch_words_for_combo_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_repeating_training.dart';
 import 'features/trainings/domain/use_cases/fetch_words_for_tw_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_cards_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_dictant_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_matching_training.dart';
 import 'features/trainings/domain/use_cases/update_words_for_repeating_trainings.dart';
+import 'features/trainings/presentation/manager/provider/combo_training_session.dart';
 import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 
 final sl = GetIt.instance;
@@ -98,6 +101,7 @@ Future<void> init() async {
         updateSet: sl(),
       ));
   sl.registerFactory(() => TrainingsBloc(
+        fetchWordsForComboTraining: sl(),
         fetchWordsForWtTraining: sl(),
         fetchWordsForTwTRainings: sl(),
         fetchWordsForMatchingTRaining: sl(),
@@ -118,16 +122,20 @@ Future<void> init() async {
         updateWordsForDictantTraining: sl(),
         updateWordsForCardsTraining: sl(),
         updateWordsForRepeatingTraining: sl(),
+        updateWordsForComboTraining: sl(),
       ));
   sl.registerFactory(() => ProfileBloc(
         fetchStatistics: sl(),
         updateDayStatistics: sl(),
         updateGoal: sl(),
       ));
+  //provider
+  sl.registerFactory<ComboTrainingSession>(() => ComboTrainingSession());
   // UseCases
   sl.registerLazySingleton(() => FetchAllWordsInDict(
         wordRepository: sl(),
       ));
+
   sl.registerLazySingleton(() => FetchWordBySource(
         wordRepository: sl(),
       ));
@@ -240,6 +248,12 @@ Future<void> init() async {
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchSetWordsForRepeatingTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => FetchWordsForComboTraining(
+        trainingsRepository: sl(),
+      ));
+  sl.registerLazySingleton(() => UpdateWordsForComboTraining(
         trainingsRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchTranslationsForWordsInSet(

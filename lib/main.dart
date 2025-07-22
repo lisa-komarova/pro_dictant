@@ -9,9 +9,11 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/home_page.dart';
 import 'package:pro_dictant/service_locator.dart' as di;
 import 'package:pro_dictant/service_locator.dart';
+import 'package:provider/provider.dart';
 
 import 'core/s.dart';
 import 'features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
+import 'features/trainings/presentation/manager/provider/combo_training_session.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,12 +42,15 @@ class MyApp extends StatelessWidget {
           BlocProvider<ProfileBloc>(
               create: (BuildContext context) => sl<ProfileBloc>()),
         ],
-        child: MaterialApp(
-          supportedLocales: S.supportedLocales,
-          localizationsDelegates: S.localizationDelegates,
-          debugShowCheckedModeBanner: false,
-          theme: appTheme,
-          home: const HomePage(),
+        child: ChangeNotifierProvider<ComboTrainingSession>(
+          create: (_) => sl<ComboTrainingSession>(),
+          child: MaterialApp(
+            supportedLocales: S.supportedLocales,
+            localizationsDelegates: S.localizationDelegates,
+            debugShowCheckedModeBanner: false,
+            theme: appTheme,
+            home: const HomePage(),
+          ),
         ));
   }
 }

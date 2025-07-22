@@ -11,12 +11,15 @@ import 'package:sqflite/sqflite.dart';
 import '../../../dictionary/data/models/word_model.dart';
 import '../../../dictionary/domain/entities/word_entity.dart';
 import '../models/cards_translation_model.dart';
+import '../models/combo_training_model.dart';
 import '../models/dictant_training_model.dart';
 import '../models/matching_training_model.dart';
 import '../models/repeating_training_model.dart';
 import '../models/tw_training_model.dart';
 
 abstract class TrainingsDatasource {
+  Future<List<ComboTrainingModel>> fetchWordsForComboTraining();
+
   Future<List<WTTraningModel>> fetchWordsForWTTraining();
 
   Future<List<TWTraningModel>> fetchWordsForTWTraining();
@@ -53,7 +56,10 @@ abstract class TrainingsDatasource {
   Future<void> updateWordsForWTTraining(List<String> toUpdate);
 
   Future<void> updateWordsForTWTraining(List<String> toUpdate);
-
+  Future<void> updateWordsForComboTraining(
+      {required String wtIdstoUpdate,
+      required String twIdstoUpdate,
+      required String dictantIdstoUpdate});
   Future<void> updateWordsForMatchingTraining(
       List<MatchingTrainingModel> toUpdate);
 
@@ -493,6 +499,44 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
              ORDER by random() limit 10''');
       words = maps.map((map) => WTTraningModel.fromJson(map)).toList();
       return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<ComboTrainingModel>> fetchWordsForComboTraining() async {
+    final db = await database;
+    List<ComboTrainingModel> words = [];
+    try {
+      final maps = await db!.rawQuery(
+          '''select word.source, words_translations.translation, words_translations.id, 
+          word.id wordId from word join words_translations on word.id = 
+          words_translations.word_id where words_translations.isInDictionary =1
+           and words_translations.isWT =0 and words_translations.isTW =0 
+           and words_translations.isDictant =0 ORDER by random() limit 50''');
+
+      words = maps.map((map) => ComboTrainingModel.fromJson(map)).toList();
+
+      return words;
+    } on Exception catch (_) {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<void> updateWordsForComboTraining(
+      {required String wtIdstoUpdate,
+      required String twIdstoUpdate,
+      required String dictantIdstoUpdate}) async {
+    final db = await database;
+    try {
+      await db!.rawQuery(
+          '''update words_translations set isWT = 1 where id in ($wtIdstoUpdate);''');
+      await db!.rawQuery(
+          ''' update words_translations set isTW = 1 where id in ($twIdstoUpdate);''');
+      await db!.rawQuery(
+          '''update words_translations set isDictant = 1 where id in ($dictantIdstoUpdate);''');
     } on Exception catch (_) {
       throw ServerException();
     }

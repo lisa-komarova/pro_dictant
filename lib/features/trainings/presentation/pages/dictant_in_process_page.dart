@@ -5,21 +5,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/dictant_result_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
+import '../../domain/entities/combo_training_entity.dart';
 import '../../domain/entities/dictant_training_entity.dart';
+import '../../domain/entities/tw_training_entity.dart';
+import '../../domain/entities/wt_training_entity.dart';
+import '../manager/provider/combo_training_session.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
+import 'combo_result_page.dart';
 
 class DictantInProcessPage extends StatefulWidget {
   final String setId;
-
+  final bool isCombo;
   const DictantInProcessPage({
     super.key,
     required this.setId,
+    this.isCombo = false,
   });
 
   @override
@@ -54,10 +62,13 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
 
   @override
   Widget build(BuildContext context) {
+    final session = context.read<ComboTrainingSession>();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
+              final session = context.read<ComboTrainingSession>();
+              session.reset();
               return Navigator.of(context).pop();
             },
             icon: Image.asset('assets/icons/cancel.png')),
@@ -78,7 +89,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
             if (words.isEmpty) {
               words.addAll(state.words);
             }
-            return _buildWordCard(state.words);
+            return _buildWordCard(words, session);
           } else {
             return const SizedBox();
           }
@@ -110,7 +121,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     );
   }
 
-  Widget _buildWordCard(List<DictantTrainingEntity> words) {
+  Widget _buildWordCard(
+      List<DictantTrainingEntity> words, ComboTrainingSession session) {
+    if (currentWordIndex >= words.length) return SizedBox();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -181,7 +194,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             ),
                           ),
                         )
-                      : _buildWordBricks(words[currentWordIndex]),
+                      : _buildWordBricks(words[currentWordIndex], session),
                   !isHintSelected
                       ? Flexible(
                           child: Padding(
@@ -198,6 +211,15 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                   if (!mistakes
                                       .contains(words[currentWordIndex])) {
                                     await pool.play(correctSoundId);
+                                    if (widget.isCombo) {
+                                      session.addCorrect('dictantTraining', (
+                                        words[currentWordIndex].source,
+                                        words[currentWordIndex].translation,
+                                        words[currentWordIndex].id,
+                                      ));
+                                      session.removeDictantWrong(
+                                          words[currentWordIndex]);
+                                    }
                                     correctAnswers.add(words[currentWordIndex]);
                                     focusBorderColor = const Color(0xFF85977f);
                                   }
@@ -212,6 +234,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                     });
                                   } else {
                                     await pool.play(wrongSoundId);
+                                    if (widget.isCombo) {
+                                      session.addDictantWrong(
+                                          words[currentWordIndex]);
+                                    }
                                     mistakes.add(words[currentWordIndex]);
                                     updateCurrentWord();
                                   }
@@ -256,21 +282,106 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
 
   void updateCurrentWord() {
     if (currentWordIndex == words.length - 1) {
-      final wordsSet = correctAnswers.map((e) => e.id).toSet();
-      Set<String> mistakesSet = mistakes.map((e) => e.id).toSet();
-      correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
-      mistakes.retainWhere((element) => mistakesSet.remove(element.id));
-      mistakesSet = mistakes.map((e) => e.id).toSet();
-      correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (ctx) => DictantResultPage(
-                correctAnswers: correctAnswers,
-                mistakes: mistakes,
-                setId: widget.setId,
-              )));
-      BlocProvider.of<TrainingsBloc>(context)
-          .add(UpdateWordsForDictantTRainings(correctAnswers));
-      return;
+      if (widget.isCombo) {
+        final session = context.read<ComboTrainingSession>();
+        final words;
+        if (session.wtWrongAnswers.toList().isNotEmpty) {
+          words = session.wtWrongAnswers.toList();
+          words.shuffle();
+          BlocProvider.of<TrainingsBloc>(context)
+              .add(FetchWordsForWtTRainings(words: words));
+          session.resetWtWrongAnswers();
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (ctx) => const WTInProcessPage(
+                    setId: '',
+                    isCombo: true,
+                  )));
+          return;
+        } else if (session.twWrongAnswers.toList().isNotEmpty) {
+          words = session.twWrongAnswers.toList();
+          words.shuffle();
+          BlocProvider.of<TrainingsBloc>(context)
+              .add(FetchWordsForTwTRainings(words: words));
+          session.resetTwWrongAnswers();
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (ctx) => const TWInProcessPage(
+                    setId: '',
+                    isCombo: true,
+                  )));
+          return;
+        } else if (session.dictantWrongAnswers.toList().isNotEmpty) {
+          words = session.dictantWrongAnswers.toList();
+          words.shuffle();
+          BlocProvider.of<TrainingsBloc>(context)
+              .add(FetchWordsForDictantTRainings(words: words));
+          session.resetDictantWrongAnswers();
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (ctx) => const DictantInProcessPage(
+                    setId: '',
+                    isCombo: true,
+                  )));
+          return;
+        } else {
+          final Set<(String, String)> allWordsSet = {};
+          final List<WTTrainingEntity> wtInitialWrongAnswers =
+              session.wtInitialWrongAnswers.toList();
+          final List<TWTrainingEntity> twInitialWrongAnswers =
+              session.twInitialWrongAnswers.toList();
+          final List<DictantTrainingEntity> dictantInitialWrongAnswers =
+              session.dictantInitialWrongAnswers.toList();
+
+          for (var tuple in session.correctAnswers['wtTraining']!) {
+            allWordsSet.add((tuple.$1, tuple.$2));
+          }
+          final String wtIdsToUpdate = session.correctAnswers["wtTraining"]!
+              .where((item) => !wtInitialWrongAnswers.any((wrong) =>
+                  wrong.source == item.$1 && wrong.translation == item.$2))
+              .map((e) => "'${e.$3}'")
+              .join(', ');
+          final String twIdsToUpdate = session.correctAnswers["wtTraining"]!
+              .where((item) => !twInitialWrongAnswers.any((wrong) =>
+                  wrong.source == item.$1 && wrong.translation == item.$2))
+              .map((e) => "'${e.$3}'")
+              .join(', ');
+          final String dictantIdsToUpdate = session
+              .correctAnswers["wtTraining"]!
+              .where((item) => !dictantInitialWrongAnswers.any((wrong) =>
+                  wrong.source == item.$1 && wrong.translation == item.$2))
+              .map((e) => "'${e.$3}'")
+              .join(', ');
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (ctx) => ComboResultPage(
+                    allWords: allWordsSet.toList(),
+                    twInitialWrongAnswers: twInitialWrongAnswers,
+                    wtInitialWrongAnswers: wtInitialWrongAnswers,
+                    dictantInitialWrongAnswers: dictantInitialWrongAnswers,
+                  )));
+          BlocProvider.of<TrainingsBloc>(context).add(
+              UpdateWordsForComboTRainings(
+                  wtIdstoUpdate: wtIdsToUpdate,
+                  twIdstoUpdate: twIdsToUpdate,
+                  dictantIdstoUpdate: dictantIdsToUpdate));
+          session.reset();
+          return;
+        }
+      } else {
+        final wordsSet = correctAnswers.map((e) => e.id).toSet();
+        Set<String> mistakesSet = mistakes.map((e) => e.id).toSet();
+        correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
+        mistakes.retainWhere((element) => mistakesSet.remove(element.id));
+        mistakesSet = mistakes.map((e) => e.id).toSet();
+        correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
+
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (ctx) => DictantResultPage(
+                  correctAnswers: correctAnswers,
+                  mistakes: mistakes,
+                  setId: widget.setId,
+                )));
+        BlocProvider.of<TrainingsBloc>(context)
+            .add(UpdateWordsForDictantTRainings(correctAnswers));
+        return;
+      }
     }
     focusBorderColor = const Color(0xFF85977f);
     isHintSelected = false;
@@ -293,7 +404,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     );
   }
 
-  _buildWordBricks(DictantTrainingEntity word) {
+  _buildWordBricks(DictantTrainingEntity word, ComboTrainingSession session) {
     if (suggestedLetters.isEmpty) fillLetters(word);
     return Flexible(
       flex: 4,
@@ -324,7 +435,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                   scrollDirection: Axis.vertical,
                   child: Wrap(
                     alignment: WrapAlignment.center,
-                    children: _buildBoxesWithLetters(word),
+                    children: _buildBoxesWithLetters(word, session),
                   ),
                 ),
               ),
@@ -378,7 +489,8 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     return boxesForLetters;
   }
 
-  List<Widget> _buildBoxesWithLetters(DictantTrainingEntity word) {
+  List<Widget> _buildBoxesWithLetters(
+      DictantTrainingEntity word, ComboTrainingSession session) {
     final List<Widget> boxesForLetters = [];
     for (int index = 0; index < suggestedLetters.length; index++) {
       boxesForLetters.add(Padding(
@@ -393,6 +505,14 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               if (currentLetterIndex == correctAnswer.length) {
                 updateCurrentWord();
                 if (!mistakes.contains(word)) {
+                  if (widget.isCombo) {
+                    session.addCorrect('dictantTraining', (
+                      words[currentWordIndex].source,
+                      words[currentWordIndex].translation,
+                      words[currentWordIndex].id,
+                    ));
+                    session.removeDictantWrong(words[currentWordIndex]);
+                  }
                   await pool.play(correctSoundId);
                   correctAnswers.add(word);
                 }
@@ -408,6 +528,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
 
               if (attempts == maxAttempts) {
                 mistakes.add(word);
+                if (widget.isCombo) {
+                  session.addDictantWrong(word);
+                }
                 await pool.play(wrongSoundId);
                 updateCurrentWord();
               }

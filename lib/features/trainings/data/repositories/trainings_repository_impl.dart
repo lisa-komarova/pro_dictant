@@ -4,6 +4,7 @@ import 'package:pro_dictant/core/error/failure.dart';
 import 'package:pro_dictant/features/trainings/data/data_sources/trainings_datasource.dart';
 import 'package:pro_dictant/features/trainings/data/models/matching_training_model.dart';
 import 'package:pro_dictant/features/trainings/data/models/wt_training_model.dart';
+import 'package:pro_dictant/features/trainings/domain/entities/combo_training_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/matching_training_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/repeating_entity.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
@@ -169,6 +170,21 @@ class TrainingsRepositoryImpl extends TrainingsRepository {
     }
   }
 
+  Future<Either<Failure, void>> updateWordsForComboTraining(
+      {required String wtIdstoUpdate,
+      required String twIdstoUpdate,
+      required String dictantIdstoUpdate}) async {
+    try {
+      await trainingsDataSource.updateWordsForComboTraining(
+          twIdstoUpdate: twIdstoUpdate,
+          wtIdstoUpdate: wtIdstoUpdate,
+          dictantIdstoUpdate: dictantIdstoUpdate);
+      return const Right(Future<void>);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
   @override
   Future<Either<Failure, void>> updateWordsForCardsTraining(
       List<CardsTrainingEntity> toUpdate) async {
@@ -310,6 +326,17 @@ class TrainingsRepositoryImpl extends TrainingsRepository {
       final wtWords =
           await trainingsDataSource.fetchSetWordsForWTTraining(setId);
       return Right(wtWords);
+    } on ServerException {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ComboTrainingEntity>>>
+      fetchWordsForComboTraining() async {
+    try {
+      final comboWords = await trainingsDataSource.fetchWordsForComboTraining();
+      return Right(comboWords);
     } on ServerException {
       return Left(ServerFailure());
     }

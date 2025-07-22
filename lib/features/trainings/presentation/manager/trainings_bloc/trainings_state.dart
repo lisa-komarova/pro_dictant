@@ -3,6 +3,7 @@ import 'package:pro_dictant/features/trainings/domain/entities/tw_training_entit
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 
 import '../../../domain/entities/cards_training_entity.dart';
+import '../../../domain/entities/combo_training_entity.dart';
 import '../../../domain/entities/dictant_training_entity.dart';
 import '../../../domain/entities/matching_training_entity.dart';
 import '../../../domain/entities/repeating_entity.dart';
@@ -53,6 +54,15 @@ class CardsTrainingLoaded extends TrainingsState {
   String setId;
 
   CardsTrainingLoaded({required this.words, this.setId = ''});
+
+  @override
+  List<Object> get props => [words];
+}
+
+class ComboTrainingLoaded extends TrainingsState {
+  final List<ComboTrainingEntity> words;
+
+  ComboTrainingLoaded({required this.words});
 
   @override
   List<Object> get props => [words];
