@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
-import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
-import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
@@ -16,7 +14,6 @@ import '../../domain/entities/wt_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
-import 'cards_result_page.dart';
 
 class ComboInitialPage extends StatefulWidget {
   const ComboInitialPage({
@@ -87,7 +84,8 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
   }
 
   Widget _buildWordCard(List<ComboTrainingEntity> words) {
-    if (currentWordIndex >= words.length) return SizedBox();
+    if (currentWordIndex >= words.length || wordsToLearn.length >= 5)
+      return SizedBox();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../dictionary/domain/entities/word_entity.dart';
-
 class ComboTrainingEntity extends Equatable {
   final String translation;
   final String source;

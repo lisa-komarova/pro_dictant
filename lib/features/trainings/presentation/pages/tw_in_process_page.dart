@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,9 +13,7 @@ import 'package:pro_dictant/features/trainings/presentation/widgets/answer_butto
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
 import 'package:yandex_mobileads/mobile_ads.dart';
-
 import '../../../../core/ad_widget.dart';
-import '../../domain/entities/combo_training_entity.dart';
 import '../../domain/entities/dictant_training_entity.dart';
 import '../../domain/entities/tw_training_entity.dart';
 import '../manager/provider/combo_training_session.dart';
@@ -299,7 +295,6 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
                             session.addCorrect('twTraining', (
                               words[currentWordIndex].source,
                               words[currentWordIndex].translation,
-                              //TODO check if the id is tr id
                               words[currentWordIndex].id,
                             ));
                             session.removeTwWrong(words[currentWordIndex]);

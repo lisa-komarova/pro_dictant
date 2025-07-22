@@ -17,6 +17,12 @@ class SetList extends StatefulWidget {
 
 class _SetListState extends State<SetList> {
   List<SetEntity> sets = [];
+  final ScrollController _scrollController = ScrollController();
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,83 +67,101 @@ class _SetListState extends State<SetList> {
       child: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: sets.length,
-              itemBuilder: (context, index) {
-                return Dismissible(
-                  direction: DismissDirection.endToStart,
-                  key: UniqueKey(),
-                  background: Row(
-                    children: [
-                      const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(
-                          'assets/icons/delete.png',
-                          width: 35,
-                          height: 35,
-                          color: const Color(0xFFB70E0E),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Scrollbar(
+                controller: _scrollController,
+                thumbVisibility: true,
+                interactive: true,
+                radius: Radius.circular(10),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    itemCount: sets.length,
+                    itemBuilder: (context, index) {
+                      return Dismissible(
+                        direction: DismissDirection.endToStart,
+                        key: UniqueKey(),
+                        background: Row(
+                          children: [
+                            const Spacer(),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(
+                                'assets/icons/delete.png',
+                                width: 35,
+                                height: 35,
+                                color: const Color(0xFFB70E0E),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  onDismissed: (DismissDirection direction) {
-                    _showShouldDeleteSetDialog(
-                        context, sets, sets[index], index);
-                  },
-                  child: GestureDetector(
-                    onTap: () async {
-                      BlocProvider.of<SetBloc>(context).add(
-                          FetchTranslationsForWordsInSets(set: sets[index]));
-                      SetEntity? setToReplace = await Navigator.of(context)
-                          .push(MaterialPageRoute(
-                              builder: (ctx) => const SetsWordsPage()));
-                      if (setToReplace != null) {
-                        setState(() {
-                          sets[index] = setToReplace;
-                        });
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Container(
-                          height: 100,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            border: Border.all(
-                              color: const Color(0xFFD9C3AC),
-                            ),
-                            color: const Color(0xFFFFFFFF),
-                          ),
-                          child: Center(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: AutoSizeText(
-                                    overflow: TextOverflow.fade,
-                                    sets[index].name.toUpperCase(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displaySmall,
-                                    textAlign: TextAlign.center,
+                        onDismissed: (DismissDirection direction) {
+                          _showShouldDeleteSetDialog(
+                              context, sets, sets[index], index);
+                        },
+                        child: GestureDetector(
+                          onTap: () async {
+                            BlocProvider.of<SetBloc>(context).add(
+                                FetchTranslationsForWordsInSets(
+                                    set: sets[index]));
+                            SetEntity? setToReplace =
+                                await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (ctx) =>
+                                            const SetsWordsPage()));
+                            if (setToReplace != null) {
+                              setState(() {
+                                sets[index] = setToReplace;
+                              });
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                                height: 100,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(
+                                    color: const Color(0xFFD9C3AC),
                                   ),
+                                  color: const Color(0xFFFFFFFF),
                                 ),
-                                Text(
-                                  overflow: TextOverflow.fade,
-                                  "${sets[index].wordsInSet.length} \n слов",
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          )),
-                    ),
+                                child: Center(
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: AutoSizeText(
+                                          overflow: TextOverflow.fade,
+                                          sets[index].name.toUpperCase(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .displaySmall,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      Text(
+                                        overflow: TextOverflow.fade,
+                                        "${sets[index].wordsInSet.length} \n слов",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+              ),
             ),
           ),
         ],

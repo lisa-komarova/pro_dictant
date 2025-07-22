@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
-import '../../domain/entities/combo_training_entity.dart';
 import '../../domain/entities/dictant_training_entity.dart';
 import '../../domain/entities/tw_training_entity.dart';
 import '../../domain/entities/wt_training_entity.dart';

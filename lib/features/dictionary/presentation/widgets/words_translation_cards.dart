@@ -25,7 +25,6 @@ class WordTranslationCards extends StatefulWidget {
 class _WordTranslationCardsState extends State<WordTranslationCards>
     with TickerProviderStateMixin {
   late PageController _pageViewController;
-  final _scrollController = ScrollController();
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
   Color _color = const Color(0xFF85977f);
@@ -44,7 +43,6 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
   void dispose() {
     super.dispose();
     _pageViewController.dispose();
-    _scrollController.dispose();
   }
 
   @override
@@ -61,7 +59,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                 onPageChanged: _handlePageViewChanged,
                 children: <Widget>[
                   for (var element in word.translationList)
-                    buildTranslastionCard(_scrollController, context, element),
+                    buildTranslastionCard(context, element),
                 ],
               ),
             ],
@@ -146,12 +144,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
     );
   }
 
-  Widget buildTranslastionCard(ScrollController scrollController,
+  Widget buildTranslastionCard(
       BuildContext context, TranslationEntity translation) {
+    final ScrollController localScrollController = ScrollController();
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
-        controller: scrollController,
+        controller: localScrollController,
         child: Container(
           height: MediaQuery.of(context).size.height * 0.7,
           decoration: BoxDecoration(
@@ -210,8 +209,6 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                             child: Padding(
                               padding: const EdgeInsets.only(right: 2),
                               child: Scrollbar(
-                                controller: scrollController,
-                                thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
                                   child: Text(word.source,
@@ -265,7 +262,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                       child: Padding(
                         padding: const EdgeInsets.only(right: 2),
                         child: Scrollbar(
-                          controller: scrollController,
+                          controller: localScrollController,
                           thumbVisibility: true,
                           radius: const Radius.circular(2),
                           child: SingleChildScrollView(
@@ -282,8 +279,6 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Scrollbar(
-                                controller: scrollController,
-                                thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
                                   child: Text(
@@ -384,6 +379,17 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
     );
   }
 
+  void sortTranslationList(WordEntity word) {
+    List<TranslationEntity> inDictList = [];
+    for (var e in word.translationList) {
+      if (e.isInDictionary == 1) inDictList.add(e);
+    }
+    word.translationList.removeWhere((element) => element.isInDictionary == 1);
+    for (var element in inDictList) {
+      word.translationList.insert(0, element);
+    }
+  }
+
   Future<void> speak(String text) async {
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
@@ -447,17 +453,6 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
         );
       },
     );
-  }
-
-  void sortTranslationList(WordEntity word) {
-    List<TranslationEntity> inDictList = [];
-    for (var e in word.translationList) {
-      if (e.isInDictionary == 1) inDictList.add(e);
-    }
-    word.translationList.removeWhere((element) => element.isInDictionary == 1);
-    for (var element in inDictList) {
-      word.translationList.insert(0, element);
-    }
   }
 
   Future<void> _showDialogDelete(

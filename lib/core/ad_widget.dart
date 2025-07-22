@@ -66,7 +66,7 @@ class _BannerAdvertisementState extends State<BannerAdvertisement> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       width: double.infinity,
       child: _buildAd(),
     );

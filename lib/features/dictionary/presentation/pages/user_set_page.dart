@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/dictionary/presentation/pages/new_set_page.dart';
 import 'package:pro_dictant/features/dictionary/presentation/widgets/set_list.dart';
+
+import '../manager/words_bloc/words_bloc.dart';
+import '../manager/words_bloc/words_event.dart';
 
 class UserSetPage extends StatefulWidget {
   const UserSetPage({super.key});
@@ -24,13 +28,24 @@ class _UserSetPageState extends State<UserSetPage> {
         leading: IconButton(
             onPressed: () {
               Navigator.of(context).pop();
+              FocusScope.of(context).unfocus();
+              BlocProvider.of<WordsBloc>(context).add(const LoadWords());
             },
             icon: Image.asset('assets/icons/cancel.png')),
       ),
-      body: const Column(
-        children: [
-          Expanded(child: SetList()),
-        ],
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          Navigator.of(context).pop();
+          FocusScope.of(context).unfocus();
+          BlocProvider.of<WordsBloc>(context).add(const LoadWords());
+        },
+        child: const Column(
+          children: [
+            Expanded(child: SetList()),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

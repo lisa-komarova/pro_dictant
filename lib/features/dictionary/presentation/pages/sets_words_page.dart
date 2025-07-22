@@ -52,8 +52,8 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
         }
         return PopScope(
           canPop: false,
-          onPopInvoked: (didPope) {
-            if (!didPope) {
+          onPopInvokedWithResult: (bool didPop, _) {
+            if (!didPop) {
               Navigator.of(context).pop(setEntity);
             }
           },

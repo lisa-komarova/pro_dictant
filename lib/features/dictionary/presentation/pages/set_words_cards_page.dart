@@ -26,10 +26,6 @@ class SetWordsCardsPage extends StatefulWidget {
 class _SetWordsCardsPageState extends State<SetWordsCardsPage>
     with TickerProviderStateMixin {
   late PageController _pageViewController;
-  final _scrollController = ScrollController();
-  final _scrollControllerSource = ScrollController();
-  final _scrollControllerTranslation = ScrollController();
-  final _scrollControllerNotes = ScrollController();
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
   Color _color = const Color(0xFF85977f);
@@ -46,15 +42,14 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
   void dispose() {
     super.dispose();
     _pageViewController.dispose();
-    _scrollController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPope) {
-        if (!didPope) {
+      onPopInvokedWithResult: (bool didPop, _) {
+        if (!didPop) {
           Navigator.of(context).pop('update');
         }
       },
@@ -151,10 +146,12 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
   }
 
   Widget buildTranslastionCard(BuildContext context, WordEntity word) {
+    final ScrollController scrollControllerSource = ScrollController();
+    final ScrollController scrollControllerTranslation = ScrollController();
+    final ScrollController scrollControllerNotes = ScrollController();
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
-        controller: _scrollController,
         child: Container(
           height: MediaQuery.of(context).size.height * 0.7,
           decoration: BoxDecoration(
@@ -213,11 +210,11 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                             child: Padding(
                               padding: const EdgeInsets.only(right: 2),
                               child: Scrollbar(
-                                controller: _scrollControllerSource,
+                                controller: scrollControllerSource,
                                 thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
-                                  controller: _scrollControllerSource,
+                                  controller: scrollControllerSource,
                                   child: Text(word.source,
                                       textAlign: TextAlign.center,
                                       style: Theme.of(context)
@@ -269,11 +266,11 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                       child: Padding(
                         padding: const EdgeInsets.only(right: 2),
                         child: Scrollbar(
-                          controller: _scrollControllerTranslation,
+                          controller: scrollControllerTranslation,
                           thumbVisibility: true,
                           radius: const Radius.circular(2),
                           child: SingleChildScrollView(
-                            controller: _scrollControllerTranslation,
+                            controller: scrollControllerTranslation,
                             child: Text(word.translationList.first.translation,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.titleLarge),
@@ -287,11 +284,11 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Scrollbar(
-                                controller: _scrollControllerNotes,
+                                controller: scrollControllerNotes,
                                 thumbVisibility: true,
                                 radius: const Radius.circular(2),
                                 child: SingleChildScrollView(
-                                  controller: _scrollControllerNotes,
+                                  controller: scrollControllerNotes,
                                   child: Text(
                                     word.translationList.first.notes,
                                     style: Theme.of(context)

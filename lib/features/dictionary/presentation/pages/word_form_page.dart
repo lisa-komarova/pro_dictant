@@ -254,7 +254,7 @@ class _WordFormState extends State<WordForm> {
                       width: double.infinity,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF85977f).withOpacity(0.5),
+                        color: const Color(0xFF85977f).withValues(alpha: 0.5),
                         borderRadius:
                             const BorderRadius.all(Radius.circular(15)),
                       ),

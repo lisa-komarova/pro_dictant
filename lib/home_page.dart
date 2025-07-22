@@ -5,7 +5,6 @@ import 'package:pro_dictant/features/profile/presentation/pages/profile_page.dar
 import 'package:pro_dictant/features/trainings/presentation/pages/trainings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yandex_mobileads/mobile_ads.dart';
-
 import 'features/dictionary/presentation/pages/dictionary_page.dart';
 import 'features/profile/presentation/manager/profile_bloc.dart';
 import 'features/profile/presentation/manager/profile_event.dart';

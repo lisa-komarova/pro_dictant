@@ -36,4 +36,10 @@ final appTheme = ThemeData(
               fontFamily: 'Hachi Maru Pop'),
     ),
   ),
+  scrollbarTheme: ScrollbarThemeData(
+    thumbColor: WidgetStateProperty.all(Color(0xFF85977f)),
+    trackColor: WidgetStateProperty.all(Colors.transparent),
+    thickness: WidgetStateProperty.all(8),
+    radius: Radius.circular(10),
+  ),
 );

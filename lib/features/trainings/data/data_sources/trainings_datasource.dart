@@ -168,7 +168,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
         translation =
             translationMap.map((e) => TranslationModel.fromJson(e)).toList();
         if (translation.length < 3) {
-          final translationMap = await db!.rawQuery(
+          final translationMap = await db.rawQuery(
               ''' select DISTINCT * FROM words_translations join word on words_translations.word_id = word.id WHERE word_id not 
             in ('${words[i].wordId}') and translation not 
             in ('${words[i].translation}') and word.pos = (SELECT pos from word where id = '${words[i].wordId}' )  ORDER by random()
@@ -218,7 +218,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
              ORDER by random() LIMIT 3''');
         sources = sourcesMap.map((e) => WordModel.fromJson(e)).toList();
         if (sources.length < 3) {
-          final sourcesMap = await db!.rawQuery(
+          final sourcesMap = await db.rawQuery(
               '''select  word.id, source, pos, transcription FROM word 
             join words_translations on word.id = words_translations.word_id
              WHERE words_translations.id not in ('${words[i].id}') 
@@ -533,9 +533,9 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     try {
       await db!.rawQuery(
           '''update words_translations set isWT = 1 where id in ($wtIdstoUpdate);''');
-      await db!.rawQuery(
+      await db.rawQuery(
           ''' update words_translations set isTW = 1 where id in ($twIdstoUpdate);''');
-      await db!.rawQuery(
+      await db.rawQuery(
           '''update words_translations set isDictant = 1 where id in ($dictantIdstoUpdate);''');
     } on Exception catch (_) {
       throw ServerException();

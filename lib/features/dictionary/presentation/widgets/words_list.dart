@@ -25,7 +25,7 @@ class WordsList extends StatefulWidget {
 
 class _WordsListState extends State<WordsList> {
   late bool isInternetConnected;
-
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     checkInternet();
@@ -44,6 +44,12 @@ class _WordsListState extends State<WordsList> {
       }
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -217,106 +223,129 @@ class _WordsListState extends State<WordsList> {
     return Expanded(
       child: RefreshIndicator(
         onRefresh: _refreshList,
-        child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: wordsToBuild.length,
-            itemBuilder: (context, index) {
-              var translation = '';
-              final isInDictionary = wordsToBuild[index]
-                  .translationList
-                  .where((element) => element.isInDictionary == 1)
-                  .toList()
-                  .length;
-              if (wordsToBuild[index].translationList.isNotEmpty) {
-                translation = isInDictionary > 0
-                    ? wordsToBuild[index]
+        child: Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Scrollbar(
+            controller: _scrollController,
+            interactive: true,
+            radius: Radius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ListView.builder(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  itemCount: wordsToBuild.length,
+                  itemBuilder: (context, index) {
+                    var translation = '';
+                    final isInDictionary = wordsToBuild[index]
                         .translationList
                         .where((element) => element.isInDictionary == 1)
                         .toList()
-                        .first
-                        .translation
-                    : wordsToBuild[index].translationList.first.translation;
-              }
-              return GestureDetector(
-                onTap: () async {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  final result =
-                      await Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => WordsDetails(
-                                word: wordsToBuild[index],
-                              )));
-                  if (result != null && result == 'delete') {
-                    widget.editingController.text = '';
-                  }
-                  if (result != null && result == 'added') {
-                    widget.editingController.text = '';
-                  } else if (result != null) {
-                    if (result is WordEntity) {
-                      setState(() {
-                        wordsToBuild[index] = result;
-                      });
-                    } else if (result is Map) {
-                      if (result.values.first == 'sendToLearnt' && isNew) {
-                        setState(() {
-                          wordsToBuild[index] = result.keys.first;
-                          wordsToBuild.remove(result.keys.first);
-                        });
-                      }
-                      if (result.values.first == 'sendToLearnt' && isLearning) {
-                        setState(() {
-                          wordsToBuild[index] = result.keys.first;
-                          wordsToBuild.remove(result.keys.first);
-                        });
-                      }
-                      if (result.values.first == 'sendToLearnt' && isLearnt) {
-                        setState(() {
-                          wordsToBuild[index] = result.keys.first;
-                        });
-                      }
-                      if (result.values.first == 'sendToLearning' && isNew) {
-                        setState(() {
-                          wordsToBuild[index] = result.keys.first;
-                          wordsToBuild.remove(result.keys.first);
-                        });
-                      }
-                      if (result.values.first == 'sendToLearning' &&
-                          isLearning) {
-                        setState(() {
-                          wordsToBuild[index] = result.keys.first;
-                        });
-                      }
-                      if (result.values.first == 'sendToLearning' && isLearnt) {
-                        setState(() {
-                          wordsToBuild[index] = result.keys.first;
-                          wordsToBuild.remove(result.keys.first);
-                        });
-                      }
+                        .length;
+                    if (wordsToBuild[index].translationList.isNotEmpty) {
+                      translation = isInDictionary > 0
+                          ? wordsToBuild[index]
+                              .translationList
+                              .where((element) => element.isInDictionary == 1)
+                              .toList()
+                              .first
+                              .translation
+                          : wordsToBuild[index]
+                              .translationList
+                              .first
+                              .translation;
                     }
-                  }
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
+                    return GestureDetector(
+                      onTap: () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        final result =
+                            await Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => WordsDetails(
+                                      word: wordsToBuild[index],
+                                    )));
+                        if (result != null && result == 'delete') {
+                          widget.editingController.text = '';
+                        }
+                        if (result != null && result == 'added') {
+                          widget.editingController.text = '';
+                        } else if (result != null) {
+                          if (result is WordEntity) {
+                            setState(() {
+                              wordsToBuild[index] = result;
+                            });
+                          } else if (result is Map) {
+                            if (result.values.first == 'sendToLearnt' &&
+                                isNew) {
+                              setState(() {
+                                wordsToBuild[index] = result.keys.first;
+                                wordsToBuild.remove(result.keys.first);
+                              });
+                            }
+                            if (result.values.first == 'sendToLearnt' &&
+                                isLearning) {
+                              setState(() {
+                                wordsToBuild[index] = result.keys.first;
+                                wordsToBuild.remove(result.keys.first);
+                              });
+                            }
+                            if (result.values.first == 'sendToLearnt' &&
+                                isLearnt) {
+                              setState(() {
+                                wordsToBuild[index] = result.keys.first;
+                              });
+                            }
+                            if (result.values.first == 'sendToLearning' &&
+                                isNew) {
+                              setState(() {
+                                wordsToBuild[index] = result.keys.first;
+                                wordsToBuild.remove(result.keys.first);
+                              });
+                            }
+                            if (result.values.first == 'sendToLearning' &&
+                                isLearning) {
+                              setState(() {
+                                wordsToBuild[index] = result.keys.first;
+                              });
+                            }
+                            if (result.values.first == 'sendToLearning' &&
+                                isLearnt) {
+                              setState(() {
+                                wordsToBuild[index] = result.keys.first;
+                                wordsToBuild.remove(result.keys.first);
+                              });
+                            }
+                          }
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ListTile(
-                            title: Text(
-                                "${wordsToBuild[index].source} - $translation"),
-                          ),
-                          Image.asset(
-                            'assets/icons/divider.png',
-                            width: 15,
-                            height: 15,
+                          Expanded(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                      "${wordsToBuild[index].source} - $translation"),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16),
+                                  child: Image.asset(
+                                    'assets/icons/divider.png',
+                                    width: 15,
+                                    height: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }),
+                    );
+                  }),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -344,7 +373,7 @@ class _WordsListState extends State<WordsList> {
           ),
           content: isInternetConnected
               ? SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: BlocBuilder<WordsBloc, WordsState>(
                       builder: (context, state) {
                     if (state is WordsEmpty) {

@@ -15,7 +15,7 @@ class _WordsDetailsState extends State<WordsDetails> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPope) {
+      onPopInvokedWithResult: (didPope, _) {
         if (!didPope) {
           Navigator.of(context).pop(widget.word);
         }

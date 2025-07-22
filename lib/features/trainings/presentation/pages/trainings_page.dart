@@ -12,12 +12,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/repeating_in_p
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_card.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
-import '../../../../service_locator.dart';
-import '../manager/provider/combo_training_session.dart';
 import 'cards_in_process_page.dart';
 import 'dictant_in_process_page.dart';
 import 'matching_in_process_page.dart';
@@ -147,20 +142,14 @@ class _TrainingsPageState extends State<TrainingsPage>
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final safePadding = MediaQuery.paddingOf(context).top;
     var width = size.width;
     var height = size.height;
     var comboHeight;
     height -= kToolbarHeight;
     if (widget.setName.isEmpty) {
       height -= 80; // default NavigationBarThemeData.height
-      //height -= 150;
     }
-    //height -= safePadding;
-    //minus currently learning
     height -= 50;
-    //height -= 50;
-    //height -= widget.setId.isEmpty ? 150 : 0;
     height -= !widget.isTodayCompleted ? 50 : 0;
     if (widget.setId.isEmpty) {
       comboHeight = height / 4;
@@ -169,9 +158,9 @@ class _TrainingsPageState extends State<TrainingsPage>
     Duration timeLeft =
         Duration(minutes: widget.goal) - (timeOnApp + sessionTime);
     var aspectRatio = (width / 2) / (height / 3);
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
           child: SizedBox(
               height: MediaQuery.of(context).size.height,
               child:

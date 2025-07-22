@@ -21,7 +21,7 @@ class TrainingLoading extends TrainingsState {}
 
 class WTTrainingLoaded extends TrainingsState {
   final List<WTTrainingEntity> words;
-  String setId;
+  final String setId;
 
   WTTrainingLoaded({required this.words, this.setId = ''});
 
@@ -31,7 +31,7 @@ class WTTrainingLoaded extends TrainingsState {
 
 class TWTrainingLoaded extends TrainingsState {
   final List<TWTrainingEntity> words;
-  String setId;
+  final String setId;
 
   TWTrainingLoaded({required this.words, this.setId = ''});
 
@@ -41,7 +41,7 @@ class TWTrainingLoaded extends TrainingsState {
 
 class RepeatingTrainingLoaded extends TrainingsState {
   final List<RepeatingTrainingEntity> words;
-  String setId;
+  final String setId;
 
   RepeatingTrainingLoaded({required this.words, this.setId = ''});
 
@@ -51,7 +51,7 @@ class RepeatingTrainingLoaded extends TrainingsState {
 
 class CardsTrainingLoaded extends TrainingsState {
   final List<CardsTrainingEntity> words;
-  String setId;
+  final String setId;
 
   CardsTrainingLoaded({required this.words, this.setId = ''});
 
@@ -70,7 +70,7 @@ class ComboTrainingLoaded extends TrainingsState {
 
 class DictantTrainingLoaded extends TrainingsState {
   final List<DictantTrainingEntity> words;
-  String setId;
+  final String setId;
 
   DictantTrainingLoaded({required this.words, this.setId = ''});
 
@@ -80,7 +80,7 @@ class DictantTrainingLoaded extends TrainingsState {
 
 class MatchingTrainingLoaded extends TrainingsState {
   final List<MatchingTrainingEntity> words;
-  String setId;
+  final String setId;
 
   MatchingTrainingLoaded({required this.words, this.setId = ''});
 

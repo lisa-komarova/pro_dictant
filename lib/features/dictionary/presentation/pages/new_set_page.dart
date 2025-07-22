@@ -49,7 +49,7 @@ class _NewSetPageState extends State<NewSetPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false, // prevent back
-      onPopInvoked: (bool didPop) async {
+      onPopInvokedWithResult: (bool didPop, _) async {
         // This can be async and you can check your condition
         if (!didPop) {
           final backNavigationAllowed = await showDialog<bool>(
@@ -382,7 +382,8 @@ class _NewSetPageState extends State<NewSetPage> {
 
   Widget buildWordsList() {
     return Container(
-      color: isSearchShown ? const Color(0xFF0E3311).withOpacity(0.4) : null,
+      color:
+          isSearchShown ? const Color(0xFF0E3311).withValues(alpha: 0.4) : null,
       height: double.infinity,
       child: ListView.builder(
           scrollDirection: Axis.vertical,
