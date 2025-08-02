@@ -345,7 +345,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<RepeatingTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.id  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isRepeated =0 and words_translations.isCards =1  and words_translations.isTW =1 and words_translations.isWT =1  and words_translations.isMatching =1  and words_translations.isDictant =1  ORDER by random()''');
+          '''select word.source, words_translations.id, words_translations.translation  from word join words_translations on word.id = words_translations.word_id where words_translations.isInDictionary =1 and words_translations.isRepeated =0 and words_translations.isCards =1  and words_translations.isTW =1 and words_translations.isWT =1  and words_translations.isMatching =1  and words_translations.isDictant =1  ORDER by random()''');
 
       words = maps.map((map) => RepeatingTrainingModel.fromJson(map)).toList();
       return words;

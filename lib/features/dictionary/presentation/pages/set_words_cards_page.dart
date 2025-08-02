@@ -401,7 +401,7 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
-                foregroundColor: const Color(0xFFB70E0E),
+                foregroundColor: toDelete ? const Color(0xFFB70E0E) : null,
               ),
               child: Text(
                   toDelete ? S.of(context).removeWord : S.of(context).addWord),
@@ -429,6 +429,7 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: toDelete ? null : const Color(0xFFB70E0E),
               ),
               child: Text(S.of(context).cancel),
               onPressed: () {
@@ -467,7 +468,6 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
-                foregroundColor: const Color(0xFFB70E0E),
               ),
               child: Text(S.of(context).yes),
               onPressed: () {
@@ -488,6 +488,7 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
               ),
               child: Text(S.of(context).cancel),
               onPressed: () {
@@ -513,7 +514,6 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
-                foregroundColor: const Color(0xFFB70E0E),
               ),
               child: Text(S.of(context).yes),
               onPressed: () {
@@ -538,6 +538,7 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
               ),
               child: Text(S.of(context).cancel),
               onPressed: () {

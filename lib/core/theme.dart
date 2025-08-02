@@ -24,8 +24,8 @@ final appTheme = ThemeData(
     bodyLarge: TextStyle(fontFamily: 'Hachi Maru Pop'),
   ),
   navigationBarTheme: NavigationBarThemeData(
-    labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
-      (Set<MaterialState> states) => states.contains(MaterialState.selected)
+    labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+      (Set<WidgetState> states) => states.contains(WidgetState.selected)
           ? const TextStyle(
               color: Color(0xFF243120),
               fontSize: 12,

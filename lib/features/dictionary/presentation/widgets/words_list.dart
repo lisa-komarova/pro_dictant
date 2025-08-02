@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -26,22 +28,17 @@ class WordsList extends StatefulWidget {
 class _WordsListState extends State<WordsList> {
   late bool isInternetConnected;
   final ScrollController _scrollController = ScrollController();
+  late final StreamSubscription<InternetStatus> _internetSubscription;
+
   @override
   void initState() {
     checkInternet();
-    InternetConnection().onStatusChange.listen((InternetStatus status) {
-      switch (status) {
-        case InternetStatus.connected:
-          setState(() {
-            isInternetConnected = true;
-          });
-          break;
-        case InternetStatus.disconnected:
-          setState(() {
-            isInternetConnected = false;
-          });
-          break;
-      }
+    _internetSubscription =
+        InternetConnection().onStatusChange.listen((status) {
+      if (!mounted) return;
+      setState(() {
+        isInternetConnected = status == InternetStatus.connected;
+      });
     });
     super.initState();
   }
@@ -49,6 +46,7 @@ class _WordsListState extends State<WordsList> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _internetSubscription.cancel();
     super.dispose();
   }
 

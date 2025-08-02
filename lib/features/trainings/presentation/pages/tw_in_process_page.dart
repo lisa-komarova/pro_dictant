@@ -7,7 +7,7 @@ import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entit
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
-import 'package:pro_dictant/features/trainings/presentation/pages/tw_result_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/answer_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -242,25 +242,57 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
           return;
         }
       } else {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (ctx) => TWResultPage(
-                  answers: answers,
-                  words: words,
-                  setId: widget.setId,
-                )));
+        List<(String, String, String?)> answersToSend = [];
         List<String> toUpdate = [];
-        answers.forEach((key, value) async {
-          String correctAnswer =
-              words.where((element) => element.id == key).toList().first.source;
+
+        for (var entry in answers.entries) {
+          final key = entry.key;
+          final value = entry.value;
+
+          final word = words.firstWhere((element) => element.id == key);
+          final String translation = word.translation;
+          final String correctAnswer = word.source;
+          String? wrongAnswer;
+
           if (correctAnswer == value) {
             toUpdate.add(key);
-            await pool.play(correctSoundId);
           } else {
-            await pool.play(wrongSoundId);
+            wrongAnswer = value;
           }
-        });
+
+          answersToSend.add((translation, correctAnswer, wrongAnswer));
+        }
         BlocProvider.of<TrainingsBloc>(context)
             .add(UpdateWordsForTwTRainings(toUpdate));
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) {
+              final safeContext = ctx;
+              return TrainingResultListPage(
+                answers: answersToSend,
+                onPressed: () {
+                  final bloc = BlocProvider.of<TrainingsBloc>(safeContext);
+
+                  if (widget.setId.isNotEmpty) {
+                    bloc.add(FetchSetWordsForTwTRainings(widget.setId));
+                    Navigator.of(safeContext).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (ctx) => TWInProcessPage(setId: widget.setId),
+                      ),
+                    );
+                  } else {
+                    bloc.add(const FetchWordsForTwTRainings());
+                    Navigator.of(safeContext).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (ctx) => const TWInProcessPage(setId: ''),
+                      ),
+                    );
+                  }
+                },
+              );
+            },
+          ),
+        );
         return;
       }
     }

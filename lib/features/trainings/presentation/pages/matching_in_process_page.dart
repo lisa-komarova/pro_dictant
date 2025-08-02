@@ -6,6 +6,7 @@ import 'package:pro_dictant/features/trainings/domain/entities/matching_training
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
 
@@ -47,7 +48,12 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   List<MatchingTrainingEntity> wordsList = [];
   List<MatchingTrainingEntity> currentWordsList = [];
   List<MatchingTrainingEntity> currentTranslationList = [];
-  List<MatchingTrainingEntity> mistakes = [];
+  List<
+      (
+        MatchingTrainingEntity word,
+        List<String> wrongChoices,
+        bool isSourceChosen
+      )> mistakes = [];
   int numberOfAdsShown = 0;
   late int correctSoundId;
   late int wrongSoundId;
@@ -198,7 +204,12 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                 child: OutlinedButton(
                   onPressed: () async {
                     List<MatchingTrainingEntity> correctAnswerstoSend = [];
-                    List<MatchingTrainingEntity> mistakesToSend = [];
+                    List<
+                        (
+                          MatchingTrainingEntity word,
+                          List<String> wrongChoices,
+                          bool isSourceChosen
+                        )> mistakesToSend = [];
                     if (correctAnswers.contains(words[index])) {
                       return;
                     } else if (isTranslationChosenWrong) {
@@ -279,19 +290,44 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                               wordsList.isEmpty &&
                                   correctAnswers.length % 5 == 0) {
                             correctAnswerstoSend.addAll(correctAnswers);
-                            correctAnswerstoSend.removeWhere(
-                                (element) => mistakes.contains(element));
+                            correctAnswerstoSend.removeWhere((element) =>
+                                mistakes.any((e) => e.$1 == element));
                             mistakesToSend.addAll(mistakes);
                             final uniqueSources = <String>{};
                             mistakesToSend.removeWhere(
-                                (item) => !uniqueSources.add(item.source));
-                            Navigator.of(context)
-                                .pushReplacement(MaterialPageRoute(
-                                    builder: (ctx) => MatchingResultPage(
-                                          correctAnswers: correctAnswerstoSend,
-                                          mistakes: mistakesToSend,
-                                          setId: widget.setId,
-                                        )));
+                                (item) => !uniqueSources.add(item.$1.source));
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (ctx) => TrainingResultListPage(
+                                  answers:
+                                      prepareAnswers(correctAnswers, mistakes),
+                                  onPressed: () {
+                                    if (widget.setId.isNotEmpty) {
+                                      BlocProvider.of<TrainingsBloc>(ctx).add(
+                                          FetchSetWordsForMatchingTRainings(
+                                              widget.setId));
+                                      Navigator.of(ctx).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              MatchingInProcessPage(
+                                                  setId: widget.setId),
+                                        ),
+                                      );
+                                    } else {
+                                      BlocProvider.of<TrainingsBloc>(ctx).add(
+                                          const FetchWordsForMatchingTRainings());
+                                      Navigator.of(ctx).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              const MatchingInProcessPage(
+                                                  setId: ''),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
                             BlocProvider.of<TrainingsBloc>(context).add(
                                 UpdateWordsForMatchingTRainings(
                                     correctAnswerstoSend));
@@ -303,7 +339,20 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                         isWordChosen = false;
                         isWordChosenWrong = true;
                         currentAnswer.remove(words[index]);
-                        mistakes.add(words[index]);
+                        final alreadyInMistakes =
+                            mistakes.any((e) => e.$1 == currentAnswer[0]);
+
+                        if (!alreadyInMistakes) {
+                          mistakes.add((
+                            currentAnswer[0],
+                            [words[index].source],
+                            false
+                          )); // true → выбран source (слово)
+                        } else {
+                          final indexInMistakes = mistakes
+                              .indexWhere((e) => e.$1 == currentAnswer[0]);
+                          mistakes[indexInMistakes].$2.add(words[index].source);
+                        }
                         colors.replaceRange(0, 5, [
                           Colors.white,
                           Colors.white,
@@ -375,7 +424,12 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                 child: OutlinedButton(
                   onPressed: () async {
                     List<MatchingTrainingEntity> correctAnswerstoSend = [];
-                    List<MatchingTrainingEntity> mistakesToSend = [];
+                    List<
+                        (
+                          MatchingTrainingEntity word,
+                          List<String> wrongChoices,
+                          bool isSourceChosen
+                        )> mistakesToSend = [];
                     if (correctAnswers.contains(words[index])) {
                       return;
                     } else if (isWordChosenWrong) {
@@ -456,19 +510,44 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                               wordsList.isEmpty &&
                                   correctAnswers.length % 5 == 0) {
                             correctAnswerstoSend.addAll(correctAnswers);
-                            correctAnswerstoSend.removeWhere(
-                                (element) => mistakes.contains(element));
+                            correctAnswerstoSend.removeWhere((element) =>
+                                mistakes.any((e) => e.$1 == element));
                             mistakesToSend.addAll(mistakes);
                             final uniqueSources = <String>{};
                             mistakesToSend.removeWhere(
-                                (item) => !uniqueSources.add(item.source));
-                            Navigator.of(context)
-                                .pushReplacement(MaterialPageRoute(
-                                    builder: (ctx) => MatchingResultPage(
-                                          correctAnswers: correctAnswerstoSend,
-                                          mistakes: mistakesToSend,
-                                          setId: widget.setId,
-                                        )));
+                                (item) => !uniqueSources.add(item.$1.source));
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (ctx) => TrainingResultListPage(
+                                  answers:
+                                      prepareAnswers(correctAnswers, mistakes),
+                                  onPressed: () {
+                                    if (widget.setId.isNotEmpty) {
+                                      BlocProvider.of<TrainingsBloc>(ctx).add(
+                                          FetchSetWordsForMatchingTRainings(
+                                              widget.setId));
+                                      Navigator.of(ctx).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              MatchingInProcessPage(
+                                                  setId: widget.setId),
+                                        ),
+                                      );
+                                    } else {
+                                      BlocProvider.of<TrainingsBloc>(ctx).add(
+                                          const FetchWordsForMatchingTRainings());
+                                      Navigator.of(ctx).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              const MatchingInProcessPage(
+                                                  setId: ''),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
                             BlocProvider.of<TrainingsBloc>(context).add(
                                 UpdateWordsForMatchingTRainings(
                                     correctAnswerstoSend));
@@ -480,7 +559,23 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                         isTranslationChosen = false;
                         isTranslationChosenWrong = true;
                         currentAnswer.remove(words[index]);
-                        mistakes.add(words[index]);
+                        final alreadyInMistakes =
+                            mistakes.any((e) => e.$1 == currentAnswer[0]);
+
+                        if (!alreadyInMistakes) {
+                          mistakes.add((
+                            currentAnswer[0],
+                            [words[index].translation],
+                            true
+                          )); // false → выбран translation
+                        } else {
+                          final indexInMistakes = mistakes
+                              .indexWhere((e) => e.$1 == currentAnswer[0]);
+                          mistakes[indexInMistakes]
+                              .$2
+                              .add(words[index].translation);
+                        }
+
                         colors.replaceRange(5, 10, [
                           Colors.white,
                           Colors.white,
@@ -555,4 +650,38 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
       return pool.load(soundData);
     });
   }
+}
+
+List<(String source, String translation, String? wrongAnswer)> prepareAnswers(
+  List<MatchingTrainingEntity> correctAnswers,
+  List<
+          (
+            MatchingTrainingEntity word,
+            List<String> wrongChoices,
+            bool isSourceChosen
+          )>
+      mistakes,
+) {
+  return correctAnswers.map((correct) {
+    final matchingMistakes = mistakes.where((e) => e.$1 == correct);
+
+    if (matchingMistakes.isNotEmpty) {
+      final mistake = matchingMistakes.first;
+      final word = mistake.$1;
+      final wrongChoices = mistake.$2;
+      final isSource = mistake.$3;
+
+      return (
+        isSource ? word.source : word.translation,
+        isSource ? word.translation : word.source,
+        wrongChoices.isNotEmpty ? wrongChoices.join(', ') : null,
+      );
+    } else {
+      return (
+        correct.source,
+        correct.translation,
+        null,
+      );
+    }
+  }).toList();
 }

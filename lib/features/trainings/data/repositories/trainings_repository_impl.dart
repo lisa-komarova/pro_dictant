@@ -215,15 +215,16 @@ class TrainingsRepositoryImpl extends TrainingsRepository {
       RepeatingTrainingModel model = RepeatingTrainingModel(
         id: element.id,
         source: element.source,
+        translation: element.translation,
       );
       mistakesModels.add(model);
     }
     List<RepeatingTrainingModel> correctAnswersModels = [];
     for (var element in correctAnswers) {
       RepeatingTrainingModel model = RepeatingTrainingModel(
-        id: element.id,
-        source: element.source,
-      );
+          id: element.id,
+          source: element.source,
+          translation: element.translation);
       correctAnswersModels.add(model);
     }
     try {

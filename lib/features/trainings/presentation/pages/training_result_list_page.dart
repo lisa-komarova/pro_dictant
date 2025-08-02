@@ -8,16 +8,14 @@ import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_
 import 'package:pro_dictant/features/trainings/presentation/widgets/continue_training_button.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/training_list_result_block_widget.dart';
 
-class TWResultPage extends StatelessWidget {
-  final Map<String, String> answers;
-  final List<TWTrainingEntity> words;
-  final String setId;
+class TrainingResultListPage extends StatelessWidget {
+  final List<(String source, String translation, String? wrongAnswer)> answers;
+  final VoidCallback onPressed;
 
-  const TWResultPage({
+  const TrainingResultListPage({
     super.key,
     required this.answers,
-    required this.words,
-    required this.setId,
+    required this.onPressed,
   });
 
   @override
@@ -56,25 +54,7 @@ class TWResultPage extends StatelessWidget {
               ),
             ),
           ),
-          ContinueTrainingButton(
-            onPressed: () {
-              if (setId.isNotEmpty) {
-                BlocProvider.of<TrainingsBloc>(context)
-                    .add(FetchSetWordsForTwTRainings(setId));
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (ctx) => TWInProcessPage(
-                          setId: setId,
-                        )));
-              } else {
-                BlocProvider.of<TrainingsBloc>(context)
-                    .add(const FetchWordsForTwTRainings());
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (ctx) => const TWInProcessPage(
-                          setId: '',
-                        )));
-              }
-            },
-          ),
+          ContinueTrainingButton(onPressed: onPressed),
         ],
       )),
     );
@@ -83,19 +63,12 @@ class TWResultPage extends StatelessWidget {
   List<Widget> buildAnswers() {
     List<Widget> answersWidgets = [];
 
-    answers.forEach((key, value) {
-      String correctAnswer =
-          words.where((element) => element.id == key).toList().first.source;
-      String translation = words
-          .where((element) => element.id == key)
-          .toList()
-          .first
-          .translation;
+    answers.forEach((element) {
       answersWidgets.add(
         TrainingListResultBlockWidget(
-          source: translation,
-          correctAnswer: correctAnswer,
-          answer: value,
+          source: element.$1,
+          correctAnswer: element.$2,
+          answer: element.$3,
         ),
       );
     });

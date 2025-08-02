@@ -50,7 +50,7 @@ class _DictionaryPageState extends State<DictionaryPage> {
                           builder: (ctx) => const UserSetPage()));
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFd9c3ac),
+                      backgroundColor: const Color(0xffd9c3ac),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),

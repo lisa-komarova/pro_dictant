@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
-import 'package:pro_dictant/features/trainings/presentation/pages/dictant_result_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,7 +43,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   bool isHintSelected = false;
   List<DictantTrainingEntity> words = [];
   List<DictantTrainingEntity> correctAnswers = [];
-  List<DictantTrainingEntity> mistakes = [];
+  List<(DictantTrainingEntity, String? mistake)> mistakes = [];
   List<String> suggestedLetters = [];
   Color focusBorderColor = const Color(0xff5e6b5a);
   final wordController = TextEditingController();
@@ -207,8 +207,8 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                         .source
                                         .toLowerCase()
                                         .replaceAll(' ', '')) {
-                                  if (!mistakes
-                                      .contains(words[currentWordIndex])) {
+                                  if (!mistakes.any((e) =>
+                                      e.$1.id == words[currentWordIndex].id)) {
                                     await pool.play(correctSoundId);
                                     if (widget.isCombo) {
                                       session.addCorrect('dictantTraining', (
@@ -237,7 +237,12 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                       session.addDictantWrong(
                                           words[currentWordIndex]);
                                     }
-                                    mistakes.add(words[currentWordIndex]);
+                                    mistakes.add((
+                                      words[currentWordIndex],
+                                      wordController.text
+                                          .toLowerCase()
+                                          .replaceAll(' ', '')
+                                    ));
                                     updateCurrentWord();
                                   }
                                   wordController.text = '';
@@ -364,19 +369,85 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           return;
         }
       } else {
-        final wordsSet = correctAnswers.map((e) => e.id).toSet();
-        Set<String> mistakesSet = mistakes.map((e) => e.id).toSet();
-        correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
-        mistakes.retainWhere((element) => mistakesSet.remove(element.id));
-        mistakesSet = mistakes.map((e) => e.id).toSet();
-        correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
+        final correctIds = correctAnswers.map((e) => e.id).toSet();
+        final mistakeIds = mistakes.map((e) => e.$1.id).toSet();
 
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (ctx) => DictantResultPage(
-                  correctAnswers: correctAnswers,
-                  mistakes: mistakes,
-                  setId: widget.setId,
-                )));
+        final filteredCorrect =
+            correctAnswers.where((e) => !mistakeIds.contains(e.id)).toList();
+
+        final filteredMistakes =
+            mistakes.where((e) => !correctIds.contains(e.$1.id)).toList();
+
+        final answers = [
+          ...filteredMistakes.map((e) {
+            final possibleMistake = e.$2 ?? '';
+            return (
+              e.$1.translation,
+              e.$1.source,
+              possibleMistake.isEmpty ? "—" : possibleMistake
+            );
+          }),
+          ...filteredCorrect.map((e) => (e.translation, e.source, null)),
+        ];
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) => TrainingResultListPage(
+              answers: answers,
+              onPressed: () {
+                if (widget.setId.isNotEmpty) {
+                  BlocProvider.of<TrainingsBloc>(ctx)
+                      .add(FetchSetWordsForDictantTRainings(widget.setId));
+                  Navigator.of(ctx).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (ctx) =>
+                          DictantInProcessPage(setId: widget.setId),
+                    ),
+                  );
+                } else {
+                  BlocProvider.of<TrainingsBloc>(ctx)
+                      .add(const FetchWordsForDictantTRainings());
+                  Navigator.of(ctx).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (ctx) => const DictantInProcessPage(setId: ''),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+        );
+
+        // final wordsSet = correctAnswers.map((e) => e.id).toSet();
+        // Set<String> mistakesSet = mistakes.map((e) => e.$1.id).toSet();
+        // correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
+        // mistakes.retainWhere((element) => mistakesSet.remove(element.$1.id));
+        // mistakesSet = mistakes.map((e) => e.$1.id).toSet();
+        // correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
+
+        /* Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (ctx) => TrainingResultListPage(
+                answers: answers,
+                onPressed: () {
+                  if (widget.setId.isNotEmpty) {
+                    BlocProvider.of<TrainingsBloc>(ctx)
+                        .add(FetchSetWordsForDictantTRainings(widget.setId));
+                    Navigator.of(ctx).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (ctx) =>
+                            DictantInProcessPage(setId: widget.setId),
+                      ),
+                    );
+                  } else {
+                    BlocProvider.of<TrainingsBloc>(ctx)
+                        .add(const FetchWordsForDictantTRainings());
+                    Navigator.of(ctx).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (ctx) => const DictantInProcessPage(setId: ''),
+                      ),
+                    );
+                  }
+                })));*/
         BlocProvider.of<TrainingsBloc>(context)
             .add(UpdateWordsForDictantTRainings(correctAnswers));
         return;
@@ -503,7 +574,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               });
               if (currentLetterIndex == correctAnswer.length) {
                 updateCurrentWord();
-                if (!mistakes.contains(word)) {
+                if (!mistakes.any((e) => e.$1.id == word.id)) {
                   if (widget.isCombo) {
                     session.addCorrect('dictantTraining', (
                       words[currentWordIndex].source,
@@ -526,7 +597,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               });
 
               if (attempts == maxAttempts) {
-                mistakes.add(word);
+                mistakes.add((word, null));
                 if (widget.isCombo) {
                   session.addDictantWrong(word);
                 }

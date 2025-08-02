@@ -5,7 +5,8 @@ import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entit
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
-import 'package:pro_dictant/features/trainings/presentation/widgets/wt_result_block_widget.dart';
+import 'package:pro_dictant/features/trainings/presentation/widgets/continue_training_button.dart';
+import 'package:pro_dictant/features/trainings/presentation/widgets/training_list_result_block_widget.dart';
 
 class WTResultPage extends StatelessWidget {
   final Map<String, String> answers;
@@ -51,41 +52,23 @@ class WTResultPage extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GestureDetector(
-              onTap: () {
-                if (setId.isNotEmpty) {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(FetchSetWordsForWtTRainings(setId));
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => WTInProcessPage(
-                            setId: setId,
-                          )));
-                } else {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(const FetchWordsForWtTRainings());
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) => const WTInProcessPage(
-                            setId: '',
-                          )));
-                }
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 50,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                    color: const Color(0xFFD9C3AC),
-                    borderRadius: BorderRadius.circular(16)),
-                child: Text(
-                  S.of(context).continueTraining,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-            ),
-          ),
+          ContinueTrainingButton(onPressed: () {
+            if (setId.isNotEmpty) {
+              BlocProvider.of<TrainingsBloc>(context)
+                  .add(FetchSetWordsForWtTRainings(setId));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (ctx) => WTInProcessPage(
+                        setId: setId,
+                      )));
+            } else {
+              BlocProvider.of<TrainingsBloc>(context)
+                  .add(const FetchWordsForWtTRainings());
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (ctx) => const WTInProcessPage(
+                        setId: '',
+                      )));
+            }
+          })
         ],
       )),
     );
@@ -103,7 +86,7 @@ class WTResultPage extends StatelessWidget {
       String source =
           words.where((element) => element.id == key).toList().first.source;
       answersWidgets.add(
-        WTResultBlockWidget(
+        TrainingListResultBlockWidget(
           source: source,
           correctAnswer: correctAnswer,
           answer: value,

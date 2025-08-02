@@ -8,6 +8,7 @@ import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entit
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_result_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/answer_button.dart';
@@ -258,28 +259,55 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
           return;
         }
       } else {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (ctx) => WTResultPage(
-                  answers: answers,
-                  words: words,
-                  setId: widget.setId,
-                )));
+        List<(String, String, String?)> answersToSend = [];
         List<String> toUpdate = [];
-        answers.forEach((key, value) async {
-          String correctAnswer = words
-              .where((element) => element.id == key)
-              .toList()
-              .first
-              .translation;
+
+        for (var entry in answers.entries) {
+          final key = entry.key;
+          final value = entry.value;
+
+          final word = words.firstWhere((element) => element.id == key);
+          final String wordSource = word.source;
+          final String correctAnswer = word.translation;
+          String? wrongAnswer;
+
           if (correctAnswer == value) {
             toUpdate.add(key);
-            await pool.play(correctSoundId);
           } else {
-            await pool.play(wrongSoundId);
+            wrongAnswer = value;
           }
-        });
+
+          answersToSend.add((wordSource, correctAnswer, wrongAnswer));
+        }
+
         BlocProvider.of<TrainingsBloc>(context)
             .add(UpdateWordsForWtTRainings(toUpdate));
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) {
+              final safeContext = ctx;
+              return TrainingResultListPage(
+                answers: answersToSend,
+                onPressed: () {
+                  final bloc = BlocProvider.of<TrainingsBloc>(safeContext);
+                  if (widget.setId.isNotEmpty) {
+                    bloc.add(FetchSetWordsForWtTRainings(widget.setId));
+                    Navigator.of(safeContext).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => WTInProcessPage(
+                              setId: widget.setId,
+                            )));
+                  } else {
+                    bloc.add(const FetchWordsForWtTRainings());
+                    Navigator.of(safeContext).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) => const WTInProcessPage(
+                              setId: '',
+                            )));
+                  }
+                },
+              );
+            },
+          ),
+        );
         return;
       }
     }

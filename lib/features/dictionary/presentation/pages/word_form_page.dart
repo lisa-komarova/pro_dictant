@@ -204,6 +204,13 @@ class _WordFormState extends State<WordForm> {
                                             },
                                           ),
                                           TextButton(
+                                            style: TextButton.styleFrom(
+                                              textStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelLarge,
+                                              foregroundColor:
+                                                  const Color(0xFFB70E0E),
+                                            ),
                                             child: Text(S.of(context).cancel),
                                             onPressed: () {
                                               Navigator.pop(context);
@@ -274,7 +281,6 @@ class _WordFormState extends State<WordForm> {
                       child: TextButton(
                         style: TextButton.styleFrom(
                           textStyle: Theme.of(context).textTheme.labelLarge,
-                          foregroundColor: const Color(0xFFB70E0E),
                         ),
                         child: widget.isNew
                             ? Text(S.of(context).add)
@@ -395,6 +401,7 @@ class _WordFormState extends State<WordForm> {
                       child: TextButton(
                         style: TextButton.styleFrom(
                           textStyle: Theme.of(context).textTheme.labelLarge,
+                          foregroundColor: const Color(0xFFB70E0E),
                         ),
                         child: Text(S.of(context).cancel),
                         onPressed: () {
@@ -508,7 +515,14 @@ class _WordFormState extends State<WordForm> {
                               },
                             ),
                             TextButton(
-                              child: Text(S.of(context).cancel),
+                              style: TextButton.styleFrom(
+                                textStyle:
+                                    Theme.of(context).textTheme.labelLarge,
+                                foregroundColor: const Color(0xFFB70E0E),
+                              ),
+                              child: Text(
+                                S.of(context).cancel,
+                              ),
                               onPressed: () {
                                 Navigator.pop(context);
                                 if (widget.isNew) {

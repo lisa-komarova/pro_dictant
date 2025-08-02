@@ -191,6 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
             TextButton(
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
+                foregroundColor: const Color(0xFFB70E0E),
               ),
               child: Text(S.of(context).cancel),
               onPressed: () {

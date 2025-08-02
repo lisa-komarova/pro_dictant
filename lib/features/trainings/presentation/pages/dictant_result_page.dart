@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/dictant_training_entity.dart';
+import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
-
-import '../manager/trainings_bloc/trainings_bloc.dart';
-import 'dictant_in_process_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/dictant_in_process_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/widgets/continue_training_button.dart';
 
 class DictantResultPage extends StatelessWidget {
   final List<DictantTrainingEntity> correctAnswers;
@@ -13,9 +13,9 @@ class DictantResultPage extends StatelessWidget {
   final String setId;
 
   const DictantResultPage({
+    super.key,
     required this.correctAnswers,
     required this.mistakes,
-    super.key,
     required this.setId,
   });
 
@@ -24,10 +24,9 @@ class DictantResultPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () {
-              return Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Image.asset('assets/icons/cancel.png'),
+        ),
         title: Padding(
           padding: const EdgeInsets.only(left: 10.0),
           child: Text(
@@ -36,158 +35,134 @@ class DictantResultPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
-          child: Column(
+      body: Column(
         children: [
           Expanded(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 5),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0x6BD9C3AC),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 50,
-                              child: Text(
-                                S.of(context).rightAnswers,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: correctAnswers.length,
-                                  itemBuilder: (ctx, index) {
-                                    return Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: SingleChildScrollView(
-                                            child: Text(
-                                              '${correctAnswers[index].source} - ${correctAnswers[index].translation}',
-                                              style: const TextStyle(
-                                                  color: Color(0xFF85977f)),
-                                            ),
-                                          ),
-                                        ),
-                                        Image.asset(
-                                          'assets/icons/divider.png',
-                                          width: 15,
-                                          height: 15,
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                            ),
-                          ],
-                        ),
-                      ),
+                  if (correctAnswers.isNotEmpty)
+                    ..._buildAnswerList(
+                      correctAnswers,
+                      const Color(0xFF85977f),
+                      false,
                     ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 5),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0x6BD9C3AC),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 50,
-                              child: Text(
-                                S.of(context).mistakes,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: mistakes.length,
-                                  itemBuilder: (ctx, index) {
-                                    return Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: SingleChildScrollView(
-                                            child: Text(
-                                              '${mistakes[index].source} - ${mistakes[index].translation}',
-                                              style: const TextStyle(
-                                                  color: Color(0xFFB70E0E)),
-                                            ),
-                                          ),
-                                        ),
-                                        Image.asset(
-                                          'assets/icons/divider.png',
-                                          width: 15,
-                                          height: 15,
-                                        ),
-                                      ],
-                                    );
-                                  }),
-                            ),
-                          ],
-                        ),
-                      ),
+                  if (mistakes.isNotEmpty)
+                    ..._buildAnswerList(
+                      mistakes,
+                      const Color(0xFFB70E0E),
+                      true,
                     ),
-                  ),
                 ],
               ),
             ),
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  if (setId.isNotEmpty) {
-                    BlocProvider.of<TrainingsBloc>(context)
-                        .add(FetchSetWordsForDictantTRainings(setId));
-
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (ctx) => DictantInProcessPage(
-                              setId: setId,
-                            )));
-                  } else {
-                    BlocProvider.of<TrainingsBloc>(context)
-                        .add(const FetchWordsForDictantTRainings());
-
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (ctx) => const DictantInProcessPage(
-                              setId: '',
-                            )));
-                  }
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: 50,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: const Color(0xFFD9C3AC),
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Text(
-                    S.of(context).continueTraining,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium,
+          ContinueTrainingButton(
+            onPressed: () {
+              if (setId.isNotEmpty) {
+                BlocProvider.of<TrainingsBloc>(context)
+                    .add(FetchSetWordsForDictantTRainings(setId));
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (ctx) => DictantInProcessPage(setId: setId),
                   ),
+                );
+              } else {
+                BlocProvider.of<TrainingsBloc>(context)
+                    .add(const FetchWordsForDictantTRainings());
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (ctx) => const DictantInProcessPage(setId: ''),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildAnswerList(
+    List<DictantTrainingEntity> list,
+    Color color,
+    bool isMistakes,
+  ) {
+    return list.map((e) {
+      return SizedBox(
+        height: 90,
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0x6BD9C3AC),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Flexible(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 10.0, bottom: 2),
+                                child: Text(
+                                  e.source,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10.0),
+                                child: Text(
+                                  e.translation,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    color: color,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: isMistakes
+                          ? Image.asset(
+                              'assets/icons/cancel.png',
+                              width: 15,
+                              height: 15,
+                              color: const Color(0xFFB70E0E),
+                            )
+                          : null,
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
-      )),
-    );
+            Image.asset(
+              'assets/icons/divider.png',
+              width: 15,
+              height: 15,
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 }
