@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
-import 'matching_result_page.dart';
+
 
 class MatchingInProcessPage extends StatefulWidget {
   final String setId;

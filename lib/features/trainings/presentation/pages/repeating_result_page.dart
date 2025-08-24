@@ -61,7 +61,15 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
     if (widget.mistakes.isNotEmpty) {
       tabs.add(Padding(
         padding: const EdgeInsets.only(bottom: 15.0),
-        child: Tab(text: S.of(context).newWords ),
+        child: Tab(
+          child: Text(
+            S.of(context).resetProgress,
+            style: TextStyle(
+                fontSize: widget.learnt.isNotEmpty || widget.learning.isNotEmpty
+                    ? 10
+                    : 15),
+          ),
+        ),
       ));
       tabViews.add(_buildAnswerList(widget.mistakes, const Color(0xFFB70E0E)));
     }
@@ -69,7 +77,16 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
     if (widget.learnt.isNotEmpty) {
       tabs.add(Padding(
         padding: const EdgeInsets.only(bottom: 15.0),
-        child: Tab(text: S.of(context).learnt),
+        child: Tab(
+          child: Text(
+            S.of(context).learnt,
+            style: TextStyle(
+                fontSize:
+                    widget.mistakes.isNotEmpty || widget.learning.isNotEmpty
+                        ? 10
+                        : 15),
+          ),
+        ),
       ));
       tabViews.add(_buildAnswerList(widget.learnt, const Color(0xFF85977f)));
     }
@@ -77,7 +94,17 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
     if (widget.learning.isNotEmpty) {
       tabs.add(Padding(
         padding: const EdgeInsets.only(bottom: 15.0),
-        child: Tab(text: S.of(context).learning),
+        child: Tab(
+          child: Text(
+            widget.learnt.isNotEmpty || widget.mistakes.isNotEmpty
+                ? S.of(context).learning
+                : S.of(context).leftLearning,
+            style: TextStyle(
+                fontSize: widget.learnt.isNotEmpty || widget.mistakes.isNotEmpty
+                    ? 10
+                    : 15),
+          ),
+        ),
       ));
       tabViews.add(_buildAnswerList(widget.learning, const Color(0xFFC0A183)));
     }
@@ -104,7 +131,7 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
                   clipBehavior: Clip.none,
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(top: 45),
+                      margin: const EdgeInsets.only(top: 55),
                       decoration: BoxDecoration(
                         color: const Color(0xFFD9C3AC),
                         borderRadius: BorderRadius.only(

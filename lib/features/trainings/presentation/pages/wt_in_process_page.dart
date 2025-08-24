@@ -10,7 +10,6 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
-import 'package:pro_dictant/features/trainings/presentation/pages/wt_result_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/answer_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soundpool/soundpool.dart';

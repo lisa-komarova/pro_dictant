@@ -48,7 +48,7 @@ class CardsResultPage extends StatelessWidget {
                     clipBehavior: Clip.none,
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(top: 45),
+                        margin: const EdgeInsets.only(top: 40),
                         decoration: BoxDecoration(
                           color: const Color(0xFFD9C3AC),
                           borderRadius: BorderRadius.circular(25),
@@ -94,14 +94,31 @@ class CardsResultPage extends StatelessWidget {
                             unselectedLabelColor: const Color(0xFFD9C3AC),
                             labelStyle: Theme.of(context).textTheme.titleMedium,
                             tabs: [
-                              if (correctAnswers.isNotEmpty) Padding(
-                                padding: const EdgeInsets.only(bottom: 15.0),
-                                child: Tab(text: S.of(context).rightAnswers),
-                              ),
-                              if (mistakes.isNotEmpty) Padding(
-                                padding: const EdgeInsets.only(bottom: 15.0),
-                                child: Tab(text: S.of(context).mistakes),
-                              ),
+                              if (correctAnswers.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 15.0),
+                                  child: Tab(
+                                    child: Text(
+                                      S.of(context).rightAnswers,
+                                      style: TextStyle(
+                                          fontSize:
+                                              mistakes.isNotEmpty ? 10 : 15),
+                                    ),
+                                  ),
+                                ),
+                              if (mistakes.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 15.0),
+                                  child: Tab(
+                                    child: Text(
+                                      S.of(context).mistakes,
+                                      style: TextStyle(
+                                          fontSize: correctAnswers.isNotEmpty
+                                              ? 10
+                                              : 15),
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),

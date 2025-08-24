@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -36,13 +38,9 @@ class TrainingsPage extends StatefulWidget {
 }
 
 class _TrainingsPageState extends State<TrainingsPage>
-    with TickerProviderStateMixin {
-  Ticker? _ticker;
+    with WidgetsBindingObserver {
   Duration timeOnApp = const Duration();
   Duration sessionTime = const Duration();
-  late final AppLifecycleListener _listener;
-  final List<String> _states = <String>[];
-  late AppLifecycleState? _state;
 
   // NetworkInfoImp networkInfo = NetworkInfoImp(InternetConnectionChecker());
   // bool isConnected = true;
@@ -53,90 +51,66 @@ class _TrainingsPageState extends State<TrainingsPage>
   //   checkInternet();
   //   super.didChangeDependencies();
   // }
+  Stopwatch? _stopwatch;
+  Timer? _timer;
 
   @override
   void initState() {
-    getTime();
-    getNumberOfAdsShown();
-    //checkInternet();
-    if (!widget.isTodayCompleted) {
-      _ticker = createTicker((elapsed) {
-        sessionTime = elapsed;
-        setState(() {
-          if ((timeOnApp + sessionTime) >= Duration(minutes: widget.goal)) {
-            BlocProvider.of<ProfileBloc>(context)
-                .add(UpdateDayStatistics(date: DateTime.now()));
-            BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
-            timeOnApp = const Duration();
-            sessionTime = const Duration();
-            widget.isTodayCompleted = true;
-            _ticker!.stop();
-          }
-        });
-      });
-      _ticker!.start();
-    }
-
     super.initState();
-    _state = SchedulerBinding.instance.lifecycleState;
-    // networkInfo.connectionChecker.onStatusChange
-    //     .listen((InternetConnectionStatus status) {
-    //   switch (status) {
-    //     case InternetConnectionStatus.connected:
-    //       setState(() {
-    //         isConnected = true;
-    //       });
-    //       break;
-    //     case InternetConnectionStatus.disconnected:
-    //       setState(() {
-    //         isConnected = false;
-    //       });
-    //       break;
-    //   }
-    // });
-    _listener = AppLifecycleListener(
-      onResume: () {
-        getTime();
-        _ticker?.start();
-      },
-      onInactive: () {
-        saveTime();
-        _ticker?.stop(canceled: false);
-      },
-      onHide: () => () {
-        saveTime();
-      },
-      onShow: () => () {
-        getTime();
-      },
-      onPause: () => () {
-        saveTime();
-      },
-      onDetach: () => () {
-        saveTime();
-      },
-      onRestart: () => () {
-        getTime();
-      },
-      onStateChange: _handleStateChange,
-    );
-    if (_state != null) {
-      _states.add(_state!.name);
+    WidgetsBinding.instance.addObserver(this);
+    getTime().then((_) {
+      if (!widget.isTodayCompleted) {
+        _startSession();
+      }
+    });
+    getNumberOfAdsShown();
+  }
+
+  void _startSession() {
+    _stopwatch = Stopwatch()..start();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {
+        sessionTime = _stopwatch?.elapsed ?? Duration.zero;
+        if ((timeOnApp + sessionTime) >= Duration(minutes: widget.goal)) {
+          BlocProvider.of<ProfileBloc>(context)
+              .add(UpdateDayStatistics(date: DateTime.now()));
+          BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
+
+          timeOnApp = Duration.zero;
+          sessionTime = Duration.zero;
+          widget.isTodayCompleted = true;
+
+          _stopwatch?.stop();
+          _timer?.cancel();
+        }
+      });
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _stopwatch?.stop();
+      sessionTime = _stopwatch?.elapsed ?? Duration.zero;
+      saveTime();
+    } else if (state == AppLifecycleState.resumed) {
+      if (!widget.isTodayCompleted) {
+        getTime().then((_) {
+          sessionTime = Duration.zero;
+          _startSession();
+        });
+      }
     }
   }
 
   @override
   void dispose() {
     saveTime();
-    _ticker?.dispose();
-    _listener.dispose();
+    _stopwatch?.stop();
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  void _handleStateChange(AppLifecycleState state) {
-    setState(() {
-      _state = state;
-    });
   }
 
   @override

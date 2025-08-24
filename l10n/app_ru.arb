@@ -17,7 +17,9 @@
   "add": "добавить",
   "cancel": "отмена",
   "new": "новые",
+  "resetProgress": "сброшен прогресс",
   "learning": "на\nизучении",
+  "leftLearning": "на изучении",
   "learnt": "изучены",
   "noWordsYet": "пока наборов слов нет ˙◠˙",
   "wordsAddedToDictionary": "слова добавлены в словарь!",
@@ -55,8 +57,8 @@
   "mistakesCount": "ошибок: {mistakes}",
   "correctAnswersCount": "ответов: {correctAnswersCount}",
   "endTrainings": "завершить тренировку",
-  "iKnowWontForget": "знаю \nне забуду",
-  "iKnowMightForget": "знаю\nно забываю",
+  "iKnowWontForget": "знаю,\nне забуду",
+  "iKnowMightForget": "знаю,\nмогу забыть",
   "iDontRemember": "не помню",
   "sentToLearning": "отправлено на изучение",
   "onLearning": "на повторении",
@@ -81,5 +83,5 @@
   "translateOnline" : "перевести в Yandex",
   "yandexSource" : "Powered by Yandex.Dictionary",
   "couldntTranslate" : "извините, не получилось перевести ˙◠˙",
-  "pass" : "пропустить"
+  "pass" : "пропуск"
 }
