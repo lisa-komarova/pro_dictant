@@ -1,16 +1,35 @@
-# pro_dictant
+# ProDictant
 
-A new Flutter project.
+**ProDictant** —  это приложение для изучения английского языка, которое помогает расширять словарный запас с помощью разнообразных тренировок
 
-## Getting Started
+[Приложение в google play ](https://play.google.com/store/apps/details?id=com.lvcorporation.pro_dictant)
 
-This project is a starting point for a Flutter application.
+## Цель проекта
+Предоставить набор упражнений для расширения словарного запаса с возможностью настройки учебной цели, отслеживания прогресса и ведения собственного словаря.
 
-A few resources to get you started if this is your first Flutter project:
+## Функциональность
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 1. Тренировки
+- **Слово → перевод** — выбрать правильный перевод на русский из четырёх вариантов.  
+- **Перевод → слово** — выбрать слово на английском по русскому переводу.  
+- **Соответствие** — сопоставить пары слово/перевод.  
+- **Карточки** — выбор между двумя вариантами.  
+- **Диктант** — ввести слово на английском с подсказками в виде блоков букв.  
+- **Повторение** — повторное проговаривание/просмотр ранее изученных слов для закрепления.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  ![](https://sun9-43.userapi.com/s/v1/ig2/rldUOfMrRITUu2oyN3j01MQzf92iymd7M4S3JNkh0QyJyvToNN0q_CikcQeX70wgVMbOi5d6tpZXVNN-ZAE23cQd.jpg?quality=95&as=32x33,48x49,72x74,108x110,160x163,240x245,360x368,480x490,540x552,640x654,720x735,1080x1103,1280x1308,1440x1471,1581x1615&from=bu&cs=1581x0)
+
+### 2. Цель обучения
+- Установка ежедневной цели по времени (10 / 15 / 30 минут).  
+- Отслеживание выполнения через статистику.
+
+  ![](https://sun9-15.userapi.com/s/v1/ig2/6cFx3uSCbzPKi6CsDoW2Ko--RptQm8xw-pJIP1e1i5M9XahiVC_jj-lHUCQAQ-2fOYYfYJ4KR3uzNVCdaStct0pH.jpg?quality=95&as=32x32,48x49,72x73,108x109,160x162,240x243,360x364,480x486,540x547,640x648,720x729,960x972&from=bu&cs=960x0)
+### 3. Личный словарь
+- Пользователь может добавлять свои слова для изучения и повторения.
+
+![](https://sun9-55.userapi.com/s/v1/ig2/dtz71xoxQPYHYQbFGAOT8iLtjOHcO3-u3rm6cRVlHRuAW8Cs5ORJriU7K_-o0WQ97ppaqrIFRaTyYCs4pkeWKhJF.jpg?quality=95&as=32x32,48x49,72x73,108x109,160x162,240x243,360x364,480x486,540x547,640x648,720x729,960x972&from=bu&cs=960x0)
+
+### 4. Готовые наборы
+- Преднастроенные словарные наборы по темам и уровням и возможность создания своих наборов.
+
+![](https://sun9-4.userapi.com/s/v1/if2/F6AeK8nEVr5VGKURgV8ajJPqTEKVZdtauUuf3SxSEODJJcpoSfYr7jIvKUIe7MHC01HSwzQhd4QGRSN_i-c6Yj1h.jpg?quality=95&as=32x22,48x33,72x50,108x75,160x111,240x166,360x249,480x332,540x374,640x443,720x498,1080x748,1280x886,1404x972&from=bu&cs=1404x0)
