@@ -62,61 +62,64 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   @override
   Widget build(BuildContext context) {
     final session = context.read<ComboTrainingSession>();
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              final session = context.read<ComboTrainingSession>();
-              session.reset();
-              return Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-      ),
-      body: BlocBuilder<TrainingsBloc, TrainingsState>(
-        builder: (context, state) {
-          if (state is TrainingEmpty) {
-            return Center(
-              child: Text(
-                S.of(context).notEnoughWords,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-            );
-          } else if (state is TrainingLoading) {
-            return _loadingIndicator();
-          } else if (state is DictantTrainingLoaded) {
-            if (words.isEmpty) {
-              words.addAll(state.words);
-            }
-            return _buildWordCard(words, session);
-          } else {
-            return const SizedBox();
-          }
-        },
-      ),
-      floatingActionButton: !isHintSelected
-          ? FloatingActionButton(
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
               onPressed: () {
-                wordController.text = '';
-                setState(() {
-                  attempts = 0;
-                  isHintSelected = true;
-                });
+                final session = context.read<ComboTrainingSession>();
+                session.reset();
+                return Navigator.of(context).pop();
               },
-              elevation: 0,
-              hoverElevation: 0,
-              focusElevation: 0,
-              highlightElevation: 0,
-              backgroundColor: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                    height: 35,
-                    width: 35,
-                    child: Image.asset('assets/icons/hint.png')),
-              ),
-            )
-          : null,
+              icon: Image.asset('assets/icons/cancel.png')),
+        ),
+        body: BlocBuilder<TrainingsBloc, TrainingsState>(
+          builder: (context, state) {
+            if (state is TrainingEmpty) {
+              return Center(
+                child: Text(
+                  S.of(context).notEnoughWords,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else if (state is TrainingLoading) {
+              return _loadingIndicator();
+            } else if (state is DictantTrainingLoaded) {
+              if (words.isEmpty) {
+                words.addAll(state.words);
+              }
+              return _buildWordCard(words, session);
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
+        floatingActionButton: !isHintSelected
+            ? FloatingActionButton(
+                onPressed: () {
+                  wordController.text = '';
+                  setState(() {
+                    attempts = 0;
+                    isHintSelected = true;
+                  });
+                },
+                elevation: 0,
+                hoverElevation: 0,
+                focusElevation: 0,
+                highlightElevation: 0,
+                backgroundColor: Colors.transparent,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                      height: 35,
+                      width: 35,
+                      child: Image.asset('assets/icons/hint.png')),
+                ),
+              )
+            : null,
+      ),
     );
   }
 

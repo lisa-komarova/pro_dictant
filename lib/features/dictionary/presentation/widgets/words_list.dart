@@ -135,9 +135,8 @@ class _WordsListState extends State<WordsList> {
                             onPressed: () {
                               BlocProvider.of<SetBloc>(context)
                                   .add(const LoadSets());
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (ctx) => const UserSetPage()));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => const UserSetPage()));
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFd9c3ac),

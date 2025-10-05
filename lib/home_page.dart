@@ -35,83 +35,86 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-          if (numberOfAdsShown < 3) {
-            _loadInterstitialAd();
-            if (_interstitialAd != null) {
-              _interstitialAd?.show();
-              numberOfAdsShown++;
-              saveNumberOfAdsShown(numberOfAdsShown);
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        bottomNavigationBar: NavigationBar(
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentPageIndex = index;
+            });
+            if (numberOfAdsShown < 3) {
+              _loadInterstitialAd();
+              if (_interstitialAd != null) {
+                _interstitialAd?.show();
+                numberOfAdsShown++;
+                saveNumberOfAdsShown(numberOfAdsShown);
+              }
             }
-          }
-        },
-        selectedIndex: currentPageIndex,
-        destinations: <Widget>[
-          NavigationDestination(
-            selectedIcon: Image.asset(
-              'assets/icons/profile.png',
-              width: 35,
-              height: 35,
-              color: const Color(0xFF243120),
+          },
+          selectedIndex: currentPageIndex,
+          destinations: <Widget>[
+            NavigationDestination(
+              selectedIcon: Image.asset(
+                'assets/icons/profile.png',
+                width: 35,
+                height: 35,
+                color: const Color(0xFF243120),
+              ),
+              icon: Image.asset(
+                'assets/icons/profile.png',
+                width: 35,
+                height: 35,
+              ),
+              label: S.of(context).profile,
             ),
-            icon: Image.asset(
-              'assets/icons/profile.png',
-              width: 35,
-              height: 35,
+            NavigationDestination(
+              selectedIcon: Image.asset(
+                'assets/icons/dictionary.png',
+                width: 35,
+                height: 35,
+                color: const Color(0xFF243120),
+              ),
+              icon: Image.asset(
+                'assets/icons/dictionary.png',
+                width: 35,
+                height: 35,
+              ),
+              label: S.of(context).dictionary,
             ),
-            label: S.of(context).profile,
-          ),
-          NavigationDestination(
-            selectedIcon: Image.asset(
-              'assets/icons/dictionary.png',
-              width: 35,
-              height: 35,
-              color: const Color(0xFF243120),
+            NavigationDestination(
+              selectedIcon: Image.asset(
+                'assets/icons/trainings.png',
+                width: 35,
+                height: 35,
+                color: const Color(0xFF243120),
+              ),
+              icon: Image.asset(
+                'assets/icons/trainings.png',
+                width: 35,
+                height: 35,
+              ),
+              label: S.of(context).trainings,
             ),
-            icon: Image.asset(
-              'assets/icons/dictionary.png',
-              width: 35,
-              height: 35,
-            ),
-            label: S.of(context).dictionary,
-          ),
-          NavigationDestination(
-            selectedIcon: Image.asset(
-              'assets/icons/trainings.png',
-              width: 35,
-              height: 35,
-              color: const Color(0xFF243120),
-            ),
-            icon: Image.asset(
-              'assets/icons/trainings.png',
-              width: 35,
-              height: 35,
-            ),
-            label: S.of(context).trainings,
-          ),
-        ],
+          ],
+        ),
+        body: <Widget>[
+          const ProfilePage(),
+          const DictionaryPage(),
+          BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
+            if (state is ProfileLoading) {
+              return _loadingIndicator();
+            } else if (state is ProfileLoaded) {
+              return TrainingsPage(
+                goal: state.statistics.goal,
+                isTodayCompleted: state.statistics.isTodayCompleted,
+              );
+            } else {
+              return const SizedBox();
+            }
+          }),
+        ][currentPageIndex],
       ),
-      body: <Widget>[
-        const ProfilePage(),
-        const DictionaryPage(),
-        BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
-          if (state is ProfileLoading) {
-            return _loadingIndicator();
-          } else if (state is ProfileLoaded) {
-            return TrainingsPage(
-              goal: state.statistics.goal,
-              isTodayCompleted: state.statistics.isTodayCompleted,
-            );
-          } else {
-            return const SizedBox();
-          }
-        }),
-      ][currentPageIndex],
     );
   }
 

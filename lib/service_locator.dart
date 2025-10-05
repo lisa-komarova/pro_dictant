@@ -70,7 +70,6 @@ import 'features/trainings/presentation/manager/provider/combo_training_session.
 import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
 
 final sl = GetIt.instance;
-
 Future<void> init() async {
   // BLoC
   sl.registerFactory(

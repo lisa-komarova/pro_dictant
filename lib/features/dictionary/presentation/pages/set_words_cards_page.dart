@@ -53,49 +53,52 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
           Navigator.of(context).pop('update');
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                return Navigator.of(context).pop('update');
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: Stack(
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  return Navigator.of(context).pop('update');
+                },
+                icon: Image.asset('assets/icons/cancel.png')),
+          ),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: <Widget>[
+                    PageView(
+                      controller: _pageViewController,
+                      onPageChanged: _handlePageViewChanged,
+                      children: <Widget>[
+                        for (var element in widget.words)
+                          buildTranslastionCard(context, element),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Align(
                 alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  PageView(
-                    controller: _pageViewController,
-                    onPageChanged: _handlePageViewChanged,
-                    children: <Widget>[
-                      for (var element in widget.words)
-                        buildTranslastionCard(context, element),
-                    ],
-                  ),
-                ],
+                child: Row(
+                  children: [
+                    _buildAWordButton(
+                        title: S.of(context).learn,
+                        color: const Color(0xFFB70E0E)),
+                    _buildAWordButton(
+                        title: S.of(context).alreadyKnow,
+                        color: const Color(0xFF85977f)),
+                  ],
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                children: [
-                  _buildAWordButton(
-                      title: S.of(context).learn,
-                      color: const Color(0xFFB70E0E)),
-                  _buildAWordButton(
-                      title: S.of(context).alreadyKnow,
-                      color: const Color(0xFF85977f)),
-                ],
-              ),
-            ),
-            // SizedBox(
-            //   height: 300,
-            // )
-          ],
+              // SizedBox(
+              //   height: 300,
+              // )
+            ],
+          ),
         ),
       ),
     );

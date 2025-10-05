@@ -44,32 +44,35 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              return Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-      ),
-      body: BlocBuilder<TrainingsBloc, TrainingsState>(
-        builder: (context, state) {
-          if (state is TrainingEmpty) {
-            return Center(
-              child: Text(
-                S.of(context).notEnoughWords,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-            );
-          } else if (state is TrainingLoading) {
-            return _loadingIndicator();
-          } else if (state is ComboTrainingLoaded) {
-            return _buildWordCard(state.words);
-          } else {
-            return const SizedBox();
-          }
-        },
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                return Navigator.of(context).pop();
+              },
+              icon: Image.asset('assets/icons/cancel.png')),
+        ),
+        body: BlocBuilder<TrainingsBloc, TrainingsState>(
+          builder: (context, state) {
+            if (state is TrainingEmpty) {
+              return Center(
+                child: Text(
+                  S.of(context).notEnoughWords,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else if (state is TrainingLoading) {
+              return _loadingIndicator();
+            } else if (state is ComboTrainingLoaded) {
+              return _buildWordCard(state.words);
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
       ),
     );
   }

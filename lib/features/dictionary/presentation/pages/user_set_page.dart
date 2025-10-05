@@ -18,45 +18,48 @@ class UserSetPage extends StatefulWidget {
 class _UserSetPageState extends State<UserSetPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          S.of(context).wordSets,
-          style: GoogleFonts.hachiMaruPop(),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            S.of(context).wordSets,
+            style: GoogleFonts.hachiMaruPop(),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                FocusScope.of(context).unfocus();
+                BlocProvider.of<WordsBloc>(context).add(const LoadWords());
+              },
+              icon: Image.asset('assets/icons/cancel.png')),
         ),
-        centerTitle: true,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              FocusScope.of(context).unfocus();
-              BlocProvider.of<WordsBloc>(context).add(const LoadWords());
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-      ),
-      body: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          Navigator.of(context).pop();
-          FocusScope.of(context).unfocus();
-          BlocProvider.of<WordsBloc>(context).add(const LoadWords());
-        },
-        child: const Column(
-          children: [
-            Expanded(child: SetList()),
-          ],
+        body: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            Navigator.of(context).pop();
+            FocusScope.of(context).unfocus();
+            BlocProvider.of<WordsBloc>(context).add(const LoadWords());
+          },
+          child: const Column(
+            children: [
+              Expanded(child: SetList()),
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (ctx) => const NewSetPage()));
-        },
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        label: Text(
-          S.of(context).newSet,
-          style: const TextStyle(fontSize: 12),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (ctx) => const NewSetPage()));
+          },
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          label: Text(
+            S.of(context).newSet,
+            style: const TextStyle(fontSize: 12),
+          ),
         ),
       ),
     );

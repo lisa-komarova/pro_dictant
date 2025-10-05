@@ -108,102 +108,105 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
       ));
       tabViews.add(_buildAnswerList(widget.learning, const Color(0xFFC0A183)));
     }
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Image.asset('assets/icons/cancel.png')),
-        title: Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Text(
-            S.of(context).results,
-            style: Theme.of(context).textTheme.titleLarge,
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Image.asset('assets/icons/cancel.png')),
+          title: Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Text(
+              S.of(context).results,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 55),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFD9C3AC),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(25),
-                          bottomRight: Radius.circular(25),
-                          topRight: Radius.circular(10),
-                          topLeft: Radius.circular(10),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20, bottom: 10),
-                        child: TabBarView(
-                            controller: tabController,
-                            physics: tabViews.length > 2
-                                ? NeverScrollableScrollPhysics()
-                                : null,
-                            children: tabViews),
-                      ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        height: 65,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 55),
                         decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: TabBar(
-                          controller: tabController,
-                          splashFactory: NoSplash.splashFactory,
-                          overlayColor:
-                              WidgetStateProperty.all(Colors.transparent),
-                          dividerColor: Colors.transparent,
-                          isScrollable: false,
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          indicator: BoxDecoration(
-                            color: const Color(0xFFD9C3AC),
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(25),
-                                topRight: Radius.circular(25)),
+                          color: const Color(0xFFD9C3AC),
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(25),
+                            bottomRight: Radius.circular(25),
+                            topRight: Radius.circular(10),
+                            topLeft: Radius.circular(10),
                           ),
-                          labelColor: Colors.black,
-                          unselectedLabelColor: const Color(0xFFD9C3AC),
-                          labelStyle: Theme.of(context).textTheme.titleMedium,
-                          tabs: tabs,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 20, bottom: 10),
+                          child: TabBarView(
+                              controller: tabController,
+                              physics: tabViews.length > 2
+                                  ? NeverScrollableScrollPhysics()
+                                  : null,
+                              children: tabViews),
                         ),
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          height: 65,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TabBar(
+                            controller: tabController,
+                            splashFactory: NoSplash.splashFactory,
+                            overlayColor:
+                                WidgetStateProperty.all(Colors.transparent),
+                            dividerColor: Colors.transparent,
+                            isScrollable: false,
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicator: BoxDecoration(
+                              color: const Color(0xFFD9C3AC),
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(25),
+                                  topRight: Radius.circular(25)),
+                            ),
+                            labelColor: Colors.black,
+                            unselectedLabelColor: const Color(0xFFD9C3AC),
+                            labelStyle: Theme.of(context).textTheme.titleMedium,
+                            tabs: tabs,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Center(child: ContinueTrainingButton(
-              onPressed: () {
-                if (widget.setId.isNotEmpty) {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(FetchSetWordsForRepeatingTRainings(widget.setId));
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) =>
-                          RepeatingInProcessPage(setId: widget.setId)));
-                } else {
-                  BlocProvider.of<TrainingsBloc>(context)
-                      .add(const FetchWordsForRepeatingTRainings());
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (ctx) =>
-                          const RepeatingInProcessPage(setId: "")));
-                }
-              },
-            )),
-          ],
+              Center(child: ContinueTrainingButton(
+                onPressed: () {
+                  if (widget.setId.isNotEmpty) {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(FetchSetWordsForRepeatingTRainings(widget.setId));
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) =>
+                            RepeatingInProcessPage(setId: widget.setId)));
+                  } else {
+                    BlocProvider.of<TrainingsBloc>(context)
+                        .add(const FetchWordsForRepeatingTRainings());
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (ctx) =>
+                            const RepeatingInProcessPage(setId: "")));
+                  }
+                },
+              )),
+            ],
+          ),
         ),
       ),
     );

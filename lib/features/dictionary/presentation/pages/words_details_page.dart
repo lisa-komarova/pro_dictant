@@ -20,16 +20,19 @@ class _WordsDetailsState extends State<WordsDetails> {
           Navigator.of(context).pop(widget.word);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                return Navigator.of(context).pop(widget.word);
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
-        ),
-        body: WordTranslationCards(
-          word: widget.word,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  return Navigator.of(context).pop(widget.word);
+                },
+                icon: Image.asset('assets/icons/cancel.png')),
+          ),
+          body: WordTranslationCards(
+            word: widget.word,
+          ),
         ),
       ),
     );

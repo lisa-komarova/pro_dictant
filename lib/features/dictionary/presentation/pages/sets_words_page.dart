@@ -57,23 +57,26 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
               Navigator.of(context).pop(setEntity);
             }
           },
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(
-                setEntity.name.toUpperCase(),
-                style: GoogleFonts.hachiMaruPop(),
+          child: SafeArea(
+            top: false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  setEntity.name.toUpperCase(),
+                  style: GoogleFonts.hachiMaruPop(),
+                ),
+                centerTitle: true,
+                leading: IconButton(
+                  onPressed: () {
+                    //BlocProvider.of<SetBloc>(context).add(const LoadSets());
+                    Navigator.of(context).pop(setEntity);
+                  },
+                  icon: Image.asset('assets/icons/cancel.png'),
+                ),
               ),
-              centerTitle: true,
-              leading: IconButton(
-                onPressed: () {
-                  //BlocProvider.of<SetBloc>(context).add(const LoadSets());
-                  Navigator.of(context).pop(setEntity);
-                },
-                icon: Image.asset('assets/icons/cancel.png'),
-              ),
+              body: buildWordsList(state.set.wordsInSet, wordsTranslations,
+                  setEntity, learntPercentage, context),
             ),
-            body: buildWordsList(state.set.wordsInSet, wordsTranslations,
-                setEntity, learntPercentage, context),
           ),
         );
       }

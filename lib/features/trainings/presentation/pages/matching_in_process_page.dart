@@ -68,56 +68,59 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                return Navigator.of(context).pop();
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
-        ),
-        body: BlocBuilder<TrainingsBloc, TrainingsState>(
-          builder: (context, state) {
-            if (state is TrainingEmpty) {
-              return Center(
-                child: Text(
-                  S.of(context).notEnoughWords,
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            } else if (state is TrainingLoading) {
-              return _loadingIndicator();
-            } else if (state is MatchingTrainingLoaded) {
-              if (wordsList.isEmpty && correctAnswers.isEmpty) {
-                wordsList.addAll(state.words);
-                if (wordsList.length >= 5) {
-                  wordsList.removeRange(0, 5);
-                } else {
-                  wordsList.clear();
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  return Navigator.of(context).pop();
+                },
+                icon: Image.asset('assets/icons/cancel.png')),
+          ),
+          body: BlocBuilder<TrainingsBloc, TrainingsState>(
+            builder: (context, state) {
+              if (state is TrainingEmpty) {
+                return Center(
+                  child: Text(
+                    S.of(context).notEnoughWords,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              } else if (state is TrainingLoading) {
+                return _loadingIndicator();
+              } else if (state is MatchingTrainingLoaded) {
+                if (wordsList.isEmpty && correctAnswers.isEmpty) {
+                  wordsList.addAll(state.words);
+                  if (wordsList.length >= 5) {
+                    wordsList.removeRange(0, 5);
+                  } else {
+                    wordsList.clear();
+                  }
                 }
-              }
-              if (currentWordsList.isEmpty) {
-                if (state.words.length >= 5) {
-                  currentWordsList.addAll(state.words.getRange(0, 5));
-                } else {
-                  currentWordsList.addAll(state.words);
+                if (currentWordsList.isEmpty) {
+                  if (state.words.length >= 5) {
+                    currentWordsList.addAll(state.words.getRange(0, 5));
+                  } else {
+                    currentWordsList.addAll(state.words);
+                  }
                 }
-              }
-              if (currentTranslationList.isEmpty) {
-                if (state.words.length >= 5) {
-                  currentTranslationList.addAll(state.words.getRange(0, 5));
-                } else {
-                  currentTranslationList.addAll(state.words);
+                if (currentTranslationList.isEmpty) {
+                  if (state.words.length >= 5) {
+                    currentTranslationList.addAll(state.words.getRange(0, 5));
+                  } else {
+                    currentTranslationList.addAll(state.words);
+                  }
+                  currentTranslationList.shuffle();
                 }
-                currentTranslationList.shuffle();
+                return _buildWordCardDeck();
+              } else {
+                return const SizedBox();
               }
-              return _buildWordCardDeck();
-            } else {
-              return const SizedBox();
-            }
-          },
-        ));
+            },
+          )),
+    );
   }
 
   Widget _loadingIndicator() {

@@ -20,43 +20,46 @@ class TrainingResultListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              return Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-        title: Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Text(
-            S.of(context).results,
-            style: Theme.of(context).textTheme.titleLarge,
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                return Navigator.of(context).pop();
+              },
+              icon: Image.asset('assets/icons/cancel.png')),
+          title: Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Text(
+              S.of(context).results,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
         ),
-      ),
-      body: Center(
-          child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  color: Colors.transparent,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ...buildAnswers(),
-                    ],
+        body: Center(
+            child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ...buildAnswers(),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          ContinueTrainingButton(onPressed: onPressed),
-        ],
-      )),
+            ContinueTrainingButton(onPressed: onPressed),
+          ],
+        )),
+      ),
     );
   }
 

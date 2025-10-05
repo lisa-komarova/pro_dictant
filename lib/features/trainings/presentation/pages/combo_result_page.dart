@@ -25,118 +25,121 @@ class ComboResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              return Navigator.of(context).pop();
-            },
-            icon: Image.asset('assets/icons/cancel.png')),
-        title: Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Text(
-            S.of(context).results,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: allWords.length,
-              itemBuilder: (context, index) {
-                final word = allWords[index];
-                final wtWrong =
-                    wtInitialWrongAnswers.any((e) => e.source == word.$1);
-                final twWrong =
-                    twInitialWrongAnswers.any((e) => e.source == word.$1);
-                final dictantWrong =
-                    dictantInitialWrongAnswers.any((e) => e.source == word.$1);
-
-                return Padding(
-                  padding:
-                      const EdgeInsets.only(left: 20.0, right: 20, bottom: 5),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Color(0x6BD9C3AC),
-                            borderRadius: BorderRadius.circular(25)),
-                        //padding: EdgeInsets.symmetric(horizontal: 5),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Text(
-                                  '${word.$1} ',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Text(
-                                  '${word.$2}',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  _buildStatusItem(
-                                      context,
-                                      S.of(context).wordTranslation,
-                                      'assets/icons/word-t.png',
-                                      wtWrong),
-                                  _buildStatusItem(
-                                      context,
-                                      S.of(context).translationWord,
-                                      'assets/icons/t-word.png',
-                                      twWrong),
-                                  _buildStatusItem(
-                                      context,
-                                      S.of(context).dictant,
-                                      'assets/icons/dictant.png',
-                                      dictantWrong),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Image.asset(
-                        'assets/icons/divider.png',
-                        width: 15,
-                        height: 15,
-                      ),
-                    ],
-                  ),
-                );
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                return Navigator.of(context).pop();
               },
+              icon: Image.asset('assets/icons/cancel.png')),
+          title: Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Text(
+              S.of(context).results,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          ContinueTrainingButton(
-            onPressed: () {
-              BlocProvider.of<TrainingsBloc>(context)
-                  .add(const FetchWordsForComboTRainings());
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const ComboInitialPage()),
-              );
-            },
-          )
-        ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: allWords.length,
+                itemBuilder: (context, index) {
+                  final word = allWords[index];
+                  final wtWrong =
+                      wtInitialWrongAnswers.any((e) => e.source == word.$1);
+                  final twWrong =
+                      twInitialWrongAnswers.any((e) => e.source == word.$1);
+                  final dictantWrong =
+                      dictantInitialWrongAnswers.any((e) => e.source == word.$1);
+      
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20.0, right: 20, bottom: 5),
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Color(0x6BD9C3AC),
+                              borderRadius: BorderRadius.circular(25)),
+                          //padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text(
+                                    '${word.$1} ',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Text(
+                                    '${word.$2}',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    _buildStatusItem(
+                                        context,
+                                        S.of(context).wordTranslation,
+                                        'assets/icons/word-t.png',
+                                        wtWrong),
+                                    _buildStatusItem(
+                                        context,
+                                        S.of(context).translationWord,
+                                        'assets/icons/t-word.png',
+                                        twWrong),
+                                    _buildStatusItem(
+                                        context,
+                                        S.of(context).dictant,
+                                        'assets/icons/dictant.png',
+                                        dictantWrong),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Image.asset(
+                          'assets/icons/divider.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            ContinueTrainingButton(
+              onPressed: () {
+                BlocProvider.of<TrainingsBloc>(context)
+                    .add(const FetchWordsForComboTRainings());
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const ComboInitialPage()),
+                );
+              },
+            )
+          ],
+        ),
       ),
     );
   }

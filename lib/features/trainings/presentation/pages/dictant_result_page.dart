@@ -21,65 +21,68 @@ class DictantResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Image.asset('assets/icons/cancel.png'),
-        ),
-        title: Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Text(
-            S.of(context).results,
-            style: Theme.of(context).textTheme.titleLarge,
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Image.asset('assets/icons/cancel.png'),
           ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  if (correctAnswers.isNotEmpty)
-                    ..._buildAnswerList(
-                      correctAnswers,
-                      const Color(0xFF85977f),
-                      false,
-                    ),
-                  if (mistakes.isNotEmpty)
-                    ..._buildAnswerList(
-                      mistakes,
-                      const Color(0xFFB70E0E),
-                      true,
-                    ),
-                ],
-              ),
+          title: Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Text(
+              S.of(context).results,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          ContinueTrainingButton(
-            onPressed: () {
-              if (setId.isNotEmpty) {
-                BlocProvider.of<TrainingsBloc>(context)
-                    .add(FetchSetWordsForDictantTRainings(setId));
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (ctx) => DictantInProcessPage(setId: setId),
-                  ),
-                );
-              } else {
-                BlocProvider.of<TrainingsBloc>(context)
-                    .add(const FetchWordsForDictantTRainings());
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (ctx) => const DictantInProcessPage(setId: ''),
-                  ),
-                );
-              }
-            },
-          ),
-        ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    if (correctAnswers.isNotEmpty)
+                      ..._buildAnswerList(
+                        correctAnswers,
+                        const Color(0xFF85977f),
+                        false,
+                      ),
+                    if (mistakes.isNotEmpty)
+                      ..._buildAnswerList(
+                        mistakes,
+                        const Color(0xFFB70E0E),
+                        true,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            ContinueTrainingButton(
+              onPressed: () {
+                if (setId.isNotEmpty) {
+                  BlocProvider.of<TrainingsBloc>(context)
+                      .add(FetchSetWordsForDictantTRainings(setId));
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (ctx) => DictantInProcessPage(setId: setId),
+                    ),
+                  );
+                } else {
+                  BlocProvider.of<TrainingsBloc>(context)
+                      .add(const FetchWordsForDictantTRainings());
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (ctx) => const DictantInProcessPage(setId: ''),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
