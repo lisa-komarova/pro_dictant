@@ -8,6 +8,7 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/ad_widget.dart';
 import '../../../../core/platform/sound_service.dart';
 import '../../../../service_locator.dart';
 
@@ -135,17 +136,17 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // numberOfAdsShown < 3
-        //     ? Padding(
-        //         padding: const EdgeInsets.all(8.0),
-        //         child: SizedBox(
-        //           height: 100,
-        //           child: BannerAdvertisement(
+        // Padding(
+        //   padding: const EdgeInsets.all(8.0),
+        //   child: SizedBox(
+        //     height: 100,
+        //     child: numberOfAdsShown < 3
+        //         ? BannerAdvertisement(
         //             screenWidth: MediaQuery.of(context).size.width.round(),
-        //           ),
-        //         ),
-        //       )
-        //     : SizedBox.shrink(),
+        //           )
+        //         : null,
+        //   ),
+        // ),
         Padding(
           padding: const EdgeInsets.all(28.0),
           child: Row(

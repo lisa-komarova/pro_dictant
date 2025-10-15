@@ -118,6 +118,7 @@ class _TrainingsPageState extends State<TrainingsPage>
     var size = MediaQuery.of(context).size;
     var width = size.width;
     var height = size.height;
+    var minHeight = 400;
     var comboHeight;
     height -= kToolbarHeight;
     if (widget.setName.isEmpty) {
@@ -194,7 +195,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                           height: comboHeight,
                           child: GestureDetector(
                             child: TrainingCard(
-                              trainingName: S.of(context).combo,
+                              trainingName:
+                                  height > minHeight ? S.of(context).combo : '',
                               imageName: 'combo',
                             ),
                             onTap: () {
@@ -216,7 +218,9 @@ class _TrainingsPageState extends State<TrainingsPage>
                           children: <Widget>[
                             GestureDetector(
                               child: TrainingCard(
-                                trainingName: S.of(context).wordTranslation,
+                                trainingName: height > minHeight
+                                    ? S.of(context).wordTranslation
+                                    : '',
                                 imageName: 'word-t',
                               ),
                               onTap: () {
@@ -240,7 +244,9 @@ class _TrainingsPageState extends State<TrainingsPage>
                             ),
                             GestureDetector(
                               child: TrainingCard(
-                                trainingName: S.of(context).translationWord,
+                                trainingName: height > minHeight
+                                    ? S.of(context).translationWord
+                                    : '',
                                 imageName: 't-word',
                               ),
                               onTap: () {
@@ -264,7 +270,9 @@ class _TrainingsPageState extends State<TrainingsPage>
                             ),
                             GestureDetector(
                               child: TrainingCard(
-                                trainingName: S.of(context).matchingWords,
+                                trainingName: height > minHeight
+                                    ? S.of(context).matchingWords
+                                    : '',
                                 imageName: 'word_matching',
                               ),
                               onTap: () {
@@ -289,7 +297,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                             ),
                             GestureDetector(
                               child: TrainingCard(
-                                trainingName: S.of(context).wordCards,
+                                trainingName:
+                                    height > minHeight ? S.of(context).wordCards : '',
                                 imageName: 'sprint',
                               ),
                               onTap: () {
@@ -314,7 +323,8 @@ class _TrainingsPageState extends State<TrainingsPage>
                             ),
                             GestureDetector(
                               child: TrainingCard(
-                                trainingName: S.of(context).dictant,
+                                trainingName:
+                                    height > minHeight ? S.of(context).dictant : '',
                                 imageName: 'dictant',
                               ),
                               onTap: () {
@@ -339,7 +349,9 @@ class _TrainingsPageState extends State<TrainingsPage>
                             ),
                             GestureDetector(
                               child: TrainingCard(
-                                trainingName: S.of(context).repeatWords,
+                                trainingName: height > minHeight
+                                    ? S.of(context).repeatWords
+                                    : '',
                                 imageName: 'repetition',
                               ),
                               onTap: () {

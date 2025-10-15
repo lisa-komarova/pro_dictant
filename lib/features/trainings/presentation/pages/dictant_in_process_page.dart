@@ -130,15 +130,17 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            height: 100,
-            child: numberOfAdsShown < 3
-                ? BannerAdvertisement(
-                    screenWidth: MediaQuery.of(context).size.width.round(),
-                  )
-                : null,
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 100,
+              child: numberOfAdsShown < 3
+                  ? BannerAdvertisement(
+                      screenWidth: MediaQuery.of(context).size.width.round(),
+                    )
+                  : null,
+            ),
           ),
         ),
         Flexible(

@@ -19,85 +19,75 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
-      if (state is ProfileLoading) {
-        return _loadingIndicator();
-      } else if (state is ProfileLoaded) {
-        return RefreshIndicator(
-          onRefresh: _refreshPage,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  height: 100,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  S.of(context).addedWords(
-                                      state.statistics.wordsInDictionary),
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  S.of(context).learntWords(
-                                      state.statistics.learntWords),
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    _dialogBuilder(context);
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        S
-                                            .of(context)
-                                            .goal(state.statistics.goal),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
-                                      ),
-                                      Image.asset(
-                                        'assets/icons/dictant.png',
-                                        width: 25,
-                                        height: 25,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        body: BlocBuilder<ProfileBloc, ProfileState>(
+          builder: (context, state) {
+            if (state is ProfileLoading) {
+              return _loadingIndicator();
+            } else if (state is ProfileLoaded) {
+              return RefreshIndicator(
+                onRefresh: _refreshPage,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              S.of(context).addedWords(
+                                  state.statistics.wordsInDictionary),
+                              style: Theme.of(context).textTheme.bodyLarge,
                             ),
-                          ),
+                            Text(
+                              S
+                                  .of(context)
+                                  .learntWords(state.statistics.learntWords),
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            GestureDetector(
+                              onTap: () => _dialogBuilder(context),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    S.of(context).goal(state.statistics.goal),
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  Image.asset(
+                                    'assets/icons/dictant.png',
+                                    width: 25,
+                                    height: 25,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      )
-                    ],
-                  ),
+                      ),
+                    ),
+
+                    // Скроллируемая статистика
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: _buildStatistics(context, state.statistics),
+                      ),
+                    ),
+                  ],
                 ),
-                Flexible(
-                  child: _buildStatistics(context, state.statistics),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-      return const SizedBox();
-    });
+              );
+            }
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
   }
 
   Widget _loadingIndicator() {
