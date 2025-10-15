@@ -8,8 +8,6 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../../core/ad_widget.dart';
 import '../../../../core/platform/sound_service.dart';
 import '../../../../service_locator.dart';
 
