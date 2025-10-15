@@ -6,9 +6,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:soundpool/soundpool.dart';
-
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/sound_service.dart';
+import '../../../../service_locator.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
@@ -34,47 +34,48 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
   var isPronounceSelected = false;
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
-  late int correctSoundId;
-  late int wrongSoundId;
-  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
+  final soundService = sl.get<SoundService>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
-    initSounds();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                return Navigator.of(context).pop();
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
-        ),
-        body: BlocBuilder<TrainingsBloc, TrainingsState>(
-          builder: (context, state) {
-            if (state is TrainingEmpty) {
-              return Center(
-                child: Text(
-                  S.of(context).notEnoughWords,
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            } else if (state is TrainingLoading) {
-              return _loadingIndicator();
-            } else if (state is CardsTrainingLoaded) {
-              return _buildWordCard(state.words);
-            } else {
-              return const SizedBox();
-            }
-          },
+    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
+    return PopScope(
+      canPop: false,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  return Navigator.of(context).pop();
+                },
+                icon: Image.asset('assets/icons/cancel.png')),
+          ),
+          body: BlocBuilder<TrainingsBloc, TrainingsState>(
+            builder: (context, state) {
+              if (state is TrainingEmpty) {
+                return Center(
+                  child: Text(
+                    S.of(context).notEnoughWords,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              } else if (state is TrainingLoading) {
+                return _loadingIndicator();
+              } else if (state is CardsTrainingLoaded) {
+                return _buildWordCard(state.words);
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
         ),
       ),
     );
@@ -171,10 +172,10 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                         if (currentWordIndex + 1 >= words.length) {
                           if (suggestedAnswer.first ==
                               words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
+                            soundService.playCorrect();
                             correctAnswers.add(words[currentWordIndex]);
                           } else {
-                            await pool.play(wrongSoundId);
+                            soundService.playWrong();
                             mistakes.add(words[currentWordIndex]);
                           }
                           finishWorkout();
@@ -182,10 +183,10 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                         } else {
                           if (suggestedAnswer.first ==
                               words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
+                            soundService.playCorrect();
                             correctAnswers.add(words[currentWordIndex]);
                           } else {
-                            await pool.play(wrongSoundId);
+                            soundService.playWrong();
                             mistakes.add(words[currentWordIndex]);
                           }
                           setState(() {
@@ -226,10 +227,10 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                         if (currentWordIndex + 1 >= words.length) {
                           if (suggestedAnswer.last ==
                               words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
+                            soundService.playCorrect();
                             correctAnswers.add(words[currentWordIndex]);
                           } else {
-                            await pool.play(wrongSoundId);
+                            soundService.playWrong();
                             mistakes.add(words[currentWordIndex]);
                           }
                           finishWorkout();
@@ -237,10 +238,10 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                         } else {
                           if (suggestedAnswer.last ==
                               words[currentWordIndex].translation) {
-                            await pool.play(correctSoundId);
+                            soundService.playCorrect();
                             correctAnswers.add(words[currentWordIndex]);
                           } else {
-                            await pool.play(wrongSoundId);
+                            soundService.playWrong();
                             mistakes.add(words[currentWordIndex]);
                           }
                           setState(() {
@@ -311,18 +312,5 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  void initSounds() async {
-    correctSoundId = await rootBundle
-        .load("assets/sounds/correct.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
-    wrongSoundId = await rootBundle
-        .load("assets/sounds/wrong.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
   }
 }

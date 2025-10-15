@@ -11,9 +11,11 @@ import 'package:pro_dictant/features/trainings/presentation/pages/training_resul
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/answer_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:soundpool/soundpool.dart';
+
 import 'package:yandex_mobileads/mobile_ads.dart';
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/sound_service.dart';
+import '../../../../service_locator.dart';
 import '../../domain/entities/dictant_training_entity.dart';
 import '../../domain/entities/tw_training_entity.dart';
 import '../manager/provider/combo_training_session.dart';
@@ -38,51 +40,54 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   int currentWordIndex = 0;
   Map<String, String> answers = {};
   int numberOfAdsShown = 0;
-  late int correctSoundId;
-  late int wrongSoundId;
-  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
+  late final correctSoundId;
+  late final wrongSoundId;
+  final soundService = sl.get<SoundService>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
-    initSounds();
     MobileAds.initialize();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-                onPressed: () {
-                  final session = context.read<ComboTrainingSession>();
-                  session.reset();
-                  return Navigator.of(context).pop();
-                },
-                icon: Image.asset('assets/icons/cancel.png')),
-          ),
-          body: BlocBuilder<TrainingsBloc, TrainingsState>(
-            builder: (context, state) {
-              if (state is TrainingEmpty) {
-                return Center(
-                  child: Text(
-                    S.of(context).notEnoughWords,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              } else if (state is TrainingLoading) {
-                return _loadingIndicator();
-              } else if (state is TWTrainingLoaded) {
-                return _buildWordCard(state.words);
-              } else {
-                return const SizedBox();
-              }
-            },
-          )),
+    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
+    return PopScope(
+      canPop: false,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                  onPressed: () {
+                    final session = context.read<ComboTrainingSession>();
+                    session.reset();
+                    return Navigator.of(context).pop();
+                  },
+                  icon: Image.asset('assets/icons/cancel.png')),
+            ),
+            body: BlocBuilder<TrainingsBloc, TrainingsState>(
+              builder: (context, state) {
+                if (state is TrainingEmpty) {
+                  return Center(
+                    child: Text(
+                      S.of(context).notEnoughWords,
+                      style: Theme.of(context).textTheme.titleLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else if (state is TrainingLoading) {
+                  return _loadingIndicator();
+                } else if (state is TWTrainingLoaded) {
+                  return _buildWordCard(state.words);
+                } else {
+                  return const SizedBox();
+                }
+              },
+            )),
+      ),
     );
   }
 
@@ -334,7 +339,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
                             ));
                             session.removeTwWrong(words[currentWordIndex]);
                           }
-                          await pool.play(correctSoundId);
+                          soundService.playCorrect();
                           updateCurrentWord(words);
                         },
                         text: words[currentWordIndex].source)),
@@ -355,7 +360,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
                           if (widget.isCombo) {
                             session.addTwWrong(words[currentWordIndex]);
                           }
-                          await pool.play(wrongSoundId);
+                          soundService.playWrong();
                           updateCurrentWord(words);
                         },
                         text: words[currentWordIndex]
@@ -379,18 +384,5 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  void initSounds() async {
-    correctSoundId = await rootBundle
-        .load("assets/sounds/correct.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
-    wrongSoundId = await rootBundle
-        .load("assets/sounds/wrong.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
   }
 }

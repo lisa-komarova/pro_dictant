@@ -41,6 +41,7 @@ import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for
 import 'package:pro_dictant/features/trainings/domain/use_cases/update_words_for_wt_trainings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/platform/sound_service.dart';
 import 'features/dictionary/domain/usecases/add_word.dart';
 import 'features/dictionary/domain/usecases/delete_set.dart';
 import 'features/dictionary/domain/usecases/delete_word.dart';
@@ -320,5 +321,7 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client());
-  sl.registerLazySingleton(() => InternetConnectionChecker());
+  sl.registerLazySingleton<SoundService>(() => SoundService());
+  await sl<SoundService>().init();
+  sl.registerLazySingleton(() => InternetConnectionChecker.instance);
 }

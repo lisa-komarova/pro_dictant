@@ -6,9 +6,10 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/sound_service.dart';
+import '../../../../service_locator.dart';
 import '../../domain/entities/combo_training_entity.dart';
 import '../../domain/entities/wt_training_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
@@ -31,19 +32,17 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
   final List<ComboTrainingEntity> wordsToLearn = [];
-  late int learnSoundId;
-  late int passSoundId;
-  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
+  final soundService = sl.get<SoundService>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
-    initSounds();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return SafeArea(
       top: false,
       child: Scaffold(
@@ -181,7 +180,7 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                           finishWorkout(wordsToLearn);
                           return;
                         }
-                        await pool.play(passSoundId);
+                        soundService.playNeutral();
                         setState(() {
                           currentWordIndex++;
                         });
@@ -220,7 +219,7 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                     child: FilledButton(
                       onPressed: () async {
                         wordsToLearn.add(words[currentWordIndex]);
-                        await pool.play(learnSoundId);
+                        soundService.playCorrect();
                         if (currentWordIndex + 1 >= words.length) {
                           finishWorkout(wordsToLearn);
                           return;
@@ -300,16 +299,4 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
   }
 
-  void initSounds() async {
-    learnSoundId = await rootBundle
-        .load("assets/sounds/correct.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
-    passSoundId = await rootBundle
-        .load("assets/sounds/neutral.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
-  }
 }

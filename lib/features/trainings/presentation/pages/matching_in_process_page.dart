@@ -8,10 +8,10 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:soundpool/soundpool.dart';
 
 import '../../../../core/ad_widget.dart';
-
+import '../../../../core/platform/sound_service.dart';
+import '../../../../service_locator.dart';
 
 class MatchingInProcessPage extends StatefulWidget {
   final String setId;
@@ -55,71 +55,72 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
         bool isSourceChosen
       )> mistakes = [];
   int numberOfAdsShown = 0;
-  late int correctSoundId;
-  late int wrongSoundId;
-  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
+  final soundService = sl.get<SoundService>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
-    initSounds();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-                onPressed: () {
-                  return Navigator.of(context).pop();
-                },
-                icon: Image.asset('assets/icons/cancel.png')),
-          ),
-          body: BlocBuilder<TrainingsBloc, TrainingsState>(
-            builder: (context, state) {
-              if (state is TrainingEmpty) {
-                return Center(
-                  child: Text(
-                    S.of(context).notEnoughWords,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              } else if (state is TrainingLoading) {
-                return _loadingIndicator();
-              } else if (state is MatchingTrainingLoaded) {
-                if (wordsList.isEmpty && correctAnswers.isEmpty) {
-                  wordsList.addAll(state.words);
-                  if (wordsList.length >= 5) {
-                    wordsList.removeRange(0, 5);
-                  } else {
-                    wordsList.clear();
+    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
+    return PopScope(
+      canPop: false,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                  onPressed: () {
+                    return Navigator.of(context).pop();
+                  },
+                  icon: Image.asset('assets/icons/cancel.png')),
+            ),
+            body: BlocBuilder<TrainingsBloc, TrainingsState>(
+              builder: (context, state) {
+                if (state is TrainingEmpty) {
+                  return Center(
+                    child: Text(
+                      S.of(context).notEnoughWords,
+                      style: Theme.of(context).textTheme.titleLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else if (state is TrainingLoading) {
+                  return _loadingIndicator();
+                } else if (state is MatchingTrainingLoaded) {
+                  if (wordsList.isEmpty && correctAnswers.isEmpty) {
+                    wordsList.addAll(state.words);
+                    if (wordsList.length >= 5) {
+                      wordsList.removeRange(0, 5);
+                    } else {
+                      wordsList.clear();
+                    }
                   }
-                }
-                if (currentWordsList.isEmpty) {
-                  if (state.words.length >= 5) {
-                    currentWordsList.addAll(state.words.getRange(0, 5));
-                  } else {
-                    currentWordsList.addAll(state.words);
+                  if (currentWordsList.isEmpty) {
+                    if (state.words.length >= 5) {
+                      currentWordsList.addAll(state.words.getRange(0, 5));
+                    } else {
+                      currentWordsList.addAll(state.words);
+                    }
                   }
-                }
-                if (currentTranslationList.isEmpty) {
-                  if (state.words.length >= 5) {
-                    currentTranslationList.addAll(state.words.getRange(0, 5));
-                  } else {
-                    currentTranslationList.addAll(state.words);
+                  if (currentTranslationList.isEmpty) {
+                    if (state.words.length >= 5) {
+                      currentTranslationList.addAll(state.words.getRange(0, 5));
+                    } else {
+                      currentTranslationList.addAll(state.words);
+                    }
+                    currentTranslationList.shuffle();
                   }
-                  currentTranslationList.shuffle();
+                  return _buildWordCardDeck();
+                } else {
+                  return const SizedBox();
                 }
-                return _buildWordCardDeck();
-              } else {
-                return const SizedBox();
-              }
-            },
-          )),
+              },
+            )),
+      ),
     );
   }
 
@@ -136,20 +137,17 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Flexible(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: 100,
-              child: numberOfAdsShown < 3
-                  ? BannerAdvertisement(
-                      screenWidth: MediaQuery.of(context).size.width.round(),
-                    )
-                  : null,
-            ),
-          ),
-        ),
+        // numberOfAdsShown < 3
+        //     ? Padding(
+        //         padding: const EdgeInsets.all(8.0),
+        //         child: SizedBox(
+        //           height: 100,
+        //           child: BannerAdvertisement(
+        //             screenWidth: MediaQuery.of(context).size.width.round(),
+        //           ),
+        //         ),
+        //       )
+        //     : SizedBox.shrink(),
         Padding(
           padding: const EdgeInsets.all(28.0),
           child: Row(
@@ -167,26 +165,31 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
             ],
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildWordCard(currentWordsList),
-                ],
-              ),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildWordCard(currentWordsList),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildTranslationCard(currentTranslationList),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildTranslationCard(currentTranslationList),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );
@@ -223,7 +226,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       currentAnswer.add(words[index]);
                       if (isWordChosen &&
                           currentAnswer[0].id == currentAnswer[1].id) {
-                        await pool.play(correctSoundId);
+                        soundService.playCorrect();
                         setState(() {
                           currentAnswer.clear();
                           isWordChosen = false;
@@ -338,7 +341,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           //colors[index] = Colors.green;
                         });
                       } else {
-                        await pool.play(wrongSoundId);
+                        soundService.playWrong();
                         isWordChosen = false;
                         isWordChosenWrong = true;
                         currentAnswer.remove(words[index]);
@@ -443,7 +446,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                       currentAnswer.insert(0, words[index]);
                       if (isTranslationChosen &&
                           currentAnswer[0].id == currentAnswer[1].id) {
-                        await pool.play(correctSoundId);
+                        soundService.playCorrect();
                         setState(() {
                           currentAnswer.clear();
                           isWordChosen = false;
@@ -558,7 +561,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           //colors[index + 5] = Colors.green;
                         });
                       } else {
-                        await pool.play(wrongSoundId);
+                        soundService.playWrong();
                         isTranslationChosen = false;
                         isTranslationChosenWrong = true;
                         currentAnswer.remove(words[index]);
@@ -639,19 +642,6 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  void initSounds() async {
-    correctSoundId = await rootBundle
-        .load("assets/sounds/correct.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
-    wrongSoundId = await rootBundle
-        .load("assets/sounds/wrong.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
   }
 }
 

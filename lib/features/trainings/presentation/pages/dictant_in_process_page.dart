@@ -8,9 +8,9 @@ import 'package:pro_dictant/features/trainings/presentation/pages/training_resul
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:soundpool/soundpool.dart';
-
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/sound_service.dart';
+import '../../../../service_locator.dart';
 import '../../domain/entities/dictant_training_entity.dart';
 import '../../domain/entities/tw_training_entity.dart';
 import '../../domain/entities/wt_training_entity.dart';
@@ -48,13 +48,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   Color focusBorderColor = const Color(0xff5e6b5a);
   final wordController = TextEditingController();
   int numberOfAdsShown = 0;
-  late int correctSoundId;
-  late int wrongSoundId;
-  Soundpool pool = Soundpool.fromOptions(options: SoundpoolOptions());
+  final soundService = sl.get<SoundService>();
 
   @override
   void initState() {
-    initSounds();
     getNumberOfAdsShown();
     super.initState();
   }
@@ -62,63 +59,67 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   @override
   Widget build(BuildContext context) {
     final session = context.read<ComboTrainingSession>();
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                final session = context.read<ComboTrainingSession>();
-                session.reset();
-                return Navigator.of(context).pop();
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
-        ),
-        body: BlocBuilder<TrainingsBloc, TrainingsState>(
-          builder: (context, state) {
-            if (state is TrainingEmpty) {
-              return Center(
-                child: Text(
-                  S.of(context).notEnoughWords,
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            } else if (state is TrainingLoading) {
-              return _loadingIndicator();
-            } else if (state is DictantTrainingLoaded) {
-              if (words.isEmpty) {
-                words.addAll(state.words);
-              }
-              return _buildWordCard(words, session);
-            } else {
-              return const SizedBox();
-            }
-          },
-        ),
-        floatingActionButton: !isHintSelected
-            ? FloatingActionButton(
+    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
+    return PopScope(
+      canPop: false,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
                 onPressed: () {
-                  wordController.text = '';
-                  setState(() {
-                    attempts = 0;
-                    isHintSelected = true;
-                  });
+                  final session = context.read<ComboTrainingSession>();
+                  session.reset();
+                  return Navigator.of(context).pop();
                 },
-                elevation: 0,
-                hoverElevation: 0,
-                focusElevation: 0,
-                highlightElevation: 0,
-                backgroundColor: Colors.transparent,
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: SizedBox(
-                      height: 35,
-                      width: 35,
-                      child: Image.asset('assets/icons/hint.png')),
-                ),
-              )
-            : null,
+                icon: Image.asset('assets/icons/cancel.png')),
+          ),
+          body: BlocBuilder<TrainingsBloc, TrainingsState>(
+            builder: (context, state) {
+              if (state is TrainingEmpty) {
+                return Center(
+                  child: Text(
+                    S.of(context).notEnoughWords,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              } else if (state is TrainingLoading) {
+                return _loadingIndicator();
+              } else if (state is DictantTrainingLoaded) {
+                if (words.isEmpty) {
+                  words.addAll(state.words);
+                }
+                return _buildWordCard(words, session);
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
+          floatingActionButton: !isHintSelected
+              ? FloatingActionButton(
+                  onPressed: () {
+                    wordController.text = '';
+                    setState(() {
+                      attempts = 0;
+                      isHintSelected = true;
+                    });
+                  },
+                  elevation: 0,
+                  hoverElevation: 0,
+                  focusElevation: 0,
+                  highlightElevation: 0,
+                  backgroundColor: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                        height: 35,
+                        width: 35,
+                        child: Image.asset('assets/icons/hint.png')),
+                  ),
+                )
+              : null,
+        ),
       ),
     );
   }
@@ -212,7 +213,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                         .replaceAll(' ', '')) {
                                   if (!mistakes.any((e) =>
                                       e.$1.id == words[currentWordIndex].id)) {
-                                    await pool.play(correctSoundId);
+                                    soundService.playCorrect();
                                     if (widget.isCombo) {
                                       session.addCorrect('dictantTraining', (
                                         words[currentWordIndex].source,
@@ -235,7 +236,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                           const Color(0xFFB70E0E);
                                     });
                                   } else {
-                                    await pool.play(wrongSoundId);
+                                    soundService.playWrong();
                                     if (widget.isCombo) {
                                       session.addDictantWrong(
                                           words[currentWordIndex]);
@@ -586,7 +587,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                     ));
                     session.removeDictantWrong(words[currentWordIndex]);
                   }
-                  await pool.play(correctSoundId);
+                  soundService.playCorrect();
                   correctAnswers.add(word);
                 }
               }
@@ -604,7 +605,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                 if (widget.isCombo) {
                   session.addDictantWrong(word);
                 }
-                await pool.play(wrongSoundId);
+                soundService.playWrong();
                 updateCurrentWord();
               }
             }
@@ -629,18 +630,5 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
-  }
-
-  void initSounds() async {
-    correctSoundId = await rootBundle
-        .load("assets/sounds/correct.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
-    wrongSoundId = await rootBundle
-        .load("assets/sounds/wrong.mp3")
-        .then((ByteData soundData) {
-      return pool.load(soundData);
-    });
   }
 }

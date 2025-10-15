@@ -11,6 +11,7 @@ import 'package:pro_dictant/service_locator.dart' as di;
 import 'package:pro_dictant/service_locator.dart';
 import 'package:provider/provider.dart';
 
+import 'core/platform/sound_service.dart';
 import 'core/s.dart';
 import 'features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
 import 'features/trainings/presentation/manager/provider/combo_training_session.dart';
