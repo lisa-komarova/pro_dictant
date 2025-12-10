@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
@@ -9,6 +11,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/auto_speak_prefs.dart';
 import '../../../../core/platform/sound_service.dart';
 import '../../../../service_locator.dart';
 import '../../domain/entities/dictant_training_entity.dart';
@@ -49,30 +52,76 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   final wordController = TextEditingController();
   int numberOfAdsShown = 0;
   final soundService = sl.get<SoundService>();
+  late FocusNode translationFocusNode;
+  final FlutterTts flutterTts = FlutterTts();
+  bool isAutoSpeakEnabled = false;
+  final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    translationFocusNode = FocusNode();
+    _loadAutoSpeak();
+    requestTranslationFocus();
     super.initState();
+  }
+
+  Future<void> _loadAutoSpeak() async {
+    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('Dictant');
+  }
+
+  @override
+  void dispose() {
+    translationFocusNode.dispose();
+    flutterTts.stop();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final session = context.read<ComboTrainingSession>();
-    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, _) async {
+        isAutoSpeakEnabled = false;
+        await flutterTts.stop();
+        if (!didPop) {
+          if (!widget.isCombo) Navigator.of(context).pop();
+        }
+      },
       child: SafeArea(
         top: false,
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  await flutterTts.stop();
                   final session = context.read<ComboTrainingSession>();
                   session.reset();
                   return Navigator.of(context).pop();
                 },
-                icon: Image.asset('assets/icons/cancel.png')),
+                icon: Semantics(
+                    excludeSemantics: isHintSelected,
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isAutoSpeakEnabled = !isAutoSpeakEnabled;
+                    });
+                    autoSpeakPrefs.setIsEnabled('Dictant', isAutoSpeakEnabled);
+                  },
+                  icon: Semantics(
+                      label: isAutoSpeakEnabled
+                          ? S.of(context).turnAutoSpeakOff
+                          : S.of(context).turnAutoSpeakOn,
+                      child: isAutoSpeakEnabled
+                          ? Image.asset(
+                              'assets/icons/announce_word_activated.png')
+                          : Image.asset(
+                              'assets/icons/announce_word_not_activated.png')))
+            ],
           ),
           body: BlocBuilder<TrainingsBloc, TrainingsState>(
             builder: (context, state) {
@@ -89,6 +138,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               } else if (state is DictantTrainingLoaded) {
                 if (words.isEmpty) {
                   words.addAll(state.words);
+                  if (isAutoSpeakEnabled) {
+                    speak(words[0].translation);
+                  }
                 }
                 return _buildWordCard(words, session);
               } else {
@@ -104,6 +156,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                       attempts = 0;
                       isHintSelected = true;
                     });
+                    requestTranslationFocus();
                   },
                   elevation: 0,
                   hoverElevation: 0,
@@ -115,7 +168,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                     child: SizedBox(
                         height: 35,
                         width: 35,
-                        child: Image.asset('assets/icons/hint.png')),
+                        child: Semantics(
+                            label: S.of(context).hintButton,
+                            child: Image.asset('assets/icons/hint.png'))),
                   ),
                 )
               : null,
@@ -147,16 +202,25 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           flex: isHintSelected ? 1 : 2,
           child: Text(
             '${currentWordIndex + 1}/${words.length}',
+            semanticsLabel: S
+                .of(context)
+                .wordsRemaining(words.length - (currentWordIndex + 1)),
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
         Flexible(
           flex: isHintSelected ? 1 : 3,
           child: Center(
-            child: AutoSizeText(
-              words[currentWordIndex].translation,
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
+            child: Focus(
+              focusNode: translationFocusNode,
+              child: Semantics(
+                focused: translationFocusNode.hasFocus,
+                child: AutoSizeText(
+                  words[currentWordIndex].translation,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ),
         ),
@@ -236,6 +300,12 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                       attempts++;
                                       focusBorderColor =
                                           const Color(0xFFB70E0E);
+                                      SemanticsService.announce(
+                                          S
+                                              .of(context)
+                                              .wrongAnswerNAttemptsLeft(
+                                                  maxAttempts - attempts - 1),
+                                          TextDirection.ltr);
                                     });
                                   } else {
                                     soundService.playWrong();
@@ -424,36 +494,6 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           ),
         );
 
-        // final wordsSet = correctAnswers.map((e) => e.id).toSet();
-        // Set<String> mistakesSet = mistakes.map((e) => e.$1.id).toSet();
-        // correctAnswers.retainWhere((x) => wordsSet.remove(x.id));
-        // mistakes.retainWhere((element) => mistakesSet.remove(element.$1.id));
-        // mistakesSet = mistakes.map((e) => e.$1.id).toSet();
-        // correctAnswers.removeWhere((element) => mistakesSet.remove(element.id));
-
-        /* Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (ctx) => TrainingResultListPage(
-                answers: answers,
-                onPressed: () {
-                  if (widget.setId.isNotEmpty) {
-                    BlocProvider.of<TrainingsBloc>(ctx)
-                        .add(FetchSetWordsForDictantTRainings(widget.setId));
-                    Navigator.of(ctx).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (ctx) =>
-                            DictantInProcessPage(setId: widget.setId),
-                      ),
-                    );
-                  } else {
-                    BlocProvider.of<TrainingsBloc>(ctx)
-                        .add(const FetchWordsForDictantTRainings());
-                    Navigator.of(ctx).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (ctx) => const DictantInProcessPage(setId: ''),
-                      ),
-                    );
-                  }
-                })));*/
         BlocProvider.of<TrainingsBloc>(context)
             .add(UpdateWordsForDictantTRainings(correctAnswers));
         return;
@@ -469,6 +509,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     setState(() {
       currentWordIndex++;
     });
+    if (mounted && isAutoSpeakEnabled) {
+      speak(words[currentWordIndex].translation);
+    }
+    requestTranslationFocus();
   }
 
   Widget _loadingIndicator() {
@@ -494,9 +538,12 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    children: _buildBoxesForLetters(),
+                  child: Semantics(
+                    label: S.of(context).currentDictantAnswer,
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      children: _buildBoxesForLetters(),
+                    ),
                   ),
                 ),
               ),
@@ -556,7 +603,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
           ),
           child: Center(
             child: currentLetterIndex > index
-                ? Text(correctAnswer[index])
+                ? Text(
+                    correctAnswer[index],
+                    locale: const Locale('en_GB'),
+                  )
                 : const Text(''),
           ),
         ),
@@ -577,6 +627,14 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               setState(() {
                 colors[index] = const Color(0xFF85977f);
                 currentLetterIndex++;
+                SemanticsService.announce(
+                    S.of(context).chosenRight, TextDirection.ltr);
+
+                for (int i = 0; i < colors.length; i++) {
+                  if (colors[i] == const Color(0xFFB70E0E)) {
+                    colors[i] = const Color(0xFFd9c3ac);
+                  }
+                }
               });
               if (currentLetterIndex == correctAnswer.length) {
                 updateCurrentWord();
@@ -609,6 +667,12 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                 }
                 soundService.playWrong();
                 updateCurrentWord();
+              } else {
+                SemanticsService.announce(
+                    S
+                        .of(context)
+                        .wrongChoiceNAttemptsLeft(maxAttempts - attempts),
+                    TextDirection.ltr);
               }
             }
           },
@@ -620,7 +684,17 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               borderRadius: BorderRadius.circular(15),
             ),
             child: Center(
-              child: Text(suggestedLetters[index]),
+              child: Semantics(
+                label: colors[index] == Color(0xFFd9c3ac)
+                    ? S.of(context).notChosen
+                    : colors[index] == Color(0xFFB70E0E)
+                        ? S.of(context).chosenWrong
+                        : S.of(context).chosenRight,
+                child: Text(
+                  suggestedLetters[index],
+                  locale: Locale('en_GB'),
+                ),
+              ),
             ),
           ),
         ),
@@ -632,5 +706,20 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  void requestTranslationFocus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(translationFocusNode);
+      }
+    });
+  }
+
+  Future<void> speak(String text) async {
+    await flutterTts.setLanguage('ru');
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.speak(text, focus: false);
   }
 }

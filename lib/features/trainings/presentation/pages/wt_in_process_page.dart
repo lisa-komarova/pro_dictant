@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:pro_dictant/core/platform/auto_speak_prefs.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
@@ -10,7 +11,7 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
-import 'package:pro_dictant/features/trainings/presentation/widgets/answer_button.dart';
+import 'package:pro_dictant/features/trainings/presentation/widgets/animated_ answer_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/ad_widget.dart';
@@ -38,16 +39,37 @@ class WTInProcessPage extends StatefulWidget {
 class _WTInProcessPageState extends State<WTInProcessPage> {
   int currentWordIndex = 0;
   Map<String, String> answers = {};
+  List<int> answerOrder = [];
   final FlutterTts flutterTts = FlutterTts();
   var isPronounceSelected = false;
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
   final soundService = sl.get<SoundService>();
+  bool isAutoSpeakEnabled = false;
+  final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
+  late FocusNode sourceFocusNode;
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    sourceFocusNode = FocusNode();
+    _loadAutoSpeak();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(sourceFocusNode);
+    });
     super.initState();
+  }
+
+  Future<void> _loadAutoSpeak() async {
+    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('WT');
+  }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    sourceFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,23 +77,45 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return PopScope(
       canPop: false,
-      // onPopInvokedWithResult: (bool didPop, _) {
-      //   if (!didPop) {
-      //     if (!widget.isCombo)
-      //       Navigator.of(context).pop();
-      //   }
-      // },
+      onPopInvokedWithResult: (bool didPop, _) async {
+        isAutoSpeakEnabled = false;
+        await flutterTts.stop();
+        if (!didPop) {
+          if (!widget.isCombo) Navigator.of(context).pop();
+        }
+      },
       child: SafeArea(
         top: false,
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await flutterTts.stop();
                     final session = context.read<ComboTrainingSession>();
                     session.reset();
                     return Navigator.of(context).pop();
                   },
-                  icon: Image.asset('assets/icons/cancel.png')),
+                  icon: Semantics(
+                      label: S.of(context).exitButton,
+                      child: Image.asset('assets/icons/cancel.png'))),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isAutoSpeakEnabled = !isAutoSpeakEnabled;
+                      });
+                      autoSpeakPrefs.setIsEnabled('WT', isAutoSpeakEnabled);
+                    },
+                    icon: Semantics(
+                        label: isAutoSpeakEnabled
+                            ? S.of(context).turnAutoSpeakOff
+                            : S.of(context).turnAutoSpeakOn,
+                        child: isAutoSpeakEnabled
+                            ? Image.asset(
+                                'assets/icons/announce_word_activated.png')
+                            : Image.asset(
+                                'assets/icons/announce_word_not_activated.png')))
+              ],
             ),
             body: BlocBuilder<TrainingsBloc, TrainingsState>(
               builder: (context, state) {
@@ -98,6 +142,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
 
   Widget _buildWordCard(List<WTTrainingEntity> words) {
     if (currentWordIndex >= words.length) return SizedBox();
+    if (isAutoSpeakEnabled) speak(words[currentWordIndex].source);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -116,27 +161,32 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
           ),
         ),
         Flexible(
-          child: GestureDetector(
-            onTap: () {
-              speak(words[currentWordIndex].source);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Image.asset(
-                'assets/icons/pronounce.png',
-                width: 80,
-                height: 80,
-                color: _color,
-              ),
-            ),
-          ),
-        ),
-        Flexible(
           flex: 2,
           child: Text(
             '${currentWordIndex + 1}/${words.length}',
+            semanticsLabel: S
+                .of(context)
+                .wordsRemaining(words.length - (currentWordIndex + 1)),
             style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        Flexible(
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              onTap: () {
+                speak(words[currentWordIndex].source);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(seconds: 1),
+                curve: Curves.fastOutSlowIn,
+                child: Image.asset(
+                  'assets/icons/pronounce.png',
+                  width: 80,
+                  height: 80,
+                  color: _color,
+                ),
+              ),
+            ),
           ),
         ),
         const Flexible(
@@ -147,20 +197,29 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
         ),
         Flexible(
           flex: 2,
-          child: Text(
-            words[currentWordIndex].source,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
+          child: Focus(
+            focusNode: sourceFocusNode,
+            child: Semantics(
+              focused: sourceFocusNode.hasFocus,
+              child: Text(
+                words[currentWordIndex].source,
+                locale: Locale('en_GB'),
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
         ),
         Flexible(
           flex: 4,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ...buildSuggestedAnswers(words),
             ],
           ),
-        )
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -323,69 +382,85 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     }
     setState(() {
       currentWordIndex++;
+      answerOrder = List.generate(4, (i) => i)..shuffle();
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(sourceFocusNode);
+      }
     });
   }
 
   List<Widget> buildSuggestedAnswers(List<WTTrainingEntity> words) {
     if (currentWordIndex >= words.length) return [];
+    if (answerOrder.isEmpty) {
+      answerOrder = List.generate(4, (i) => i)..shuffle();
+    }
+    final order = answerOrder;
+
     List<Widget> answersContainers = [];
     final session = context.read<ComboTrainingSession>();
-    var rng = Random();
-    Set<int> randomSequence = {};
-    do {
-      randomSequence.add(rng.nextInt(4));
-    } while (randomSequence.length < 4);
 
-    for (var element in randomSequence) {
+    for (var element in order) {
       element == 3
           ? answersContainers.add(Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: AnswerButton(
-                      onPressed: () async {
-                        answers[words[currentWordIndex].id] =
-                            words[currentWordIndex].translation;
-                        if (widget.isCombo) {
-                          session.addCorrect("wtTraining", (
-                            words[currentWordIndex].source,
-                            words[currentWordIndex].translation,
-                            words[currentWordIndex].id,
-                          ));
-                          session.removeWtWrong(words[currentWordIndex]);
-                        }
-                        soundService.playCorrect();
-                        updateCurrentWord(words);
-                      },
-                      text: words[currentWordIndex].translation,
-                    )),
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: AnimatedAnswerButton(
+                  text: words[currentWordIndex].translation,
+                  color: const Color(0xFF85977f),
+                  onTap: () async {
+                    answers[words[currentWordIndex].id] =
+                        words[currentWordIndex].translation;
+
+                    if (widget.isCombo) {
+                      session.addCorrect(
+                        "wtTraining",
+                        (
+                          words[currentWordIndex].source,
+                          words[currentWordIndex].translation,
+                          words[currentWordIndex].id,
+                        ),
+                      );
+                      session.removeWtWrong(words[currentWordIndex]);
+                    }
+
+                    soundService.playCorrect();
+                    updateCurrentWord(words);
+                  },
+                ),
               ),
-            ))
+            )))
           : answersContainers.add(Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: 50,
-                    child: AnswerButton(
-                      onPressed: () async {
+                    child: AnimatedAnswerButton(
+                      text: words[currentWordIndex]
+                          .suggestedTranslationList[element]
+                          .translation,
+                      color: const Color(0xFFB70E0E),
+                      onTap: () async {
                         answers[words[currentWordIndex].id] =
                             words[currentWordIndex]
                                 .suggestedTranslationList[element]
                                 .translation;
+
                         if (widget.isCombo) {
                           session.addWtWrong(words[currentWordIndex]);
                         }
+
                         soundService.playWrong();
                         updateCurrentWord(words);
                       },
-                      text: words[currentWordIndex]
-                          .suggestedTranslationList[element]
-                          .translation,
-                    )),
-              ),
+                    ),
+                  )),
             ));
     }
     return answersContainers;
@@ -404,7 +479,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
-    await flutterTts.speak(text);
+    await flutterTts.speak(text, focus: false);
   }
 
   getNumberOfAdsShown() async {

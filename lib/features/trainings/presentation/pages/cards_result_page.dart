@@ -29,9 +29,10 @@ class CardsResultPage extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Image.asset('assets/icons/cancel.png'),
-            ),
+                onPressed: () => Navigator.of(context).pop(),
+                icon: Semantics(
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
             title: Padding(
               padding: const EdgeInsets.only(left: 10.0),
               child: Text(
@@ -94,11 +95,13 @@ class CardsResultPage extends StatelessWidget {
                               ),
                               labelColor: Colors.black,
                               unselectedLabelColor: const Color(0xFFD9C3AC),
-                              labelStyle: Theme.of(context).textTheme.titleMedium,
+                              labelStyle:
+                                  Theme.of(context).textTheme.titleMedium,
                               tabs: [
                                 if (correctAnswers.isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 15.0),
+                                    padding:
+                                        const EdgeInsets.only(bottom: 15.0),
                                     child: Tab(
                                       child: Text(
                                         S.of(context).rightAnswers,
@@ -110,7 +113,8 @@ class CardsResultPage extends StatelessWidget {
                                   ),
                                 if (mistakes.isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 15.0),
+                                    padding:
+                                        const EdgeInsets.only(bottom: 15.0),
                                     child: Tab(
                                       child: Text(
                                         S.of(context).mistakes,
@@ -140,7 +144,8 @@ class CardsResultPage extends StatelessWidget {
                       BlocProvider.of<TrainingsBloc>(context)
                           .add(const FetchWordsForCardsTRainings());
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (ctx) => const CardsInProcessPage(setId: "")));
+                          builder: (ctx) =>
+                              const CardsInProcessPage(setId: "")));
                     }
                   },
                 )),
@@ -174,6 +179,7 @@ class CardsResultPage extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: Text(
                         '${list[index].source} -',
+                        locale: Locale('en_GB'),
                         textAlign: TextAlign.center,
                         style: TextStyle(color: color),
                       ),
@@ -184,6 +190,10 @@ class CardsResultPage extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         child: Text(
                           '${list[index].translation}',
+                          semanticsLabel: color == Color(0xFFB70E0E)
+                              ? S.of(ctx).rightAnswer +
+                                  ' ${list[index].translation}'
+                              : '${list[index].translation}',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: color),
                         ),

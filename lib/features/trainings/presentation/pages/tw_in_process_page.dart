@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
@@ -9,11 +10,12 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_page.dart';
-import 'package:pro_dictant/features/trainings/presentation/widgets/answer_button.dart';
+import 'package:pro_dictant/features/trainings/presentation/widgets/animated_ answer_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:yandex_mobileads/mobile_ads.dart';
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/auto_speak_prefs.dart';
 import '../../../../core/platform/sound_service.dart';
 import '../../../../service_locator.dart';
 import '../../domain/entities/dictant_training_entity.dart';
@@ -39,34 +41,84 @@ class TWInProcessPage extends StatefulWidget {
 class _TWInProcessPageState extends State<TWInProcessPage> {
   int currentWordIndex = 0;
   Map<String, String> answers = {};
+  List<int> answerOrder = [];
   int numberOfAdsShown = 0;
   late final correctSoundId;
   late final wrongSoundId;
   final soundService = sl.get<SoundService>();
+  late FocusNode translationFocusNode;
+  final FlutterTts flutterTts = FlutterTts();
+  bool isAutoSpeakEnabled = false;
+  final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
     MobileAds.initialize();
+    translationFocusNode = FocusNode();
+    _loadAutoSpeak();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(translationFocusNode);
+    });
     super.initState();
+  }
+
+  Future<void> _loadAutoSpeak() async {
+    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('TW');
+  }
+
+  @override
+  void dispose() {
+    translationFocusNode.dispose();
+    flutterTts.stop();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, _) async {
+        isAutoSpeakEnabled = false;
+        await flutterTts.stop();
+        if (!didPop) {
+          if (!widget.isCombo) Navigator.of(context).pop();
+        }
+      },
       child: SafeArea(
         top: false,
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                  onPressed: () {
-                    final session = context.read<ComboTrainingSession>();
-                    session.reset();
-                    return Navigator.of(context).pop();
-                  },
-                  icon: Image.asset('assets/icons/cancel.png')),
+                onPressed: () async {
+                  await flutterTts.stop();
+                  final session = context.read<ComboTrainingSession>();
+                  session.reset();
+                  return Navigator.of(context).pop();
+                },
+                icon: Semantics(
+                  label: S.of(context).exitButton,
+                  child: Image.asset('assets/icons/cancel.png'),
+                ),
+              ),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isAutoSpeakEnabled = !isAutoSpeakEnabled;
+                      });
+                      autoSpeakPrefs.setIsEnabled('TW', isAutoSpeakEnabled);
+                    },
+                    icon: Semantics(
+                        label: isAutoSpeakEnabled
+                            ? S.of(context).turnAutoSpeakOff
+                            : S.of(context).turnAutoSpeakOn,
+                        child: isAutoSpeakEnabled
+                            ? Image.asset(
+                                'assets/icons/announce_word_activated.png')
+                            : Image.asset(
+                                'assets/icons/announce_word_not_activated.png')))
+              ],
             ),
             body: BlocBuilder<TrainingsBloc, TrainingsState>(
               builder: (context, state) {
@@ -93,6 +145,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
 
   Widget _buildWordCard(List<TWTrainingEntity> words) {
     if (currentWordIndex >= words.length) return SizedBox();
+    if (isAutoSpeakEnabled) speak(words[currentWordIndex].translation);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -114,6 +167,9 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
           flex: 2,
           child: Text(
             '${currentWordIndex + 1}/${words.length}',
+            semanticsLabel: S
+                .of(context)
+                .wordsRemaining(words.length - (currentWordIndex + 1)),
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -126,21 +182,31 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
         Flexible(
           flex: 2,
           child: Center(
-            child: Text(
-              words[currentWordIndex].translation,
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
+            child: Semantics(
+              child: Focus(
+                focusNode: translationFocusNode,
+                child: Semantics(
+                  focused: translationFocusNode.hasFocus,
+                  child: Text(
+                    words[currentWordIndex].translation,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
         Flexible(
           flex: 4,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ...buildSuggestedAnswers(words),
             ],
           ),
-        )
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -306,68 +372,85 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
     }
     setState(() {
       currentWordIndex++;
+      answerOrder = List.generate(4, (i) => i)..shuffle();
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(translationFocusNode);
+      }
     });
   }
 
   List<Widget> buildSuggestedAnswers(List<TWTrainingEntity> words) {
     if (currentWordIndex >= words.length) return [];
     List<Widget> answersContainers = [];
+    if (answerOrder.isEmpty) {
+      answerOrder = List.generate(4, (i) => i)..shuffle();
+    }
+    final order = answerOrder;
     final session = context.read<ComboTrainingSession>();
-    var rng = Random();
-    Set<int> randomSequence = {};
-    do {
-      randomSequence.add(rng.nextInt(4));
-    } while (randomSequence.length < 4);
 
-    for (var element in randomSequence) {
+    for (var element in order) {
       element == 3
           ? answersContainers.add(Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: AnswerButton(
-                        onPressed: () async {
-                          answers[words[currentWordIndex].id] =
-                              words[currentWordIndex].source;
-                          if (widget.isCombo) {
-                            session.addCorrect('twTraining', (
-                              words[currentWordIndex].source,
-                              words[currentWordIndex].translation,
-                              words[currentWordIndex].id,
-                            ));
-                            session.removeTwWrong(words[currentWordIndex]);
-                          }
-                          soundService.playCorrect();
-                          updateCurrentWord(words);
-                        },
-                        text: words[currentWordIndex].source)),
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: AnimatedAnswerButton(
+                  text: words[currentWordIndex].source,
+                  color: const Color(0xFF85977f),
+                  onTap: () async {
+                    answers[words[currentWordIndex].id] =
+                        words[currentWordIndex].source;
+
+                    if (widget.isCombo) {
+                      session.addCorrect(
+                        "twTraining",
+                        (
+                          words[currentWordIndex].source,
+                          words[currentWordIndex].translation,
+                          words[currentWordIndex].id,
+                        ),
+                      );
+                      session.removeTwWrong(words[currentWordIndex]);
+                    }
+
+                    soundService.playCorrect();
+                    updateCurrentWord(words);
+                  },
+                ),
               ),
-            ))
+            )))
           : answersContainers.add(Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 50,
-                    child: AnswerButton(
-                        onPressed: () async {
-                          answers[words[currentWordIndex].id] =
-                              words[currentWordIndex]
-                                  .suggestedSourcesList[element]
-                                  .source;
-                          if (widget.isCombo) {
-                            session.addTwWrong(words[currentWordIndex]);
-                          }
-                          soundService.playWrong();
-                          updateCurrentWord(words);
-                        },
-                        text: words[currentWordIndex]
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: AnimatedAnswerButton(
+                  text: words[currentWordIndex]
+                      .suggestedSourcesList[element]
+                      .source,
+                  color: const Color(0xFFB70E0E),
+                  onTap: () async {
+                    answers[words[currentWordIndex].id] =
+                        words[currentWordIndex]
                             .suggestedSourcesList[element]
-                            .source)),
+                            .source;
+
+                    if (widget.isCombo) {
+                      session.addTwWrong(words[currentWordIndex]);
+                    }
+
+                    soundService.playWrong();
+                    updateCurrentWord(words);
+                  },
+                ),
               ),
-            ));
+            )));
     }
     return answersContainers;
   }
@@ -384,5 +467,12 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
+  }
+
+  Future<void> speak(String text) async {
+    await flutterTts.setLanguage('ru');
+    await flutterTts.setPitch(1);
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.speak(text, focus: false);
   }
 }

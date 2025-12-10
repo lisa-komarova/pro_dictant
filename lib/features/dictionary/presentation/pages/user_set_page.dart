@@ -33,7 +33,9 @@ class _UserSetPageState extends State<UserSetPage> {
                 FocusScope.of(context).unfocus();
                 BlocProvider.of<WordsBloc>(context).add(const LoadWords());
               },
-              icon: Image.asset('assets/icons/cancel.png')),
+              icon: Semantics(
+                  label: S.of(context).exitButton,
+                  child: Image.asset('assets/icons/cancel.png'))),
         ),
         body: PopScope(
           canPop: false,

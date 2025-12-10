@@ -443,19 +443,19 @@ abstract class AppLocalizations {
   /// No description provided for @iKnowWontForget.
   ///
   /// In en, this message translates to:
-  /// **'i know \nwon\'t forget'**
+  /// **'i know won\'t forget'**
   String get iKnowWontForget;
 
   /// No description provided for @iKnowMightForget.
   ///
   /// In en, this message translates to:
-  /// **'i know\nmight forget'**
+  /// **'i know might forget'**
   String get iKnowMightForget;
 
   /// No description provided for @iDontRemember.
   ///
   /// In en, this message translates to:
-  /// **'i don\'t\nremember'**
+  /// **'i don\'t remember'**
   String get iDontRemember;
 
   /// No description provided for @sentToLearning.
@@ -595,6 +595,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'pass'**
   String get pass;
+
+  /// No description provided for @filterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'filter button {filter}'**
+  String filterButton(Object filter);
+
+  /// No description provided for @selected.
+  ///
+  /// In en, this message translates to:
+  /// **'selected'**
+  String get selected;
+
+  /// No description provided for @notSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'not selected'**
+  String get notSelected;
+
+  /// No description provided for @searchButton.
+  ///
+  /// In en, this message translates to:
+  /// **'search'**
+  String get searchButton;
+
+  /// No description provided for @clearButton.
+  ///
+  /// In en, this message translates to:
+  /// **'clear'**
+  String get clearButton;
+
+  /// No description provided for @progress.
+  ///
+  /// In en, this message translates to:
+  /// **'{learnt} trainings passed'**
+  String progress(Object learnt);
+
+  /// No description provided for @speakButton.
+  ///
+  /// In en, this message translates to:
+  /// **'pronounce'**
+  String get speakButton;
+
+  /// No description provided for @deleteWordFromDictionaryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'delete this word from the dictionary'**
+  String get deleteWordFromDictionaryButton;
+
+  /// No description provided for @addWordToDictionaryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'add this word to my dictionary'**
+  String get addWordToDictionaryButton;
+
+  /// No description provided for @deleteWordFromDBButton.
+  ///
+  /// In en, this message translates to:
+  /// **'delete this word permanently'**
+  String get deleteWordFromDBButton;
+
+  /// No description provided for @exitButton.
+  ///
+  /// In en, this message translates to:
+  /// **'exit'**
+  String get exitButton;
+
+  /// No description provided for @addNotesToTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'add notes to {translation} translation'**
+  String addNotesToTranslation(Object translation);
+
+  /// No description provided for @addAnotherTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'add another translation'**
+  String get addAnotherTranslation;
+
+  /// No description provided for @removeThisTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'remove {translation} translation'**
+  String removeThisTranslation(Object translation);
+
+  /// No description provided for @wordsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} words remaining'**
+  String wordsRemaining(num count);
+
+  /// No description provided for @rightAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'right answer'**
+  String get rightAnswer;
+
+  /// No description provided for @wrongAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'wrong answer'**
+  String get wrongAnswer;
+
+  /// No description provided for @wordRightInWTandTWResult.
+  ///
+  /// In en, this message translates to:
+  /// **'{word} no mistake'**
+  String wordRightInWTandTWResult(Object word);
+
+  /// No description provided for @wordWrongInWTandTWResult.
+  ///
+  /// In en, this message translates to:
+  /// **'{word} mistake'**
+  String wordWrongInWTandTWResult(Object word);
+
+  /// No description provided for @hintButton.
+  ///
+  /// In en, this message translates to:
+  /// **'hint'**
+  String get hintButton;
+
+  /// No description provided for @notChosen.
+  ///
+  /// In en, this message translates to:
+  /// **'not chosen'**
+  String get notChosen;
+
+  /// No description provided for @chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'сhosen'**
+  String get chosen;
+
+  /// No description provided for @chosenRight.
+  ///
+  /// In en, this message translates to:
+  /// **'right choice'**
+  String get chosenRight;
+
+  /// No description provided for @chosenWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'wrong choice'**
+  String get chosenWrong;
+
+  /// No description provided for @currentDictantAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'current answer'**
+  String get currentDictantAnswer;
+
+  /// No description provided for @wordNotEntered.
+  ///
+  /// In en, this message translates to:
+  /// **'empty field'**
+  String get wordNotEntered;
+
+  /// No description provided for @goalCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'goal сompleted'**
+  String get goalCompleted;
+
+  /// No description provided for @goalUncompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'goal unсompleted'**
+  String get goalUncompleted;
+
+  /// No description provided for @wrongAnswerNAttemptsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'wrong answer, {count} attempts left'**
+  String wrongAnswerNAttemptsLeft(num count);
+
+  /// No description provided for @wrongChoiceNAttemptsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'wrong choice, {count} attempts left'**
+  String wrongChoiceNAttemptsLeft(num count);
+
+  /// No description provided for @wordTranslationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'word-translation: choose the correct translation into Russian'**
+  String get wordTranslationDesc;
+
+  /// No description provided for @translationWordDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'translation-word: choose the correct translation into English'**
+  String get translationWordDesc;
+
+  /// No description provided for @matchingWordsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'math the words: pair the word with its translation'**
+  String get matchingWordsDesc;
+
+  /// No description provided for @wordCardsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'word cards: choose the correct translation from two options'**
+  String get wordCardsDesc;
+
+  /// No description provided for @dictantDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'dictation: write down the translation of the word in English'**
+  String get dictantDesc;
+
+  /// No description provided for @comboDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'combo: a combination of word-translation, translation-word, and dictation trainings'**
+  String get comboDesc;
+
+  /// No description provided for @repeatWordsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'repeat words: track the progress of learned words'**
+  String get repeatWordsDesc;
+
+  /// No description provided for @turnAutoSpeakOn.
+  ///
+  /// In en, this message translates to:
+  /// **'turn on auto-speak'**
+  String get turnAutoSpeakOn;
+
+  /// No description provided for @turnAutoSpeakOff.
+  ///
+  /// In en, this message translates to:
+  /// **'turn off auto-speak'**
+  String get turnAutoSpeakOff;
 }
 
 class _AppLocalizationsDelegate

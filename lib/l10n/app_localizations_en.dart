@@ -194,13 +194,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endTrainings => 'end training';
 
   @override
-  String get iKnowWontForget => 'i know \nwon\'t forget';
+  String get iKnowWontForget => 'i know won\'t forget';
 
   @override
-  String get iKnowMightForget => 'i know\nmight forget';
+  String get iKnowMightForget => 'i know might forget';
 
   @override
-  String get iDontRemember => 'i don\'t\nremember';
+  String get iDontRemember => 'i don\'t remember';
 
   @override
   String get sentToLearning => 'sent to learning';
@@ -277,4 +277,147 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pass => 'pass';
+
+  @override
+  String filterButton(Object filter) {
+    return 'filter button $filter';
+  }
+
+  @override
+  String get selected => 'selected';
+
+  @override
+  String get notSelected => 'not selected';
+
+  @override
+  String get searchButton => 'search';
+
+  @override
+  String get clearButton => 'clear';
+
+  @override
+  String progress(Object learnt) {
+    return '$learnt trainings passed';
+  }
+
+  @override
+  String get speakButton => 'pronounce';
+
+  @override
+  String get deleteWordFromDictionaryButton =>
+      'delete this word from the dictionary';
+
+  @override
+  String get addWordToDictionaryButton => 'add this word to my dictionary';
+
+  @override
+  String get deleteWordFromDBButton => 'delete this word permanently';
+
+  @override
+  String get exitButton => 'exit';
+
+  @override
+  String addNotesToTranslation(Object translation) {
+    return 'add notes to $translation translation';
+  }
+
+  @override
+  String get addAnotherTranslation => 'add another translation';
+
+  @override
+  String removeThisTranslation(Object translation) {
+    return 'remove $translation translation';
+  }
+
+  @override
+  String wordsRemaining(num count) {
+    return '$count words remaining';
+  }
+
+  @override
+  String get rightAnswer => 'right answer';
+
+  @override
+  String get wrongAnswer => 'wrong answer';
+
+  @override
+  String wordRightInWTandTWResult(Object word) {
+    return '$word no mistake';
+  }
+
+  @override
+  String wordWrongInWTandTWResult(Object word) {
+    return '$word mistake';
+  }
+
+  @override
+  String get hintButton => 'hint';
+
+  @override
+  String get notChosen => 'not chosen';
+
+  @override
+  String get chosen => 'сhosen';
+
+  @override
+  String get chosenRight => 'right choice';
+
+  @override
+  String get chosenWrong => 'wrong choice';
+
+  @override
+  String get currentDictantAnswer => 'current answer';
+
+  @override
+  String get wordNotEntered => 'empty field';
+
+  @override
+  String get goalCompleted => 'goal сompleted';
+
+  @override
+  String get goalUncompleted => 'goal unсompleted';
+
+  @override
+  String wrongAnswerNAttemptsLeft(num count) {
+    return 'wrong answer, $count attempts left';
+  }
+
+  @override
+  String wrongChoiceNAttemptsLeft(num count) {
+    return 'wrong choice, $count attempts left';
+  }
+
+  @override
+  String get wordTranslationDesc =>
+      'word-translation: choose the correct translation into Russian';
+
+  @override
+  String get translationWordDesc =>
+      'translation-word: choose the correct translation into English';
+
+  @override
+  String get matchingWordsDesc =>
+      'math the words: pair the word with its translation';
+
+  @override
+  String get wordCardsDesc =>
+      'word cards: choose the correct translation from two options';
+
+  @override
+  String get dictantDesc =>
+      'dictation: write down the translation of the word in English';
+
+  @override
+  String get comboDesc =>
+      'combo: a combination of word-translation, translation-word, and dictation trainings';
+
+  @override
+  String get repeatWordsDesc =>
+      'repeat words: track the progress of learned words';
+
+  @override
+  String get turnAutoSpeakOn => 'turn on auto-speak';
+
+  @override
+  String get turnAutoSpeakOff => 'turn off auto-speak';
 }

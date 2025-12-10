@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:pro_dictant/features/dictionary/presentation/widgets/words_translation_cards.dart';
 
+import '../../../../core/s.dart';
+
 class WordsDetails extends StatefulWidget {
   final WordEntity word;
   const WordsDetails({required this.word, super.key});
@@ -28,7 +30,9 @@ class _WordsDetailsState extends State<WordsDetails> {
                 onPressed: () {
                   return Navigator.of(context).pop(widget.word);
                 },
-                icon: Image.asset('assets/icons/cancel.png')),
+                icon: Semantics(
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
           ),
           body: WordTranslationCards(
             word: widget.word,

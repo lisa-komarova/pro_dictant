@@ -71,7 +71,9 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                     //BlocProvider.of<SetBloc>(context).add(const LoadSets());
                     Navigator.of(context).pop(setEntity);
                   },
-                  icon: Image.asset('assets/icons/cancel.png'),
+                  icon: Semantics(
+                      label: S.of(context).exitButton,
+                      child: Image.asset('assets/icons/cancel.png')),
                 ),
               ),
               body: buildWordsList(state.set.wordsInSet, wordsTranslations,
@@ -364,11 +366,14 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                       child: FittedBox(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            'assets/icons/dictant.png',
-                            width: 35,
-                            height: 35,
-                            color: Colors.white,
+                          child: Semantics(
+                            label: S.of(context).editSet,
+                            child: Image.asset(
+                              'assets/icons/dictant.png',
+                              width: 35,
+                              height: 35,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

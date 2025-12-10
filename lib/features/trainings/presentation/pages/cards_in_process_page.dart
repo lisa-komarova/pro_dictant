@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -7,11 +8,13 @@ import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/auto_speak_prefs.dart';
 import '../../../../core/platform/sound_service.dart';
 import '../../../../service_locator.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
+import '../widgets/animated_ answer_button.dart';
 import 'cards_result_page.dart';
 
 class CardsInProcessPage extends StatefulWidget {
@@ -35,27 +38,75 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
   final soundService = sl.get<SoundService>();
+  late FocusNode wordFocusNode;
+  bool isAutoSpeakEnabled = false;
+  final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    wordFocusNode = FocusNode();
+    _loadAutoSpeak();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        wordFocusNode.requestFocus();
+      }
+    });
     super.initState();
+  }
+
+  Future<void> _loadAutoSpeak() async {
+    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('Cards');
+  }
+
+  @override
+  void dispose() {
+    wordFocusNode.dispose();
+    flutterTts.stop();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, _) async {
+        isAutoSpeakEnabled = false;
+        await flutterTts.stop();
+        if (!didPop) {
+          Navigator.of(context).pop();
+        }
+      },
       child: SafeArea(
         top: false,
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-                onPressed: () {
+                onPressed: () async {
+                  await flutterTts.stop();
                   return Navigator.of(context).pop();
                 },
-                icon: Image.asset('assets/icons/cancel.png')),
+                icon: Semantics(
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isAutoSpeakEnabled = !isAutoSpeakEnabled;
+                    });
+                    autoSpeakPrefs.setIsEnabled('Cards', isAutoSpeakEnabled);
+                  },
+                  icon: Semantics(
+                      label: isAutoSpeakEnabled
+                          ? S.of(context).turnAutoSpeakOff
+                          : S.of(context).turnAutoSpeakOn,
+                      child: isAutoSpeakEnabled
+                          ? Image.asset(
+                              'assets/icons/announce_word_activated.png')
+                          : Image.asset(
+                              'assets/icons/announce_word_not_activated.png')))
+            ],
           ),
           body: BlocBuilder<TrainingsBloc, TrainingsState>(
             builder: (context, state) {
@@ -97,6 +148,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
       suggestedAnswer.add(words[currentWordIndex].wrongTranslation);
       suggestedAnswer.shuffle();
     }
+    if (isAutoSpeakEnabled) speak(words[currentWordIndex].source);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -118,6 +170,9 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
           flex: 2,
           child: Text(
             '${currentWordIndex + 1}/${words.length}',
+            semanticsLabel: S
+                .of(context)
+                .wordsRemaining(words.length - (currentWordIndex + 1)),
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -135,11 +190,14 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
             child: AnimatedContainer(
               duration: const Duration(seconds: 1),
               curve: Curves.fastOutSlowIn,
-              child: Image.asset(
-                'assets/icons/pronounce.png',
-                width: 80,
-                height: 80,
-                color: _color,
+              child: Semantics(
+                label: S.of(context).speakButton,
+                child: Image.asset(
+                  'assets/icons/pronounce.png',
+                  width: 80,
+                  height: 80,
+                  color: _color,
+                ),
               ),
             ),
           ),
@@ -149,10 +207,14 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                words[currentWordIndex].source,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
+              child: Focus(
+                focusNode: wordFocusNode,
+                child: Text(
+                  words[currentWordIndex].source,
+                  locale: Locale('en_GB'),
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),
@@ -160,59 +222,41 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
         Flexible(
           flex: 4,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
                     height: 100,
-                    child: FilledButton(
-                      onPressed: () async {
+                    child: AnimatedAnswerButton(
+                      text: suggestedAnswer.first,
+                      color: suggestedAnswer.first !=
+                              words[currentWordIndex].translation
+                          ? const Color(0xFFB70E0E)
+                          : const Color(0xFF85977f),
+                      onTap: () async {
+                        final isCorrect = suggestedAnswer.first ==
+                            words[currentWordIndex].translation;
+
+                        if (isCorrect) {
+                          soundService.playCorrect();
+                          correctAnswers.add(words[currentWordIndex]);
+                        } else {
+                          soundService.playWrong();
+                          mistakes.add(words[currentWordIndex]);
+                        }
+
                         if (currentWordIndex + 1 >= words.length) {
-                          if (suggestedAnswer.first ==
-                              words[currentWordIndex].translation) {
-                            soundService.playCorrect();
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            soundService.playWrong();
-                            mistakes.add(words[currentWordIndex]);
-                          }
                           finishWorkout();
                           return;
-                        } else {
-                          if (suggestedAnswer.first ==
-                              words[currentWordIndex].translation) {
-                            soundService.playCorrect();
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            soundService.playWrong();
-                            mistakes.add(words[currentWordIndex]);
-                          }
-                          setState(() {
-                            currentWordIndex++;
-                            suggestedAnswer = [];
-                          });
                         }
+
+                        setState(() {
+                          currentWordIndex++;
+                          suggestedAnswer = [];
+                        });
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFd9c3ac),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: AutoSizeText(
-                              suggestedAnswer.first,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ),
@@ -222,52 +266,34 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
                     height: 100,
-                    child: FilledButton(
-                      onPressed: () async {
+                    child: AnimatedAnswerButton(
+                      text: suggestedAnswer.last,
+                      color: suggestedAnswer.last !=
+                              words[currentWordIndex].translation
+                          ? const Color(0xFFB70E0E)
+                          : const Color(0xFF85977f),
+                      onTap: () async {
+                        final isCorrect = suggestedAnswer.last ==
+                            words[currentWordIndex].translation;
+
+                        if (isCorrect) {
+                          soundService.playCorrect();
+                          correctAnswers.add(words[currentWordIndex]);
+                        } else {
+                          soundService.playWrong();
+                          mistakes.add(words[currentWordIndex]);
+                        }
+
                         if (currentWordIndex + 1 >= words.length) {
-                          if (suggestedAnswer.last ==
-                              words[currentWordIndex].translation) {
-                            soundService.playCorrect();
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            soundService.playWrong();
-                            mistakes.add(words[currentWordIndex]);
-                          }
                           finishWorkout();
                           return;
-                        } else {
-                          if (suggestedAnswer.last ==
-                              words[currentWordIndex].translation) {
-                            soundService.playCorrect();
-                            correctAnswers.add(words[currentWordIndex]);
-                          } else {
-                            soundService.playWrong();
-                            mistakes.add(words[currentWordIndex]);
-                          }
-                          setState(() {
-                            currentWordIndex++;
-                            suggestedAnswer = [];
-                          });
                         }
+
+                        setState(() {
+                          currentWordIndex++;
+                          suggestedAnswer = [];
+                        });
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFd9c3ac),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: AutoSizeText(
-                              suggestedAnswer.last,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ),
@@ -275,12 +301,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
             ],
           ),
         ),
-        const Flexible(
-          flex: 1,
-          child: SizedBox(
-            height: 100,
-          ),
-        ),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -306,7 +327,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
-    await flutterTts.speak(text);
+    await flutterTts.speak(text, focus: false);
   }
 
   getNumberOfAdsShown() async {

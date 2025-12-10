@@ -40,6 +40,7 @@ class TrainingCard extends StatelessWidget {
         if (trainingName.isNotEmpty)
           Text(
             trainingName,
+            semanticsLabel: "",
             textAlign: TextAlign.center,
           ),
       ],

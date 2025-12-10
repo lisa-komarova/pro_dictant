@@ -20,10 +20,13 @@ class TrainingResultListPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-              onPressed: () {
-                return Navigator.of(context).pop();
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
+            onPressed: () {
+              return Navigator.of(context).pop();
+            },
+            icon: Semantics(
+                label: S.of(context).exitButton,
+                child: Image.asset('assets/icons/cancel.png')),
+          ),
           title: Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Text(

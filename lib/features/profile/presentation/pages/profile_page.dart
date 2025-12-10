@@ -19,8 +19,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    double topPadding = MediaQuery.of(context).padding.top;
     return SafeArea(
-      top: false,
       child: Scaffold(
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
@@ -29,57 +29,59 @@ class _ProfilePageState extends State<ProfilePage> {
             } else if (state is ProfileLoaded) {
               return RefreshIndicator(
                 onRefresh: _refreshPage,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              S.of(context).addedWords(
-                                  state.statistics.wordsInDictionary),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              S
-                                  .of(context)
-                                  .learntWords(state.statistics.learntWords),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            GestureDetector(
-                              onTap: () => _dialogBuilder(context),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    S.of(context).goal(state.statistics.goal),
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                  Image.asset(
-                                    'assets/icons/dictant.png',
-                                    width: 25,
-                                    height: 25,
-                                  ),
-                                ],
+                child: SingleChildScrollView(
+                  //physics: const AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight:
+                          MediaQuery.of(context).size.height - topPadding - 80,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 25.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                S.of(context).addedWords(
+                                    state.statistics.wordsInDictionary),
+                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
-                            ),
-                          ],
+                              Text(
+                                S
+                                    .of(context)
+                                    .learntWords(state.statistics.learntWords),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              GestureDetector(
+                                onTap: () => _dialogBuilder(context),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      S.of(context).goal(state.statistics.goal),
+                                      style:
+                                          Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                    Image.asset(
+                                      'assets/icons/dictant.png',
+                                      width: 25,
+                                      height: 25,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                        _buildStatistics(context, state.statistics),
+                        const SizedBox(height: 1),
+                        const SizedBox(height: 1),
+                      ],
                     ),
-
-                    // Скроллируемая статистика
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: _buildStatistics(context, state.statistics),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               );
             }
@@ -108,24 +110,35 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: HeatMap(
-          startDate: DateTime.now().subtract(const Duration(days: 30)),
-          endDate: DateTime.now(),
-          scrollable: true,
-          colorMode: ColorMode.color,
-          showColorTip: false,
-          showText: true,
-          textColor: Colors.black,
-          defaultColor: const Color(0xFFd9c3ac),
-          size: 35,
-          borderRadius: 25,
-          colorsets: const {
-            1: Color(0xFF85977F),
-          },
-          datasets: dateSets,
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          const margin = 5.0;
+          final cellSize = (width - margin * 7) / 8;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 5),
+            child: SizedBox(
+              child: HeatMap(
+                startDate: DateTime.now().subtract(const Duration(days: 30)),
+                endDate: DateTime.now(),
+                colorMode: ColorMode.color,
+                scrollable: true,
+                showColorTip: false,
+                showText: true,
+                textColor: Colors.black,
+                defaultColor: const Color(0xFFd9c3ac),
+                size: cellSize,
+                borderRadius: 5,
+                margin: const EdgeInsets.all(margin),
+                colorsets: const {
+                  1: Color(0xFF85977F),
+                },
+                datasets: dateSets,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

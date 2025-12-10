@@ -61,7 +61,9 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                 onPressed: () {
                   return Navigator.of(context).pop('update');
                 },
-                icon: Image.asset('assets/icons/cancel.png')),
+                icon: Semantics(
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
           ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -194,11 +196,14 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                         child: AnimatedContainer(
                           duration: const Duration(seconds: 1),
                           curve: Curves.fastOutSlowIn,
-                          child: Image.asset(
-                            'assets/icons/pronounce.png',
-                            width: 80,
-                            height: 80,
-                            color: _color,
+                          child: Semantics(
+                            label: S.of(context).speakButton,
+                            child: Image.asset(
+                              'assets/icons/pronounce.png',
+                              width: 80,
+                              height: 80,
+                              color: _color,
+                            ),
                           ),
                         ),
                       ),
@@ -231,14 +236,16 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                               ? Flexible(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: AutoSizeText(
-                                      word.pos,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12),
+                                    child: ExcludeSemantics(
+                                      child: AutoSizeText(
+                                        word.pos,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12),
+                                      ),
                                     ),
                                   ),
                                 )
@@ -247,16 +254,18 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                               ? Flexible(
                                   child: Padding(
                                     padding: const EdgeInsets.all(5.0),
-                                    child: Text(
-                                      word.transcription,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.normal,
-                                          ),
+                                    child: ExcludeSemantics(
+                                      child: Text(
+                                        word.transcription,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                      ),
                                     ),
                                   ),
                                 )
@@ -320,10 +329,13 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                       child: GestureDetector(
                         onTap: () => _showDialog(
                             context, word.translationList.first, true),
-                        child: Image.asset(
-                          'assets/icons/delete.png',
-                          width: 35,
-                          height: 35,
+                        child: Semantics(
+                          label: S.of(context).deleteWordFromDictionaryButton,
+                          child: Image.asset(
+                            'assets/icons/delete.png',
+                            width: 35,
+                            height: 35,
+                          ),
                         ),
                       ),
                     ),
@@ -336,10 +348,13 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                       child: GestureDetector(
                         onTap: () => _showDialog(
                             context, word.translationList.first, false),
-                        child: Image.asset(
-                          'assets/icons/add.png',
-                          width: 35,
-                          height: 35,
+                        child: Semantics(
+                          label: S.of(context).addWordToDictionaryButton,
+                          child: Image.asset(
+                            'assets/icons/add.png',
+                            width: 35,
+                            height: 35,
+                          ),
                         ),
                       ),
                     ),
@@ -372,10 +387,13 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
     if (translation.isRepeated == 1) {
       learnt++;
     }
-    return Image.asset(
-      'assets/icons/learnt$learnt.png',
-      width: 35,
-      height: 35,
+    return Semantics(
+      label: S.of(context).progress(learnt),
+      child: Image.asset(
+        'assets/icons/learnt$learnt.png',
+        width: 35,
+        height: 35,
+      ),
     );
   }
 

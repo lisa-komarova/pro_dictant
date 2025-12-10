@@ -416,59 +416,69 @@ class _WordsListState extends State<WordsList> {
                                       translations +=
                                           '${element.translation}, ';
                                     });
-                                    return Column(
-                                      children: [
-                                        ListTile(
-                                          title: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              SingleChildScrollView(
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                child: Text(
-                                                  "${index + 1}. ${state.words[index].pos} ",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium,
-                                                  //textDirection: TextDirection.ltr,
+                                    return Semantics(
+                                      label: translations,
+                                      child: Column(
+                                        children: [
+                                          ListTile(
+                                            title: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SingleChildScrollView(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  child: Text(
+                                                    "${index + 1}. ${state.words[index].pos} ",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium,
+                                                    //textDirection: TextDirection.ltr,
+                                                  ),
                                                 ),
-                                              ),
-                                              state.words[index].transcription
-                                                      .isNotEmpty
-                                                  ? SingleChildScrollView(
-                                                      scrollDirection:
-                                                          Axis.horizontal,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(3.0),
-                                                        child: Text(
-                                                          "     [${state.words[index].transcription}]",
-                                                          style:
-                                                              Theme.of(context)
+                                                state.words[index].transcription
+                                                        .isNotEmpty
+                                                    ? SingleChildScrollView(
+                                                        scrollDirection:
+                                                            Axis.horizontal,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(3.0),
+                                                          child:
+                                                              ExcludeSemantics(
+                                                            child: Text(
+                                                              "     [${state.words[index].transcription}]",
+                                                              style: Theme.of(
+                                                                      context)
                                                                   .textTheme
                                                                   .titleSmall,
-                                                          //textDirection: TextDirection.ltr,
+                                                              //textDirection: TextDirection.ltr,
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    )
-                                                  : SizedBox.shrink(),
-                                              Text(
-                                                "$translations",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
-                                              ),
-                                            ],
+                                                      )
+                                                    : SizedBox.shrink(),
+                                                ExcludeSemantics(
+                                                  child: Text(
+                                                    "$translations",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleMedium,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        Image.asset(
-                                          'assets/icons/divider.png',
-                                          width: 15,
-                                          height: 15,
-                                        ),
-                                      ],
+                                          ExcludeSemantics(
+                                            child: Image.asset(
+                                              'assets/icons/divider.png',
+                                              width: 15,
+                                              height: 15,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   }),
                             ),

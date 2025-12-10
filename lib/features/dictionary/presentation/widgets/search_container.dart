@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/s.dart';
+
 ///app bar with search
 class SearchContainer extends StatefulWidget {
   final void Function(String searchText) searchHandler;
@@ -76,15 +78,21 @@ class _SearchContainerState extends State<SearchContainer> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: widget.controller.text.isEmpty
-                            ? Image.asset(
-                                'assets/icons/search.png',
-                                width: 24,
-                                height: 24,
+                            ? Semantics(
+                                label: S.of(context).searchButton,
+                                child: Image.asset(
+                                  'assets/icons/search.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
                               )
-                            : Image.asset(
-                                'assets/icons/cancel.png',
-                                width: 24,
-                                height: 24,
+                            : Semantics(
+                                label: S.of(context).clearButton,
+                                child: Image.asset(
+                                  'assets/icons/cancel.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
                               ),
                       ),
                     ),

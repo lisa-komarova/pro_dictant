@@ -102,7 +102,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get learn => 'изучить';
 
   @override
-  String get alreadyKnow => 'Уже знаю';
+  String get alreadyKnow => 'уже знаю';
 
   @override
   String get changeWord => 'изменить';
@@ -192,10 +192,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get endTrainings => 'завершить тренировку';
 
   @override
-  String get iKnowWontForget => 'знаю,\nне забуду';
+  String get iKnowWontForget => 'знаю, не забуду';
 
   @override
-  String get iKnowMightForget => 'знаю,\nмогу забыть';
+  String get iKnowMightForget => 'знаю, могу забыть';
 
   @override
   String get iDontRemember => 'не помню';
@@ -221,7 +221,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get translationWord => 'перевод-слово';
 
   @override
-  String get matchingWords => 'соответствие';
+  String get matchingWords => 'мэтч';
 
   @override
   String get wordCards => 'карточки';
@@ -275,4 +275,167 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pass => 'пропуск';
+
+  @override
+  String filterButton(Object filter) {
+    return 'кнопка фильтрации $filter';
+  }
+
+  @override
+  String get selected => 'выбрано';
+
+  @override
+  String get notSelected => 'не выбрано';
+
+  @override
+  String get searchButton => 'искать';
+
+  @override
+  String get clearButton => 'очистить';
+
+  @override
+  String progress(Object learnt) {
+    return 'пройдено $learnt тренировок';
+  }
+
+  @override
+  String get speakButton => 'произнести слово';
+
+  @override
+  String get deleteWordFromDictionaryButton => 'удалить слово из словаря';
+
+  @override
+  String get addWordToDictionaryButton => 'добавить слово в словарь';
+
+  @override
+  String get deleteWordFromDBButton => 'удалить слово навсегда';
+
+  @override
+  String get exitButton => 'выйти';
+
+  @override
+  String addNotesToTranslation(Object translation) {
+    return 'добавить примечание к переводу $translation';
+  }
+
+  @override
+  String get addAnotherTranslation => 'добавить перевод';
+
+  @override
+  String removeThisTranslation(Object translation) {
+    return 'убрать перевод $translation';
+  }
+
+  @override
+  String wordsRemaining(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'осталось $count слов',
+      many: 'осталось $count слов',
+      few: 'осталось $count слова',
+      one: 'осталось $count слово',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get rightAnswer => 'правильный ответ';
+
+  @override
+  String get wrongAnswer => 'неправильный ответ';
+
+  @override
+  String wordRightInWTandTWResult(Object word) {
+    return '$word отвечено правильно';
+  }
+
+  @override
+  String wordWrongInWTandTWResult(Object word) {
+    return '$word отвечено неправильно';
+  }
+
+  @override
+  String get hintButton => 'подсказка';
+
+  @override
+  String get notChosen => 'не выбрано';
+
+  @override
+  String get chosen => 'выбрано';
+
+  @override
+  String get chosenRight => 'выбрано верно';
+
+  @override
+  String get chosenWrong => 'выбрано неверно';
+
+  @override
+  String get currentDictantAnswer => 'текущий ответ';
+
+  @override
+  String get wordNotEntered => 'нет ответа';
+
+  @override
+  String get goalCompleted => 'цель выполнена';
+
+  @override
+  String get goalUncompleted => 'цель не выполнена';
+
+  @override
+  String wrongAnswerNAttemptsLeft(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'неправильный ответ, осталось $count попыток',
+      many: 'неправильный ответ, осталось $count попыток',
+      few: 'неправильный ответ, осталось $count попытки',
+      one: 'неправильный ответ, осталась $count попытка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String wrongChoiceNAttemptsLeft(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'выбрано неверно, осталось $count попыток',
+      many: 'выбрано неверно, осталось $count попыток',
+      few: 'выбрано неверно, осталось $count попытки',
+      one: 'выбрано неверно, осталась $count попытка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wordTranslationDesc =>
+      'слово-перевод: выберите правильный перевод на русский';
+
+  @override
+  String get translationWordDesc =>
+      'перевод-слово: выберите правильный перевод на английский';
+
+  @override
+  String get matchingWordsDesc => 'мэтч: сопоставьте слово с переводом';
+
+  @override
+  String get wordCardsDesc =>
+      'карточки: выберите правильный перевод из двух вариантов';
+
+  @override
+  String get dictantDesc => 'диктант: запишите перевод слова на английский';
+
+  @override
+  String get comboDesc =>
+      'комбо: комбинация тренировок слово-перевод, перевод-слово и диктант';
+
+  @override
+  String get repeatWordsDesc => 'повторение: отследите прогресс изученных слов';
+
+  @override
+  String get turnAutoSpeakOn => 'включить автопроизношение';
+
+  @override
+  String get turnAutoSpeakOff => 'выключить автопроизношение';
 }

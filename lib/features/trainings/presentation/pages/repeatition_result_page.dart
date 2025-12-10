@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_event.dart';
-import 'package:pro_dictant/features/trainings/presentation/pages/repeating_in_process_page.dart';
+import 'package:pro_dictant/features/trainings/presentation/pages/repeatition_in_process_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/widgets/continue_training_button.dart';
 
 import '../../domain/entities/repeating_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 
-class RepeatingResultPage extends StatefulWidget {
+class RepeatitionResultPage extends StatefulWidget {
   final String setId;
   final List<RepeatingTrainingEntity> mistakes;
   final List<RepeatingTrainingEntity> learnt;
   final List<RepeatingTrainingEntity> learning;
 
-  const RepeatingResultPage({
+  const RepeatitionResultPage({
     required this.setId,
     required this.mistakes,
     required this.learnt,
@@ -23,10 +23,10 @@ class RepeatingResultPage extends StatefulWidget {
   });
 
   @override
-  State<RepeatingResultPage> createState() => _RepeatingResultPageState();
+  State<RepeatitionResultPage> createState() => _RepeatitionResultPageState();
 }
 
-class _RepeatingResultPageState extends State<RepeatingResultPage>
+class _RepeatitionResultPageState extends State<RepeatitionResultPage>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
 
@@ -114,7 +114,9 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
         appBar: AppBar(
           leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
-              icon: Image.asset('assets/icons/cancel.png')),
+              icon: Semantics(
+                  label: S.of(context).exitButton,
+                  child: Image.asset('assets/icons/cancel.png'))),
           title: Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Text(
@@ -195,13 +197,13 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
                         .add(FetchSetWordsForRepeatingTRainings(widget.setId));
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (ctx) =>
-                            RepeatingInProcessPage(setId: widget.setId)));
+                            RepeatitionInProcessPage(setId: widget.setId)));
                   } else {
                     BlocProvider.of<TrainingsBloc>(context)
                         .add(const FetchWordsForRepeatingTRainings());
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (ctx) =>
-                            const RepeatingInProcessPage(setId: "")));
+                            const RepeatitionInProcessPage(setId: "")));
                   }
                 },
               )),
@@ -229,12 +231,15 @@ Widget _buildAnswerList(List<RepeatingTrainingEntity> list, Color color) {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Text(
-                      '${list[index].source} -',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: color),
+                  Semantics(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(
+                        '${list[index].source} -',
+                        locale: const Locale('en_GB'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: color),
+                      ),
                     ),
                   ),
                   SingleChildScrollView(

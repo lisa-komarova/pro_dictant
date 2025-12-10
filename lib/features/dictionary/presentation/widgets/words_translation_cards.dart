@@ -190,11 +190,14 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                         child: AnimatedContainer(
                           duration: const Duration(seconds: 1),
                           curve: Curves.fastOutSlowIn,
-                          child: Image.asset(
-                            'assets/icons/pronounce.png',
-                            width: 80,
-                            height: 80,
-                            color: _color,
+                          child: Semantics(
+                            label: S.of(context).speakButton,
+                            child: Image.asset(
+                              'assets/icons/pronounce.png',
+                              width: 80,
+                              height: 80,
+                              color: _color,
+                            ),
                           ),
                         ),
                       ),
@@ -240,16 +243,18 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                               ? Flexible(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      word.transcription,
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.normal,
-                                          ),
+                                    child: ExcludeSemantics(
+                                      child: Text(
+                                        word.transcription,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                      ),
                                     ),
                                   ),
                                 )
@@ -308,10 +313,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                       padding: const EdgeInsets.all(8),
                       child: GestureDetector(
                         onTap: () => _showDialog(context, translation, true),
-                        child: Image.asset(
-                          'assets/icons/delete.png',
-                          width: 35,
-                          height: 35,
+                        child: Semantics(
+                          label: S.of(context).deleteWordFromDictionaryButton,
+                          child: Image.asset(
+                            'assets/icons/delete.png',
+                            width: 35,
+                            height: 35,
+                          ),
                         ),
                       ),
                     ),
@@ -322,10 +330,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                       child: GestureDetector(
                         onTap: () =>
                             _showDialogDelete(context, translation, word),
-                        child: Image.asset(
-                          'assets/icons/delete.png',
-                          width: 35,
-                          height: 35,
+                        child: Semantics(
+                          label: S.of(context).deleteWordFromDBButton,
+                          child: Image.asset(
+                            'assets/icons/delete.png',
+                            width: 35,
+                            height: 35,
+                          ),
                         ),
                       ),
                     ),
@@ -336,10 +347,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                           left: 8, right: 8, bottom: 8, top: 8),
                       child: GestureDetector(
                         onTap: () => _showDialog(context, translation, false),
-                        child: Image.asset(
-                          'assets/icons/add.png',
-                          width: 35,
-                          height: 35,
+                        child: Semantics(
+                          label: S.of(context).addWordToDictionaryButton,
+                          child: Image.asset(
+                            'assets/icons/add.png',
+                            width: 35,
+                            height: 35,
+                          ),
                         ),
                       ),
                     ),
@@ -372,10 +386,13 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
     if (translation.isRepeated == 1) {
       learnt++;
     }
-    return Image.asset(
-      'assets/icons/learnt$learnt.png',
-      width: 35,
-      height: 35,
+    return Semantics(
+      label: S.of(context).progress(learnt),
+      child: Image.asset(
+        'assets/icons/learnt$learnt.png',
+        width: 35,
+        height: 35,
+      ),
     );
   }
 
