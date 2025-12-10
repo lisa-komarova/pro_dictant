@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +10,7 @@ import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/auto_speak_prefs.dart';
 import '../../../../core/platform/sound_service.dart';
 import '../../../../service_locator.dart';
 import '../../domain/entities/combo_training_entity.dart';
@@ -33,44 +36,91 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
   int numberOfAdsShown = 0;
   final List<ComboTrainingEntity> wordsToLearn = [];
   final soundService = sl.get<SoundService>();
+  late FocusNode sourceFocusNode;
+  bool isAutoSpeakEnabled = false;
+  final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    sourceFocusNode = FocusNode();
+    _loadAutoSpeak();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(sourceFocusNode);
+    });
     super.initState();
+  }
+
+  Future<void> _loadAutoSpeak() async {
+    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('ComboInit');
+  }
+
+  @override
+  void dispose() {
+    sourceFocusNode.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                return Navigator.of(context).pop();
-              },
-              icon: Image.asset('assets/icons/cancel.png')),
-        ),
-        body: BlocBuilder<TrainingsBloc, TrainingsState>(
-          builder: (context, state) {
-            if (state is TrainingEmpty) {
-              return Center(
-                child: Text(
-                  S.of(context).notEnoughWords,
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            } else if (state is TrainingLoading) {
-              return _loadingIndicator();
-            } else if (state is ComboTrainingLoaded) {
-              return _buildWordCard(state.words);
-            } else {
-              return const SizedBox();
-            }
-          },
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, _) {
+        isAutoSpeakEnabled = false;
+        if (!didPop) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  return Navigator.of(context).pop();
+                },
+                icon: Semantics(
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isAutoSpeakEnabled = !isAutoSpeakEnabled;
+                    });
+                    autoSpeakPrefs.setIsEnabled("ComboInit", isAutoSpeakEnabled);
+                  },
+                  icon: Semantics(
+                      label: isAutoSpeakEnabled
+                          ? S.of(context).turnAutoSpeakOff
+                          : S.of(context).turnAutoSpeakOn,
+                      child: isAutoSpeakEnabled
+                          ? Image.asset(
+                              'assets/icons/announce_word_activated.png')
+                          : Image.asset(
+                              'assets/icons/announce_word_not_activated.png')))
+            ],
+          ),
+          body: BlocBuilder<TrainingsBloc, TrainingsState>(
+            builder: (context, state) {
+              if (state is TrainingEmpty) {
+                return Center(
+                  child: Text(
+                    S.of(context).notEnoughWords,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              } else if (state is TrainingLoading) {
+                return _loadingIndicator();
+              } else if (state is ComboTrainingLoaded) {
+                return _buildWordCard(state.words);
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
         ),
       ),
     );
@@ -88,6 +138,12 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
   Widget _buildWordCard(List<ComboTrainingEntity> words) {
     if (currentWordIndex >= words.length || wordsToLearn.length >= 5)
       return SizedBox();
+    if (isAutoSpeakEnabled) {
+      speak(
+        words[currentWordIndex].source,
+        words[currentWordIndex].translation,
+      );
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -109,6 +165,8 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
           flex: 2,
           child: Text(
             '${wordsToLearn.length + 1}/${words.length >= 5 ? 5 : words.length}',
+            semanticsLabel:
+                S.of(context).wordsRemaining(5 - wordsToLearn.length),
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -119,18 +177,23 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
           ),
         ),
         Flexible(
-          child: GestureDetector(
-            onTap: () {
-              speak(words[currentWordIndex].source);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Image.asset(
-                'assets/icons/pronounce.png',
-                width: 80,
-                height: 80,
-                color: _color,
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              onTap: () {
+                speak(
+                  words[currentWordIndex].source,
+                  words[currentWordIndex].translation,
+                );
+              },
+              child: AnimatedContainer(
+                duration: const Duration(seconds: 1),
+                curve: Curves.fastOutSlowIn,
+                child: Image.asset(
+                  'assets/icons/pronounce.png',
+                  width: 80,
+                  height: 80,
+                  color: _color,
+                ),
               ),
             ),
           ),
@@ -142,10 +205,17 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text(
-                    words[currentWordIndex].source,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
+                  Focus(
+                    focusNode: sourceFocusNode,
+                    child: Semantics(
+                      focused: sourceFocusNode.hasFocus,
+                      child: Text(
+                        words[currentWordIndex].source,
+                        locale: Locale('en'),
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     height: 10,
@@ -180,7 +250,7 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                           finishWorkout(wordsToLearn);
                           return;
                         }
-                        soundService.playNeutral();
+                        await soundService.playNeutral();
                         setState(() {
                           currentWordIndex++;
                         });
@@ -219,7 +289,8 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                     child: FilledButton(
                       onPressed: () async {
                         wordsToLearn.add(words[currentWordIndex]);
-                        soundService.playCorrect();
+                        await soundService.playCorrect();
+                        Future.delayed(Duration(milliseconds: 100));
                         if (currentWordIndex + 1 >= words.length) {
                           finishWorkout(wordsToLearn);
                           return;
@@ -287,16 +358,30 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
             )));
   }
 
-  Future<void> speak(String text) async {
+  Future<void> speak(String source, String translation) async {
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
-    await flutterTts.speak(text);
+    await flutterTts.speak(source, focus: false);
+    await _waitForTtsCompletion();
+    await flutterTts.setLanguage('ru');
+    await flutterTts.speak(translation, focus: false);
+  }
+
+  Future<void> _waitForTtsCompletion() async {
+    Completer<void> completer = Completer();
+
+    flutterTts.setCompletionHandler(() {
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    });
+
+    return completer.future;
   }
 
   getNumberOfAdsShown() async {
     final prefs = await SharedPreferences.getInstance();
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
   }
-
 }

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -7,6 +8,7 @@ import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/cards_training_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/ad_widget.dart';
+import '../../../../core/platform/auto_speak_prefs.dart';
 import '../../../../core/platform/sound_service.dart';
 import '../../../../service_locator.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
@@ -35,47 +37,84 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
   final soundService = sl.get<SoundService>();
+  late FocusNode wordFocusNode;
+  bool isAutoSpeakEnabled = false;
+  final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    wordFocusNode = FocusNode();
+    _loadAutoSpeak();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        wordFocusNode.requestFocus();
+      }
+    });
     super.initState();
+  }
+
+  Future<void> _loadAutoSpeak() async {
+    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('Cards');
+  }
+
+  @override
+  void dispose() {
+    wordFocusNode.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
-    return PopScope(
-      canPop: false,
-      child: SafeArea(
-        top: false,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                return Navigator.of(context).pop();
+              },
+              icon: Semantics(
+                  label: S.of(context).exitButton,
+                  child: Image.asset('assets/icons/cancel.png'))),
+          actions: [
+            IconButton(
                 onPressed: () {
-                  return Navigator.of(context).pop();
+                  setState(() {
+                    isAutoSpeakEnabled = !isAutoSpeakEnabled;
+                  });
+                  autoSpeakPrefs.setIsEnabled('Cards', isAutoSpeakEnabled);
                 },
-                icon: Image.asset('assets/icons/cancel.png')),
-          ),
-          body: BlocBuilder<TrainingsBloc, TrainingsState>(
-            builder: (context, state) {
-              if (state is TrainingEmpty) {
-                return Center(
-                  child: Text(
-                    S.of(context).notEnoughWords,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              } else if (state is TrainingLoading) {
-                return _loadingIndicator();
-              } else if (state is CardsTrainingLoaded) {
-                return _buildWordCard(state.words);
-              } else {
-                return const SizedBox();
-              }
-            },
-          ),
+                icon: Semantics(
+                    label: isAutoSpeakEnabled
+                        ? S.of(context).turnAutoSpeakOff
+                        : S.of(context).turnAutoSpeakOn,
+                    child: isAutoSpeakEnabled
+                        ? Image.asset(
+                            'assets/icons/announce_word_activated.png')
+                        : Image.asset(
+                            'assets/icons/announce_word_not_activated.png')))
+          ],
+        ),
+        body: BlocBuilder<TrainingsBloc, TrainingsState>(
+          builder: (context, state) {
+            if (state is TrainingEmpty) {
+              return Center(
+                child: Text(
+                  S.of(context).notEnoughWords,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else if (state is TrainingLoading) {
+              return _loadingIndicator();
+            } else if (state is CardsTrainingLoaded) {
+              return _buildWordCard(state.words);
+            } else {
+              return const SizedBox();
+            }
+          },
         ),
       ),
     );
@@ -97,6 +136,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
       suggestedAnswer.add(words[currentWordIndex].wrongTranslation);
       suggestedAnswer.shuffle();
     }
+    if (isAutoSpeakEnabled) speak(words[currentWordIndex].source);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -118,6 +158,9 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
           flex: 2,
           child: Text(
             '${currentWordIndex + 1}/${words.length}',
+            semanticsLabel: S
+                .of(context)
+                .wordsRemaining(words.length - (currentWordIndex + 1)),
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -135,11 +178,14 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
             child: AnimatedContainer(
               duration: const Duration(seconds: 1),
               curve: Curves.fastOutSlowIn,
-              child: Image.asset(
-                'assets/icons/pronounce.png',
-                width: 80,
-                height: 80,
-                color: _color,
+              child: Semantics(
+                label: S.of(context).speakButton,
+                child: Image.asset(
+                  'assets/icons/pronounce.png',
+                  width: 80,
+                  height: 80,
+                  color: _color,
+                ),
               ),
             ),
           ),
@@ -149,10 +195,14 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                words[currentWordIndex].source,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
+              child: Focus(
+                focusNode: wordFocusNode,
+                child: Text(
+                  words[currentWordIndex].source,
+                  locale: Locale('en'),
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),
@@ -306,7 +356,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
-    await flutterTts.speak(text);
+    await flutterTts.speak(text, focus: false);
   }
 
   getNumberOfAdsShown() async {

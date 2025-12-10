@@ -77,7 +77,9 @@ class _WordFormState extends State<WordForm> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: Image.asset('assets/icons/cancel.png')),
+              icon: Semantics(
+                  label: S.of(context).exitButton,
+                  child: Image.asset('assets/icons/cancel.png'))),
         ),
         body: SizedBox(
           height: MediaQuery.of(context).size.height,
@@ -167,8 +169,10 @@ class _WordFormState extends State<WordForm> {
                                               color: Color(0xFFd9c3ac),
                                               width: 3,
                                             )),
-                                        hintText: S.of(context).enterTranslation,
-                                        hintStyle: const TextStyle(fontSize: 10),
+                                        hintText:
+                                            S.of(context).enterTranslation,
+                                        hintStyle:
+                                            const TextStyle(fontSize: 10),
                                       ),
                                       // The validator receives the text that the user has entered.
                                       validator: (value) {
@@ -201,8 +205,10 @@ class _WordFormState extends State<WordForm> {
                                             TextButton(
                                               child: Text(S.of(context).add),
                                               onPressed: () {
-                                                Navigator.pop(context,
-                                                    _notesControllerList[0].text);
+                                                Navigator.pop(
+                                                    context,
+                                                    _notesControllerList[0]
+                                                        .text);
                                               },
                                             ),
                                             TextButton(
@@ -231,11 +237,17 @@ class _WordFormState extends State<WordForm> {
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Image.asset(
-                                      'assets/icons/dictant.png',
-                                      width: 35,
-                                      height: 35,
-                                      color: const Color(0xFF85977f),
+                                    child: Semantics(
+                                      label: S
+                                          .of(context)
+                                          .addNotesToTranslation(
+                                              _translationControllerList[0].text),
+                                      child: Image.asset(
+                                        'assets/icons/dictant.png',
+                                        width: 35,
+                                        height: 35,
+                                        color: const Color(0xFF85977f),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -269,8 +281,11 @@ class _WordFormState extends State<WordForm> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            'assets/icons/add.png',
+                          child: Semantics(
+                            label: S.of(context).addAnotherTranslation,
+                            child: Image.asset(
+                              'assets/icons/add.png',
+                            ),
                           ),
                         ),
                       ),
@@ -305,7 +320,8 @@ class _WordFormState extends State<WordForm> {
                                     wordId: widget.word.id,
                                     translation: e.text,
                                     notes: _notesControllerList[
-                                            _translationControllerList.indexOf(e)]
+                                            _translationControllerList
+                                                .indexOf(e)]
                                         .text,
                                   );
                                   if (_translationControllerList.indexOf(e) ==
@@ -333,10 +349,10 @@ class _WordFormState extends State<WordForm> {
                                 for (int i = 0;
                                     i < existingTranslations.length;
                                     i++) {
-                                  if (newTranslationsIds
-                                          .contains(existingTranslations[i].id) &&
-                                      oldTranslationsIds
-                                          .contains(existingTranslations[i].id)) {
+                                  if (newTranslationsIds.contains(
+                                          existingTranslations[i].id) &&
+                                      oldTranslationsIds.contains(
+                                          existingTranslations[i].id)) {
                                     toUpdate.add(existingTranslations[i]);
                                   }
                                   if (!newTranslationsIds
@@ -374,23 +390,26 @@ class _WordFormState extends State<WordForm> {
                                 if (toUpdate.isNotEmpty) {
                                   for (int i = 0; i < toUpdate.length; i++) {
                                     BlocProvider.of<WordsBloc>(context).add(
-                                        UpdateTranslation(toUpdate.elementAt(i)));
+                                        UpdateTranslation(
+                                            toUpdate.elementAt(i)));
                                   }
                                 }
                                 if (toDelete.isNotEmpty) {
                                   for (int i = 0; i < toDelete.length; i++) {
                                     BlocProvider.of<WordsBloc>(context).add(
-                                        DeleteTranslation(toDelete.elementAt(i)));
+                                        DeleteTranslation(
+                                            toDelete.elementAt(i)));
                                   }
                                 }
                                 if (toAdd.isNotEmpty) {
                                   for (int i = 0; i < toAdd.length; i++) {
-                                    BlocProvider.of<WordsBloc>(context)
-                                        .add(AddTranslation(toAdd.elementAt(i)));
+                                    BlocProvider.of<WordsBloc>(context).add(
+                                        AddTranslation(toAdd.elementAt(i)));
                                   }
                                 }
                                 widget.word.translationList.clear();
-                                widget.word.translationList.addAll(translations);
+                                widget.word.translationList
+                                    .addAll(translations);
                                 Navigator.of(context).pop(widget.word);
                               }
                             }
@@ -483,10 +502,15 @@ class _WordFormState extends State<WordForm> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(
-                        'assets/icons/delete.png',
-                        width: 35,
-                        height: 35,
+                      child: Semantics(
+                        label: S.of(context).removeThisTranslation(widget.isNew
+                            ? _translationControllerList[index + 1].text
+                            : _translationControllerList[index].text),
+                        child: Image.asset(
+                          'assets/icons/delete.png',
+                          width: 35,
+                          height: 35,
+                        ),
                       ),
                     ),
                   ),
@@ -542,11 +566,16 @@ class _WordFormState extends State<WordForm> {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image.asset(
-                      'assets/icons/dictant.png',
-                      width: 35,
-                      height: 35,
-                      color: const Color(0xFF85977f),
+                    child: Semantics(
+                      label: S.of(context).addNotesToTranslation(widget.isNew
+                          ? _translationControllerList[index + 1].text
+                          : _translationControllerList[index].text),
+                      child: Image.asset(
+                        'assets/icons/dictant.png',
+                        width: 35,
+                        height: 35,
+                        color: const Color(0xFF85977f),
+                      ),
                     ),
                   ),
                 ),

@@ -21,9 +21,9 @@ import 'matching_in_process_page.dart';
 
 class TrainingsPage extends StatefulWidget {
   final int goal;
-  bool isTodayCompleted;
-  String setId;
-  String setName;
+  final bool isTodayCompleted;
+  final String setId;
+  final String setName;
 
   TrainingsPage({
     required this.goal,
@@ -41,7 +41,7 @@ class _TrainingsPageState extends State<TrainingsPage>
     with WidgetsBindingObserver {
   Duration timeOnApp = const Duration();
   Duration sessionTime = const Duration();
-
+  bool isTodayCompleted = false;
   // NetworkInfoImp networkInfo = NetworkInfoImp(InternetConnectionChecker());
   // bool isConnected = true;
   int numberOfAdsShown = 0;
@@ -57,9 +57,10 @@ class _TrainingsPageState extends State<TrainingsPage>
   @override
   void initState() {
     super.initState();
+    isTodayCompleted = widget.isTodayCompleted;
     WidgetsBinding.instance.addObserver(this);
     getTime().then((_) {
-      if (!widget.isTodayCompleted) {
+      if (!isTodayCompleted) {
         _startSession();
       }
     });
@@ -78,7 +79,7 @@ class _TrainingsPageState extends State<TrainingsPage>
 
           timeOnApp = Duration.zero;
           sessionTime = Duration.zero;
-          widget.isTodayCompleted = true;
+          isTodayCompleted = true;
 
           _stopwatch?.stop();
           _timer?.cancel();
@@ -95,7 +96,7 @@ class _TrainingsPageState extends State<TrainingsPage>
       sessionTime = _stopwatch?.elapsed ?? Duration.zero;
       saveTime();
     } else if (state == AppLifecycleState.resumed) {
-      if (!widget.isTodayCompleted) {
+      if (!isTodayCompleted) {
         getTime().then((_) {
           sessionTime = Duration.zero;
           _startSession();
@@ -125,7 +126,7 @@ class _TrainingsPageState extends State<TrainingsPage>
       height -= 80; // default NavigationBarThemeData.height
     }
     height -= 50;
-    height -= !widget.isTodayCompleted ? 50 : 0;
+    height -= !isTodayCompleted ? 50 : 0;
     if (widget.setId.isEmpty) {
       comboHeight = height / 4;
       height -= comboHeight;
@@ -142,13 +143,13 @@ class _TrainingsPageState extends State<TrainingsPage>
                   //(isConnected || (numberOfAdsShown >= 3)) ?
                   Column(
                 children: [
-                  !widget.isTodayCompleted
+                  !isTodayCompleted
                       ? SizedBox(
                           height: 50,
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 left: 10.0, right: 10, top: 10),
-                            child: !widget.isTodayCompleted
+                            child: !isTodayCompleted
                                 ? AutoSizeText(
                                     timeLeft.inMinutes == widget.goal
                                         ? ""
@@ -191,20 +192,25 @@ class _TrainingsPageState extends State<TrainingsPage>
                       child: Column(
                     children: [
                       if (widget.setId.isEmpty)
-                        SizedBox(
-                          height: comboHeight,
-                          child: GestureDetector(
-                            child: TrainingCard(
-                              trainingName:
-                                  height > minHeight ? S.of(context).combo : '',
-                              imageName: 'combo',
+                        Semantics(
+                          label: S.of(context).comboDesc,
+                          child: SizedBox(
+                            height: comboHeight,
+                            child: GestureDetector(
+                              child: TrainingCard(
+                                trainingName: height > minHeight
+                                    ? S.of(context).combo
+                                    : '',
+                                imageName: 'combo',
+                              ),
+                              onTap: () {
+                                BlocProvider.of<TrainingsBloc>(context)
+                                    .add(const FetchWordsForComboTRainings());
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) =>
+                                        const ComboInitialPage()));
+                              },
                             ),
-                            onTap: () {
-                              BlocProvider.of<TrainingsBloc>(context)
-                                  .add(const FetchWordsForComboTRainings());
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (ctx) => const ComboInitialPage()));
-                            },
                           ),
                         ),
                       Expanded(
@@ -217,11 +223,14 @@ class _TrainingsPageState extends State<TrainingsPage>
                           physics: NeverScrollableScrollPhysics(),
                           children: <Widget>[
                             GestureDetector(
-                              child: TrainingCard(
-                                trainingName: height > minHeight
-                                    ? S.of(context).wordTranslation
-                                    : '',
-                                imageName: 'word-t',
+                              child: Semantics(
+                                label: S.of(context).wordTranslationDesc,
+                                child: TrainingCard(
+                                  trainingName: height > minHeight
+                                      ? S.of(context).wordTranslation
+                                      : '',
+                                  imageName: 'word-t',
+                                ),
                               ),
                               onTap: () {
                                 if (widget.setId.isNotEmpty) {
@@ -243,11 +252,14 @@ class _TrainingsPageState extends State<TrainingsPage>
                               },
                             ),
                             GestureDetector(
-                              child: TrainingCard(
-                                trainingName: height > minHeight
-                                    ? S.of(context).translationWord
-                                    : '',
-                                imageName: 't-word',
+                              child: Semantics(
+                                label: S.of(context).translationWordDesc,
+                                child: TrainingCard(
+                                  trainingName: height > minHeight
+                                      ? S.of(context).translationWord
+                                      : '',
+                                  imageName: 't-word',
+                                ),
                               ),
                               onTap: () {
                                 if (widget.setId.isNotEmpty) {
@@ -269,11 +281,14 @@ class _TrainingsPageState extends State<TrainingsPage>
                               },
                             ),
                             GestureDetector(
-                              child: TrainingCard(
-                                trainingName: height > minHeight
-                                    ? S.of(context).matchingWords
-                                    : '',
-                                imageName: 'word_matching',
+                              child: Semantics(
+                                label: S.of(context).matchingWordsDesc,
+                                child: TrainingCard(
+                                  trainingName: height > minHeight
+                                      ? S.of(context).matchingWords
+                                      : '',
+                                  imageName: 'word_matching',
+                                ),
                               ),
                               onTap: () {
                                 if (widget.setId.isNotEmpty) {
@@ -296,10 +311,14 @@ class _TrainingsPageState extends State<TrainingsPage>
                               },
                             ),
                             GestureDetector(
-                              child: TrainingCard(
-                                trainingName:
-                                    height > minHeight ? S.of(context).wordCards : '',
-                                imageName: 'sprint',
+                              child: Semantics(
+                                label: S.of(context).wordCardsDesc,
+                                child: TrainingCard(
+                                  trainingName: height > minHeight
+                                      ? S.of(context).wordCards
+                                      : '',
+                                  imageName: 'word_cards',
+                                ),
                               ),
                               onTap: () {
                                 if (widget.setId.isNotEmpty) {
@@ -322,10 +341,14 @@ class _TrainingsPageState extends State<TrainingsPage>
                               },
                             ),
                             GestureDetector(
-                              child: TrainingCard(
-                                trainingName:
-                                    height > minHeight ? S.of(context).dictant : '',
-                                imageName: 'dictant',
+                              child: Semantics(
+                                label: S.of(context).dictantDesc,
+                                child: TrainingCard(
+                                  trainingName: height > minHeight
+                                      ? S.of(context).dictant
+                                      : '',
+                                  imageName: 'dictant',
+                                ),
                               ),
                               onTap: () {
                                 if (widget.setId.isNotEmpty) {
@@ -348,11 +371,14 @@ class _TrainingsPageState extends State<TrainingsPage>
                               },
                             ),
                             GestureDetector(
-                              child: TrainingCard(
-                                trainingName: height > minHeight
-                                    ? S.of(context).repeatWords
-                                    : '',
-                                imageName: 'repetition',
+                              child: Semantics(
+                                label: S.of(context).repeatWordsDesc,
+                                child: TrainingCard(
+                                  trainingName: height > minHeight
+                                      ? S.of(context).repeatWords
+                                      : '',
+                                  imageName: 'repetition',
+                                ),
                               ),
                               onTap: () {
                                 if (widget.setId.isNotEmpty) {

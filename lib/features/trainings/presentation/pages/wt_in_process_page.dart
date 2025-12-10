@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:pro_dictant/core/platform/auto_speak_prefs.dart';
 import 'package:pro_dictant/core/s.dart';
 import 'package:pro_dictant/features/trainings/domain/entities/wt_training_entity.dart';
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
@@ -43,11 +44,30 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
   final soundService = sl.get<SoundService>();
+  bool isAutoSpeakEnabled = false;
+  final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
+  late FocusNode sourceFocusNode;
 
   @override
   void initState() {
     getNumberOfAdsShown();
+    sourceFocusNode = FocusNode();
+    _loadAutoSpeak();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(sourceFocusNode);
+    });
     super.initState();
+  }
+
+  Future<void> _loadAutoSpeak() async {
+    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('WT');
+  }
+
+  @override
+  void dispose() {
+    sourceFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,12 +75,12 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return PopScope(
       canPop: false,
-      // onPopInvokedWithResult: (bool didPop, _) {
-      //   if (!didPop) {
-      //     if (!widget.isCombo)
-      //       Navigator.of(context).pop();
-      //   }
-      // },
+      onPopInvokedWithResult: (bool didPop, _) {
+        isAutoSpeakEnabled = false;
+        if (!didPop) {
+          if (!widget.isCombo) Navigator.of(context).pop();
+        }
+      },
       child: SafeArea(
         top: false,
         child: Scaffold(
@@ -71,7 +91,27 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                     session.reset();
                     return Navigator.of(context).pop();
                   },
-                  icon: Image.asset('assets/icons/cancel.png')),
+                  icon: Semantics(
+                      label: S.of(context).exitButton,
+                      child: Image.asset('assets/icons/cancel.png'))),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isAutoSpeakEnabled = !isAutoSpeakEnabled;
+                      });
+                      autoSpeakPrefs.setIsEnabled('WT', isAutoSpeakEnabled);
+                    },
+                    icon: Semantics(
+                        label: isAutoSpeakEnabled
+                            ? S.of(context).turnAutoSpeakOff
+                            : S.of(context).turnAutoSpeakOn,
+                        child: isAutoSpeakEnabled
+                            ? Image.asset(
+                                'assets/icons/announce_word_activated.png')
+                            : Image.asset(
+                                'assets/icons/announce_word_not_activated.png')))
+              ],
             ),
             body: BlocBuilder<TrainingsBloc, TrainingsState>(
               builder: (context, state) {
@@ -98,6 +138,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
 
   Widget _buildWordCard(List<WTTrainingEntity> words) {
     if (currentWordIndex >= words.length) return SizedBox();
+    if (isAutoSpeakEnabled) speak(words[currentWordIndex].source);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -116,18 +157,20 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
           ),
         ),
         Flexible(
-          child: GestureDetector(
-            onTap: () {
-              speak(words[currentWordIndex].source);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Image.asset(
-                'assets/icons/pronounce.png',
-                width: 80,
-                height: 80,
-                color: _color,
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              onTap: () {
+                speak(words[currentWordIndex].source);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(seconds: 1),
+                curve: Curves.fastOutSlowIn,
+                child: Image.asset(
+                  'assets/icons/pronounce.png',
+                  width: 80,
+                  height: 80,
+                  color: _color,
+                ),
               ),
             ),
           ),
@@ -136,6 +179,9 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
           flex: 2,
           child: Text(
             '${currentWordIndex + 1}/${words.length}',
+            semanticsLabel: S
+                .of(context)
+                .wordsRemaining(words.length - (currentWordIndex + 1)),
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -147,10 +193,17 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
         ),
         Flexible(
           flex: 2,
-          child: Text(
-            words[currentWordIndex].source,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
+          child: Focus(
+            focusNode: sourceFocusNode,
+            child: Semantics(
+              focused: sourceFocusNode.hasFocus,
+              child: Text(
+                words[currentWordIndex].source,
+                locale: Locale('en'),
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
         ),
         Flexible(
@@ -324,6 +377,12 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     setState(() {
       currentWordIndex++;
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(sourceFocusNode);
+      }
+    });
   }
 
   List<Widget> buildSuggestedAnswers(List<WTTrainingEntity> words) {
@@ -359,7 +418,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                         soundService.playCorrect();
                         updateCurrentWord(words);
                       },
-                      text: words[currentWordIndex].translation,
+                      text: (words[currentWordIndex].translation, Locale('ru')),
                     )),
               ),
             ))
@@ -381,9 +440,12 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                         soundService.playWrong();
                         updateCurrentWord(words);
                       },
-                      text: words[currentWordIndex]
-                          .suggestedTranslationList[element]
-                          .translation,
+                      text: (
+                        words[currentWordIndex]
+                            .suggestedTranslationList[element]
+                            .translation,
+                        Locale('ru')
+                      ),
                     )),
               ),
             ));
@@ -404,7 +466,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
-    await flutterTts.speak(text);
+    await flutterTts.speak(text, focus: false);
   }
 
   getNumberOfAdsShown() async {

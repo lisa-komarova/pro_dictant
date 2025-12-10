@@ -102,7 +102,9 @@ class _NewSetPageState extends State<NewSetPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                icon: Image.asset('assets/icons/cancel.png')),
+                icon: Semantics(
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
           ),
           body: Column(children: [
             Padding(
@@ -165,10 +167,13 @@ class _NewSetPageState extends State<NewSetPage> {
                     suffixIcon: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: _searchController.text.isEmpty
-                          ? Image.asset(
-                              'assets/icons/search.png',
-                              width: 24,
-                              height: 24,
+                          ? Semantics(
+                              label: S.of(context).searchButton,
+                              child: Image.asset(
+                                'assets/icons/search.png',
+                                width: 24,
+                                height: 24,
+                              ),
                             )
                           : GestureDetector(
                               onTap: () {
@@ -178,10 +183,13 @@ class _NewSetPageState extends State<NewSetPage> {
                                   isSearchShown = false;
                                 });
                               },
-                              child: Image.asset(
-                                'assets/icons/cancel.png',
-                                width: 24,
-                                height: 24,
+                              child: Semantics(
+                                label: S.of(context).clearButton,
+                                child: Image.asset(
+                                  'assets/icons/cancel.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
                               ),
                             ),
                     ),
@@ -189,8 +197,8 @@ class _NewSetPageState extends State<NewSetPage> {
                       left: 30,
                     ),
                     focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(color: Color(0xFFd9c3ac), width: 2),
+                        borderSide: const BorderSide(
+                            color: Color(0xFFd9c3ac), width: 2),
                         borderRadius: BorderRadius.circular(35)),
                     enabledBorder: OutlineInputBorder(
                       borderSide:
@@ -250,7 +258,8 @@ class _NewSetPageState extends State<NewSetPage> {
                                                 child: Text(
                                                   '${state.words[index].source} - ${state.words[index].translationList.first.translation}',
                                                   textAlign: TextAlign.start,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                   style: Theme.of(context)
                                                       .textTheme
@@ -309,7 +318,9 @@ class _NewSetPageState extends State<NewSetPage> {
                           }
                         }
                       } else {
-                        for (int i = 0; i < widget.set!.wordsInSet.length; i++) {
+                        for (int i = 0;
+                            i < widget.set!.wordsInSet.length;
+                            i++) {
                           if (widget.set!.wordsInSet
                                   .contains(widget.set!.wordsInSet[i]) &&
                               !wordsInSet.contains(widget.set!.wordsInSet[i])) {

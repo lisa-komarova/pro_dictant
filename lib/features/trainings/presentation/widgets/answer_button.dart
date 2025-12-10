@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class AnswerButton extends StatefulWidget {
   final Future<void> Function() onPressed;
-  final String text;
+  final (String content, Locale locale) text;
   final ButtonStyle? style;
 
   const AnswerButton({
@@ -50,7 +50,8 @@ class _SafeButtonState extends State<AnswerButton> {
         child: Padding(
           padding: const EdgeInsets.all(5.0),
           child: AutoSizeText(
-            widget.text,
+            widget.text.$1,
+            locale: widget.text.$2,
             textAlign: TextAlign.center,
           ),
         ),

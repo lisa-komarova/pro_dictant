@@ -114,7 +114,9 @@ class _RepeatingResultPageState extends State<RepeatingResultPage>
         appBar: AppBar(
           leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
-              icon: Image.asset('assets/icons/cancel.png')),
+              icon: Semantics(
+                  label: S.of(context).exitButton,
+                  child: Image.asset('assets/icons/cancel.png'))),
           title: Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Text(
@@ -229,12 +231,15 @@ Widget _buildAnswerList(List<RepeatingTrainingEntity> list, Color color) {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Text(
-                      '${list[index].source} -',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: color),
+                  Semantics(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(
+                        '${list[index].source} -',
+                        locale: const Locale('en'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: color),
+                      ),
                     ),
                   ),
                   SingleChildScrollView(

@@ -33,7 +33,9 @@ class ComboResultPage extends StatelessWidget {
               onPressed: () {
                 return Navigator.of(context).pop();
               },
-              icon: Image.asset('assets/icons/cancel.png')),
+              icon: Semantics(
+                  label: S.of(context).exitButton,
+                  child: Image.asset('assets/icons/cancel.png'))),
           title: Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Text(
@@ -47,83 +49,93 @@ class ComboResultPage extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 itemCount: allWords.length,
+                semanticChildCount: allWords.length,
                 itemBuilder: (context, index) {
                   final word = allWords[index];
                   final wtWrong =
                       wtInitialWrongAnswers.any((e) => e.source == word.$1);
                   final twWrong =
                       twInitialWrongAnswers.any((e) => e.source == word.$1);
-                  final dictantWrong =
-                      dictantInitialWrongAnswers.any((e) => e.source == word.$1);
-      
-                  return Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20.0, right: 20, bottom: 5),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Color(0x6BD9C3AC),
-                              borderRadius: BorderRadius.circular(25)),
-                          //padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Text(
-                                    '${word.$1} ',
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                    overflow: TextOverflow.ellipsis,
+                  final dictantWrong = dictantInitialWrongAnswers
+                      .any((e) => e.source == word.$1);
+
+                  return Semantics(
+                    container: true,
+                    explicitChildNodes: true,
+                    child: Padding(
+
+                      padding: const EdgeInsets.only(
+                          left: 20.0, right: 20, bottom: 5),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Color(0x6BD9C3AC),
+                                borderRadius: BorderRadius.circular(25)),
+                            //padding: EdgeInsets.symmetric(horizontal: 5),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Text(
+                                      '${word.$1} ',
+                                      locale: Locale('en'),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Text(
-                                    '${word.$2}',
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                    overflow: TextOverflow.ellipsis,
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Text(
+                                      '${word.$2}',
+                                      locale: Locale('ru'),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    _buildStatusItem(
-                                        context,
-                                        S.of(context).wordTranslation,
-                                        'assets/icons/word-t.png',
-                                        wtWrong),
-                                    _buildStatusItem(
-                                        context,
-                                        S.of(context).translationWord,
-                                        'assets/icons/t-word.png',
-                                        twWrong),
-                                    _buildStatusItem(
-                                        context,
-                                        S.of(context).dictant,
-                                        'assets/icons/dictant.png',
-                                        dictantWrong),
-                                  ],
-                                ),
-                              ],
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      _buildStatusItem(
+                                          context,
+                                          S.of(context).wordTranslation,
+                                          'assets/icons/word-t.png',
+                                          wtWrong),
+                                      _buildStatusItem(
+                                          context,
+                                          S.of(context).translationWord,
+                                          'assets/icons/t-word.png',
+                                          twWrong),
+                                      _buildStatusItem(
+                                          context,
+                                          S.of(context).dictant,
+                                          'assets/icons/dictant.png',
+                                          dictantWrong),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Image.asset(
-                          'assets/icons/divider.png',
-                          width: 15,
-                          height: 15,
-                        ),
-                      ],
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Image.asset(
+                            'assets/icons/divider.png',
+                            width: 15,
+                            height: 15,
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -147,32 +159,36 @@ class ComboResultPage extends StatelessWidget {
   Widget _buildStatusItem(
       BuildContext context, String label, String icon, bool isWrong) {
     return Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Tooltip(
-              message: label,
-              waitDuration:
-                  Duration(milliseconds: 100), // задержка перед показом
-              showDuration: Duration(seconds: 2), // сколько показывается
-              preferBelow: false, // показать над элементом
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              textStyle: TextStyle(color: Colors.white),
-              child: Image.asset(icon, width: 35, height: 35)),
-          const SizedBox(width: 8),
-          isWrong
-              ? Image.asset(
-                  'assets/icons/cancel.png',
-                  width: 25,
-                  height: 25,
-                  color: Color(0xFFB70E0E),
-                )
-              : Image.asset('assets/icons/add.png',
-                  width: 25, height: 25, color: Color(0xFF85977f)),
-        ],
+      child: Semantics(
+        label: isWrong
+            ? label + " " + S.of(context).wrongAnswer
+            : label + " " + S.of(context).rightAnswer,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Tooltip(
+                message: label,
+                waitDuration: Duration(milliseconds: 100),
+                showDuration: Duration(seconds: 2),
+                preferBelow: false,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                textStyle: TextStyle(color: Colors.white),
+                child: Image.asset(icon, width: 35, height: 35)),
+            const SizedBox(width: 8),
+            isWrong
+                ? Image.asset(
+                    'assets/icons/cancel.png',
+                    width: 25,
+                    height: 25,
+                    color: Color(0xFFB70E0E),
+                  )
+                : Image.asset('assets/icons/add.png',
+                    width: 25, height: 25, color: Color(0xFF85977f)),
+          ],
+        ),
       ),
     );
   }

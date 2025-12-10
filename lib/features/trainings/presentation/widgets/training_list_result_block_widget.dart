@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/s.dart';
+
 class TrainingListResultBlockWidget extends StatefulWidget {
   const TrainingListResultBlockWidget({
     super.key,
@@ -13,10 +15,12 @@ class TrainingListResultBlockWidget extends StatefulWidget {
   final String correctAnswer;
 
   @override
-  State<TrainingListResultBlockWidget> createState() => _TrainingListResultBlockWidgetState();
+  State<TrainingListResultBlockWidget> createState() =>
+      _TrainingListResultBlockWidgetState();
 }
 
-class _TrainingListResultBlockWidgetState extends State<TrainingListResultBlockWidget> {
+class _TrainingListResultBlockWidgetState
+    extends State<TrainingListResultBlockWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -43,9 +47,19 @@ class _TrainingListResultBlockWidgetState extends State<TrainingListResultBlockW
                             child: Padding(
                               padding:
                                   const EdgeInsets.only(left: 10.0, bottom: 2),
-                              child: Text(
-                                widget.source,
-                                textAlign: TextAlign.start,
+                              child: Semantics(
+                                label: widget.answer == null
+                                    ? S.of(context).wordRightInWTandTWResult("")
+                                    : S
+                                        .of(context)
+                                        .wordWrongInWTandTWResult(""),
+                                child: Text(
+                                  widget.source,
+                                  locale: isEnglish(widget.source)
+                                      ? Locale('en')
+                                      : Locale('ru'),
+                                  textAlign: TextAlign.start,
+                                ),
                               ),
                             ),
                           ),
@@ -57,14 +71,25 @@ class _TrainingListResultBlockWidgetState extends State<TrainingListResultBlockW
                                   child: Padding(
                                       padding:
                                           const EdgeInsets.only(left: 10.0),
-                                      child: Text(
-                                        widget.answer!,
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: widget.answer ==
-                                                  widget.correctAnswer
-                                              ? const Color(0xFF85977f)
-                                              : const Color(0xFFB70E0E),
+                                      child: Semantics(
+                                        label: widget.answer ==
+                                                widget.correctAnswer
+                                            ? S.of(context).rightAnswer
+                                            : widget.answer == "—"
+                                                ? S.of(context).wordNotEntered
+                                                : S.of(context).wrongAnswer,
+                                        child: Text(
+                                          widget.answer!,
+                                          textAlign: TextAlign.start,
+                                          locale: isEnglish(widget.answer!)
+                                              ? Locale('en')
+                                              : Locale('ru'),
+                                          style: TextStyle(
+                                            color: widget.answer ==
+                                                    widget.correctAnswer
+                                                ? const Color(0xFF85977f)
+                                                : const Color(0xFFB70E0E),
+                                          ),
                                         ),
                                       )),
                                 ),
@@ -76,11 +101,17 @@ class _TrainingListResultBlockWidgetState extends State<TrainingListResultBlockW
                                   scrollDirection: Axis.horizontal,
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 10.0),
-                                    child: Text(
-                                      widget.correctAnswer,
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        color: const Color(0xFF85977f),
+                                    child: Semantics(
+                                      label: S.of(context).rightAnswer,
+                                      child: Text(
+                                        widget.correctAnswer,
+                                        locale: isEnglish(widget.correctAnswer)
+                                            ? Locale('en')
+                                            : Locale('ru'),
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: const Color(0xFF85977f),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -113,4 +144,9 @@ class _TrainingListResultBlockWidgetState extends State<TrainingListResultBlockW
       ),
     );
   }
+}
+
+bool isEnglish(String word) {
+  if (word.contains(RegExp('[a-z]'))) return true;
+  return false;
 }
