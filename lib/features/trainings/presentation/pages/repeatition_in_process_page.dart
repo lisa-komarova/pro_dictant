@@ -14,7 +14,6 @@ import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
 import '../widgets/animated_ answer_button.dart';
-import '../widgets/repetition_answer_buttons.dart';
 
 class RepeatitionInProcessPage extends StatefulWidget {
   final String setId;
@@ -58,7 +57,11 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
   }
 
   Future<void> _loadAutoSpeak() async {
-    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('Repetition');
+    final value = await autoSpeakPrefs.getIsEnabled('Repetition');
+    if (!mounted) return;
+    setState(() {
+      isAutoSpeakEnabled = value;
+    });
   }
 
   @override
@@ -243,7 +246,7 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
                       focused: sourceFocusNode.hasFocus,
                       child: Text(
                         words[currentWordIndex].source,
-                        locale: const Locale('en_GB'),
+                        locale: const Locale('en', 'GB'),
                         style: Theme.of(context).textTheme.titleLarge,
                         textAlign: TextAlign.center,
                       ),
@@ -269,6 +272,7 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
                           height: 50,
                           child: AnimatedAnswerButton(
                             text: S.of(context).iKnowWontForget,
+                            locale: Localizations.localeOf(context),
                             onTap: () {
                               soundService.playCorrect();
                               correctAnswers.add(words[currentWordIndex]);
@@ -285,6 +289,7 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
                           height: 50,
                           child: AnimatedAnswerButton(
                             text: S.of(context).iKnowMightForget,
+                            locale: Localizations.localeOf(context),
                             onTap: () {
                               soundService.playNeutral();
                               goToNextOrFinish(words);
@@ -300,6 +305,7 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
                           height: 50,
                           child: AnimatedAnswerButton(
                             text: S.of(context).iDontRemember,
+                            locale: Localizations.localeOf(context),
                             onTap: () {
                               soundService.playWrong();
                               mistakes.add(words[currentWordIndex]);

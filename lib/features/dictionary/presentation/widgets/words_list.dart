@@ -322,8 +322,21 @@ class _WordsListState extends State<WordsList> {
                             child: Column(
                               children: [
                                 ListTile(
-                                  title: Text(
-                                      "${wordsToBuild[index].source} - $translation"),
+                                  title: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "${wordsToBuild[index].source}",
+                                          locale: const Locale('en', 'GB'),
+                                        ),
+                                        Text(
+                                          " - $translation",
+                                          locale: const Locale('ru'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 16),
@@ -462,6 +475,7 @@ class _WordsListState extends State<WordsList> {
                                                 ExcludeSemantics(
                                                   child: Text(
                                                     "$translations",
+                                                    locale: const Locale('ru'),
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .titleMedium,

@@ -28,6 +28,7 @@ class _RepetitionAnswerButtonsState extends State<RepetitionAnswerButtons> {
           normal: const Color(0xFFd9c3ac),
           pressed: const Color(0xFF85977f),
           isPressed: press1,
+          locale: Localizations.localeOf(context),
           onTap: () async {
             setState(() => press1 = true);
             await Future.delayed(const Duration(milliseconds: 150));
@@ -40,6 +41,7 @@ class _RepetitionAnswerButtonsState extends State<RepetitionAnswerButtons> {
           normal: const Color(0xFFd9c3ac),
           pressed: Colors.white,
           isPressed: press2,
+          locale: Localizations.localeOf(context),
           onTap: () async {
             setState(() => press2 = true);
             await Future.delayed(const Duration(milliseconds: 150));
@@ -52,6 +54,7 @@ class _RepetitionAnswerButtonsState extends State<RepetitionAnswerButtons> {
           normal: const Color(0xFFd9c3ac),
           pressed: const Color(0xFFB70E0E),
           isPressed: press3,
+          locale: Localizations.localeOf(context),
           onTap: () async {
             setState(() => press3 = true);
             await Future.delayed(const Duration(milliseconds: 150));
@@ -69,6 +72,7 @@ class _RepetitionAnswerButtonsState extends State<RepetitionAnswerButtons> {
     required Color pressed,
     required bool isPressed,
     required VoidCallback onTap,
+    required Locale locale,
   }) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 120),
@@ -82,7 +86,11 @@ class _RepetitionAnswerButtonsState extends State<RepetitionAnswerButtons> {
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Center(
-          child: AutoSizeText(text, textAlign: TextAlign.center),
+          child: AutoSizeText(
+            text,
+            textAlign: TextAlign.center,
+            locale: locale,
+          ),
         ),
       ),
     );

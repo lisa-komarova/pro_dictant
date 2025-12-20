@@ -209,7 +209,7 @@ abstract class AppLocalizations {
   /// No description provided for @resetProgress.
   ///
   /// In en, this message translates to:
-  /// **'reset progree'**
+  /// **'reset progress'**
   String get resetProgress;
 
   /// No description provided for @learning.
@@ -443,13 +443,13 @@ abstract class AppLocalizations {
   /// No description provided for @iKnowWontForget.
   ///
   /// In en, this message translates to:
-  /// **'i know won\'t forget'**
+  /// **'i know, won\'t forget'**
   String get iKnowWontForget;
 
   /// No description provided for @iKnowMightForget.
   ///
   /// In en, this message translates to:
-  /// **'i know might forget'**
+  /// **'i know, might forget'**
   String get iKnowMightForget;
 
   /// No description provided for @iDontRemember.
@@ -725,7 +725,7 @@ abstract class AppLocalizations {
   /// No description provided for @chosen.
   ///
   /// In en, this message translates to:
-  /// **'сhosen'**
+  /// **'chosen'**
   String get chosen;
 
   /// No description provided for @chosenRight.
@@ -755,13 +755,13 @@ abstract class AppLocalizations {
   /// No description provided for @goalCompleted.
   ///
   /// In en, this message translates to:
-  /// **'goal сompleted'**
+  /// **'goal completed'**
   String get goalCompleted;
 
   /// No description provided for @goalUncompleted.
   ///
   /// In en, this message translates to:
-  /// **'goal unсompleted'**
+  /// **'goal uncompleted'**
   String get goalUncompleted;
 
   /// No description provided for @wrongAnswerNAttemptsLeft.
@@ -829,6 +829,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'turn off auto-speak'**
   String get turnAutoSpeakOff;
+
+  /// No description provided for @words.
+  ///
+  /// In en, this message translates to:
+  /// **'words'**
+  String words(num count);
 }
 
 class _AppLocalizationsDelegate

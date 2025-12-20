@@ -63,6 +63,7 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
               appBar: AppBar(
                 title: Text(
                   setEntity.name.toUpperCase(),
+                  locale: const Locale("en", "GB"),
                   style: GoogleFonts.hachiMaruPop(),
                 ),
                 centerTitle: true,
@@ -449,8 +450,21 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                         child: Column(
                           children: [
                             ListTile(
-                              title: Text(
-                                  "${words[index].source} - ${words[index].translationList.first.translation}"),
+                              title: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "${words[index].source}",
+                                      locale: const Locale('en', 'GB'),
+                                    ),
+                                    Text(
+                                      "- ${words[index].translationList.first.translation}",
+                                      locale: const Locale('ru'),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               selected: selectedWords.contains(words[index]),
                               selectedColor: const Color(0xFFFFFFFF),
                               selectedTileColor: const Color(0xFF5E6B5A),

@@ -236,7 +236,7 @@ Widget _buildAnswerList(List<RepeatingTrainingEntity> list, Color color) {
                       scrollDirection: Axis.horizontal,
                       child: Text(
                         '${list[index].source} -',
-                        locale: const Locale('en_GB'),
+                        locale: const Locale('en', 'GB'),
                         textAlign: TextAlign.center,
                         style: TextStyle(color: color),
                       ),

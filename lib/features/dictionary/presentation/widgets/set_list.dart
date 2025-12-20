@@ -138,7 +138,8 @@ class _SetListState extends State<SetList> {
                                         child: AutoSizeText(
                                           overflow: TextOverflow.fade,
                                           sets[index].name.toUpperCase(),
-                                          style: Theme.of(context)
+                                          locale: const Locale('en', 'GB'),
+                                      style: Theme.of(context)
                                               .textTheme
                                               .displaySmall,
                                           textAlign: TextAlign.center,
@@ -146,7 +147,7 @@ class _SetListState extends State<SetList> {
                                       ),
                                       Text(
                                         overflow: TextOverflow.fade,
-                                        "${sets[index].wordsInSet.length} \n слов",
+                                        "${sets[index].wordsInSet.length} \n " + S.of(context).words(sets[index].wordsInSet.length),
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge,

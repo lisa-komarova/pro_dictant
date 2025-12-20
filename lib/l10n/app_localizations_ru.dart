@@ -438,4 +438,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get turnAutoSpeakOff => 'выключить автопроизношение';
+
+  @override
+  String words(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'слов',
+      many: 'слов',
+      few: 'слова',
+      one: 'слово',
+    );
+    return '$_temp0';
+  }
 }

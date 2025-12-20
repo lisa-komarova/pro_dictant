@@ -82,7 +82,7 @@ class ComboResultPage extends StatelessWidget {
                                     scrollDirection: Axis.horizontal,
                                     child: Text(
                                       '${word.$1} ',
-                                      locale: Locale('en_GB'),
+                                      locale: const Locale('en', 'GB'),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium,

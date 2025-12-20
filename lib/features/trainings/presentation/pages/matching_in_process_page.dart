@@ -72,7 +72,11 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
   }
 
   Future<void> _loadAutoSpeak() async {
-    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('Matching');
+    final value = await autoSpeakPrefs.getIsEnabled('Matching');
+    if (!mounted) return;
+    setState(() {
+      isAutoSpeakEnabled = value;
+    });
   }
 
   @override
@@ -269,7 +273,10 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                             currentAnswer[0].id == currentAnswer[1].id) {
                           soundService.playCorrect();
                           if (isAutoSpeakEnabled)
-                            speak(words[index].source, 'en-GB');
+                            speak(
+                              words[index].source,
+                              const Locale('en', 'GB'),
+                            );
                           setState(() {
                             currentAnswer.clear();
                             isWordChosen = false;
@@ -432,7 +439,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                         SemanticsService.announce(
                             S.of(context).chosen, TextDirection.ltr);
                         if (isAutoSpeakEnabled)
-                          speak(words[index].source, 'en-GB');
+                          speak(words[index].source, const Locale('en', 'GB'));
                       }
                     },
                     style: OutlinedButton.styleFrom(
@@ -462,7 +469,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                                   : ""),
                           child: Text(
                             words[index].source,
-                            locale: const Locale('en_GB'),
+                            locale: const Locale('en', 'GB'),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
@@ -703,6 +710,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                                   : ""),
                           child: Text(
                             words[index].translation,
+                            locale: const Locale('ru'),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
@@ -730,8 +738,8 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
     });
   }
 
-  Future<void> speak(String text, String locale) async {
-    await flutterTts.setLanguage(locale);
+  Future<void> speak(String text, Locale locale) async {
+    await flutterTts.setLanguage(locale.languageCode);
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
     await flutterTts.speak(text, focus: false);

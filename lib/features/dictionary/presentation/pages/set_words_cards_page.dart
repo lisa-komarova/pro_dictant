@@ -225,6 +225,7 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                                   controller: scrollControllerSource,
                                   child: Text(word.source,
                                       textAlign: TextAlign.center,
+                                      locale: const Locale('en', 'GB'),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge),

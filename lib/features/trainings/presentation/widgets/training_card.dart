@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/s.dart';
+
 class TrainingCard extends StatelessWidget {
   final String imageName;
   final String trainingName;
@@ -41,6 +43,7 @@ class TrainingCard extends StatelessWidget {
           Text(
             trainingName,
             semanticsLabel: "",
+            locale: Localizations.localeOf(context),
             textAlign: TextAlign.center,
           ),
       ],

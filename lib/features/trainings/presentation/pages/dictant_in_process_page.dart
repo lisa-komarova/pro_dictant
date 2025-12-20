@@ -67,7 +67,11 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   }
 
   Future<void> _loadAutoSpeak() async {
-    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('Dictant');
+    final value = await autoSpeakPrefs.getIsEnabled('Dictant');
+    if (!mounted) return;
+    setState(() {
+      isAutoSpeakEnabled = value;
+    });
   }
 
   @override
@@ -605,7 +609,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
             child: currentLetterIndex > index
                 ? Text(
                     correctAnswer[index],
-                    locale: const Locale('en_GB'),
+                    locale: const Locale('en', 'GB'),
                   )
                 : const Text(''),
           ),
@@ -692,7 +696,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                         : S.of(context).chosenRight,
                 child: Text(
                   suggestedLetters[index],
-                  locale: Locale('en_GB'),
+                  locale: const Locale('en', 'GB'),
                 ),
               ),
             ),

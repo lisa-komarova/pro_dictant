@@ -63,7 +63,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newWords => 'new';
 
   @override
-  String get resetProgress => 'reset progree';
+  String get resetProgress => 'reset progress';
 
   @override
   String get learning => 'learning';
@@ -194,10 +194,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endTrainings => 'end training';
 
   @override
-  String get iKnowWontForget => 'i know won\'t forget';
+  String get iKnowWontForget => 'i know, won\'t forget';
 
   @override
-  String get iKnowMightForget => 'i know might forget';
+  String get iKnowMightForget => 'i know, might forget';
 
   @override
   String get iDontRemember => 'i don\'t remember';
@@ -357,7 +357,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notChosen => 'not chosen';
 
   @override
-  String get chosen => 'сhosen';
+  String get chosen => 'chosen';
 
   @override
   String get chosenRight => 'right choice';
@@ -372,10 +372,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wordNotEntered => 'empty field';
 
   @override
-  String get goalCompleted => 'goal сompleted';
+  String get goalCompleted => 'goal completed';
 
   @override
-  String get goalUncompleted => 'goal unсompleted';
+  String get goalUncompleted => 'goal uncompleted';
 
   @override
   String wrongAnswerNAttemptsLeft(num count) {
@@ -420,4 +420,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get turnAutoSpeakOff => 'turn off auto-speak';
+
+  @override
+  String words(num count) {
+    return 'words';
+  }
 }

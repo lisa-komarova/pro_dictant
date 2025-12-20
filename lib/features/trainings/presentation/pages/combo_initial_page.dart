@@ -52,7 +52,11 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
   }
 
   Future<void> _loadAutoSpeak() async {
-    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('ComboInit');
+    final value = await autoSpeakPrefs.getIsEnabled('ComboInit');
+    if (!mounted) return;
+    setState(() {
+      isAutoSpeakEnabled = value;
+    });
   }
 
   @override
@@ -214,7 +218,7 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                       focused: sourceFocusNode.hasFocus,
                       child: Text(
                         words[currentWordIndex].source,
-                        locale: Locale('en_GB'),
+                        locale: const Locale('en', 'GB'),
                         style: Theme.of(context).textTheme.titleLarge,
                         textAlign: TextAlign.center,
                       ),

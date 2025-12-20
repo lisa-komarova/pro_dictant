@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,7 +61,11 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
   }
 
   Future<void> _loadAutoSpeak() async {
-    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('WT');
+    final value = await autoSpeakPrefs.getIsEnabled('WT');
+    if (!mounted) return;
+    setState(() {
+      isAutoSpeakEnabled = value;
+    });
   }
 
   @override
@@ -203,7 +206,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
               focused: sourceFocusNode.hasFocus,
               child: Text(
                 words[currentWordIndex].source,
-                locale: Locale('en_GB'),
+                locale: const Locale('en', 'GB'),
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -413,6 +416,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                 child: AnimatedAnswerButton(
                   text: words[currentWordIndex].translation,
                   color: const Color(0xFF85977f),
+                  locale: const Locale('ru'),
                   onTap: () async {
                     answers[words[currentWordIndex].id] =
                         words[currentWordIndex].translation;
@@ -445,6 +449,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
                       text: words[currentWordIndex]
                           .suggestedTranslationList[element]
                           .translation,
+                      locale: const Locale('ru'),
                       color: const Color(0xFFB70E0E),
                       onTap: () async {
                         answers[words[currentWordIndex].id] =

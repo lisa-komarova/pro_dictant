@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AnimatedAnswerButton extends StatefulWidget {
   final String text;
   final Color color;
+  final Locale locale;
   final VoidCallback onTap;
 
   const AnimatedAnswerButton({
@@ -10,6 +11,7 @@ class AnimatedAnswerButton extends StatefulWidget {
     required this.text,
     required this.onTap,
     required this.color,
+    required this.locale ,
   });
 
   @override
@@ -38,6 +40,7 @@ class _AnimatedAnswerButtonState extends State<AnimatedAnswerButton> {
         child: Center(
           child: Text(
             widget.text,
+            locale: widget.locale ,
             textAlign: TextAlign.center,
           ),
         ),

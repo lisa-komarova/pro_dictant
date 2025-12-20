@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -56,7 +55,11 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
   }
 
   Future<void> _loadAutoSpeak() async {
-    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('Cards');
+    final value = await autoSpeakPrefs.getIsEnabled('Cards');
+    if (!mounted) return;
+    setState(() {
+      isAutoSpeakEnabled = value;
+    });
   }
 
   @override
@@ -211,7 +214,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                 focusNode: wordFocusNode,
                 child: Text(
                   words[currentWordIndex].source,
-                  locale: Locale('en_GB'),
+                  locale: const Locale('en', 'GB'),
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -230,6 +233,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                   child: SizedBox(
                     height: 100,
                     child: AnimatedAnswerButton(
+                      locale: const Locale('ru'),
                       text: suggestedAnswer.first,
                       color: suggestedAnswer.first !=
                               words[currentWordIndex].translation
@@ -267,6 +271,7 @@ class _CardsInProcessPageState extends State<CardsInProcessPage> {
                   child: SizedBox(
                     height: 100,
                     child: AnimatedAnswerButton(
+                      locale: const Locale('ru'),
                       text: suggestedAnswer.last,
                       color: suggestedAnswer.last !=
                               words[currentWordIndex].translation

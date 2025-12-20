@@ -216,6 +216,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                                 child: SingleChildScrollView(
                                   child: Text(word.source,
                                       textAlign: TextAlign.center,
+                                      locale: const Locale('en', 'GB'),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge),
@@ -273,6 +274,7 @@ class _WordTranslationCardsState extends State<WordTranslationCards>
                           child: SingleChildScrollView(
                             child: Text(translation.translation,
                                 textAlign: TextAlign.center,
+                                locale: const Locale('ru'),
                                 style: Theme.of(context).textTheme.titleLarge),
                           ),
                         ),

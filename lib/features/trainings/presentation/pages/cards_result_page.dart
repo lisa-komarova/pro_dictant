@@ -179,7 +179,7 @@ class CardsResultPage extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: Text(
                         '${list[index].source} -',
-                        locale: Locale('en_GB'),
+                        locale: const Locale('en', 'GB'),
                         textAlign: TextAlign.center,
                         style: TextStyle(color: color),
                       ),

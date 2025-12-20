@@ -56,8 +56,8 @@ class _TrainingListResultBlockWidgetState
                                 child: Text(
                                   widget.source,
                                   locale: isEnglish(widget.source)
-                                      ? Locale('en_GB')
-                                      : Locale('ru'),
+                                      ? const Locale('en', "GB")
+                                      : const Locale('ru'),
                                   textAlign: TextAlign.start,
                                 ),
                               ),
@@ -82,8 +82,8 @@ class _TrainingListResultBlockWidgetState
                                           widget.answer!,
                                           textAlign: TextAlign.start,
                                           locale: isEnglish(widget.answer!)
-                                              ? Locale('en_GB')
-                                              : Locale('ru'),
+                                              ? const Locale('en', "GB")
+                                              : const Locale('ru'),
                                           style: TextStyle(
                                             color: widget.answer ==
                                                     widget.correctAnswer
@@ -106,8 +106,8 @@ class _TrainingListResultBlockWidgetState
                                       child: Text(
                                         widget.correctAnswer,
                                         locale: isEnglish(widget.correctAnswer)
-                                            ? Locale('en_GB')
-                                            : Locale('ru'),
+                                            ? const Locale('en', "GB")
+                                            : const Locale('ru'),
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           color: const Color(0xFF85977f),

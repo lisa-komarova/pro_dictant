@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,7 +63,11 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   }
 
   Future<void> _loadAutoSpeak() async {
-    isAutoSpeakEnabled = await autoSpeakPrefs.getIsEnabled('TW');
+    final value = await autoSpeakPrefs.getIsEnabled('TW');
+    if (!mounted) return;
+    setState(() {
+      isAutoSpeakEnabled = value;
+    });
   }
 
   @override
@@ -401,6 +404,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
                 height: 50,
                 child: AnimatedAnswerButton(
                   text: words[currentWordIndex].source,
+                  locale: const Locale('en', 'GB'),
                   color: const Color(0xFF85977f),
                   onTap: () async {
                     answers[words[currentWordIndex].id] =
@@ -434,6 +438,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
                   text: words[currentWordIndex]
                       .suggestedSourcesList[element]
                       .source,
+                  locale: const Locale('en', 'GB'),
                   color: const Color(0xFFB70E0E),
                   onTap: () async {
                     answers[words[currentWordIndex].id] =
