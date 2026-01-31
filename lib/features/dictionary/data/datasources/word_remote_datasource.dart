@@ -17,10 +17,10 @@ class WordRemoteDatasourceImpl implements WordRemoteDatasource {
   Future<List<WordModel>> searchWord(String query) async {
     final baseUrl =
         'https://dictionary.yandex.net/api/v1/dicservice.json/lookup';
-
+    const yandexApiKey = String.fromEnvironment('YANDEX_API_KEY');
     final queryParams = {
       'key':
-          'dict.1.1.20240604T075331Z.10377594721cb484.05fe0e4b76923b5b6fd28ab5b8763ee6772f698c',
+      yandexApiKey,
       'lang': 'en-ru',
       'text': query
     };
