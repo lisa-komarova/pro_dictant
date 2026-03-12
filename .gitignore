@@ -45,6 +45,7 @@ app.*.map.json
 android/build/
 .gradle/
 
+
 # Firebase logs
 firebase-debug.log
 
@@ -54,3 +55,4 @@ packages/**/pubspec.lock
 .env
 .env.*
 
+android/app/google-services.json
