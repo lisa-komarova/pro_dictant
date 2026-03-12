@@ -425,4 +425,113 @@ class AppLocalizationsEn extends AppLocalizations {
   String words(num count) {
     return 'words';
   }
+
+  @override
+  String get login => 'login with email';
+
+  @override
+  String get continueWithGoogle => 'login with Google';
+
+  @override
+  String get continueWithoutAccount => 'continue without account';
+
+  @override
+  String get logoutButton => 'logout';
+
+  @override
+  String get loginButton => 'login';
+
+  @override
+  String get chooseOtherLoginOption => 'choose other login option';
+
+  @override
+  String get enterEmail => 'enter email';
+
+  @override
+  String get enterPassword => 'enter password';
+
+  @override
+  String get emailIsTooShort => 'email is too short';
+
+  @override
+  String get emailIsNotValid => 'invalid email format';
+
+  @override
+  String get passwordIsTooShort =>
+      'password must be at least 6 characters long';
+
+  @override
+  String get atLeastOneDigit => 'password must contain at least one digit';
+
+  @override
+  String get signUpButton => 'sign up';
+
+  @override
+  String get createAnAccount => 'create an account';
+
+  @override
+  String get alreadyHaveAccount => 'already have an account?';
+
+  @override
+  String get forgotPassword => 'forgot password?';
+
+  @override
+  String get resetPasswordTitle => 'password reset';
+
+  @override
+  String get resetPasswordDescription =>
+      'a password reset link will be sent to this email address.';
+
+  @override
+  String get sendButton => 'send';
+
+  @override
+  String get resetPasswordSentMessage =>
+      'if this email exists, a reset link was sent.';
+
+  @override
+  String get errorUserNotFound => 'No user found with this email.';
+
+  @override
+  String get errorWrongPassword => 'Incorrect password. Please try again.';
+
+  @override
+  String get errorEmailAlreadyInUse =>
+      'This email address is already in use by another account.';
+
+  @override
+  String get errorInvalidEmail => 'The email address is badly formatted.';
+
+  @override
+  String get errorWeakPassword =>
+      'The password is too weak. Use at least 6 characters.';
+
+  @override
+  String get errorUserDisabled =>
+      'This account has been disabled. Contact support.';
+
+  @override
+  String get errorTooManyRequests =>
+      'Too many failed attempts. Try again later.';
+
+  @override
+  String get errorOperationNotAllowed =>
+      'This sign-in method is currently disabled.';
+
+  @override
+  String get errorGoogleCancelled => 'Google sign-in was cancelled';
+
+  @override
+  String get errorNetworkRequestFailed =>
+      'Network error. Please check your internet connection.';
+
+  @override
+  String get errorInternalAuth =>
+      'Internal authentication error. Please try again.';
+
+  @override
+  String get errorServer => 'Server-side error. Please try again later.';
+
+  @override
+  String get errorUnknown => 'An unexpected error occurred.';
 }

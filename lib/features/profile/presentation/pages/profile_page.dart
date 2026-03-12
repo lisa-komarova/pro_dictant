@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
@@ -7,6 +8,8 @@ import 'package:pro_dictant/features/profile/presentation/manager/profile_bloc.d
 import 'package:pro_dictant/features/profile/presentation/manager/profile_event.dart';
 import 'package:pro_dictant/features/profile/presentation/manager/profile_state.dart';
 
+import '../../../authentification/presentation/pages/login_page.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -15,79 +18,137 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  DateTime dateNow = DateTime.now();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
-    double topPadding = MediaQuery.of(context).padding.top;
+    final User? user = _auth.currentUser;
+
     return SafeArea(
       child: Scaffold(
-        body: BlocBuilder<ProfileBloc, ProfileState>(
-          builder: (context, state) {
-            if (state is ProfileLoading) {
-              return _loadingIndicator();
-            } else if (state is ProfileLoaded) {
-              return RefreshIndicator(
-                onRefresh: _refreshPage,
-                child: SingleChildScrollView(
-                  //physics: const AlwaysScrollableScrollPhysics(),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight:
-                          MediaQuery.of(context).size.height - topPadding - 80,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 25.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                S.of(context).addedWords(
-                                    state.statistics.wordsInDictionary),
-                                style: Theme.of(context).textTheme.bodyLarge,
+        body: Column(
+          children: [
+            Expanded(
+              child: BlocBuilder<ProfileBloc, ProfileState>(
+                builder: (context, state) {
+                  if (state is ProfileLoading) {
+                    return _loadingIndicator();
+                  } else if (state is ProfileLoaded) {
+                    return RefreshIndicator(
+                        onRefresh: _refreshPage,
+                        child: LayoutBuilder(builder: (c, constraints) {
+                          return SingleChildScrollView(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: constraints.maxHeight,
                               ),
-                              Text(
-                                S
-                                    .of(context)
-                                    .learntWords(state.statistics.learntWords),
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildUserHeader(user, context),
+                                  _buildMainStats(context, state),
+                                  _buildStatistics(context, state.statistics),
+                                  const SizedBox(height: 1),
+                                ],
                               ),
-                              GestureDetector(
-                                onTap: () => _dialogBuilder(context),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      S.of(context).goal(state.statistics.goal),
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    Image.asset(
-                                      'assets/icons/dictant.png',
-                                      width: 25,
-                                      height: 25,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        _buildStatistics(context, state.statistics),
-                        const SizedBox(height: 1),
-                        const SizedBox(height: 1),
-                      ],
+                            ),
+                          );
+                        }));
+                  }
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding _buildMainStats(BuildContext context, ProfileLoaded state) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 25.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            S.of(context).addedWords(state.statistics.wordsInDictionary),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Text(
+            S.of(context).learntWords(state.statistics.learntWords),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          GestureDetector(
+            onTap: () => _dialogBuilder(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  S.of(context).goal(state.statistics.goal),
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Image.asset(
+                  'assets/icons/dictant.png',
+                  width: 25,
+                  height: 25,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Padding _buildUserHeader(User? user, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          user != null && user.email != null
+              ? Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      user.email!,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
-                ),
-              );
-            }
-            return const SizedBox();
-          },
-        ),
+                )
+              : SizedBox.shrink(),
+          FilledButton(
+            onPressed: () async {
+              if (user != null) {
+                await _auth.signOut();
+                setState(() {});
+              } else {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LoginPage(),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xffd9c3ac),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                user != null
+                    ? S.of(context).logoutButton
+                    : S.of(context).loginButton,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -118,24 +179,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 5),
-            child: SizedBox(
-              child: HeatMap(
-                startDate: DateTime.now().subtract(const Duration(days: 30)),
-                endDate: DateTime.now(),
-                colorMode: ColorMode.color,
-                scrollable: true,
-                showColorTip: false,
-                showText: true,
-                textColor: Colors.black,
-                defaultColor: const Color(0xFFd9c3ac),
-                size: cellSize,
-                borderRadius: 5,
-                margin: const EdgeInsets.all(margin),
-                colorsets: const {
-                  1: Color(0xFF85977F),
-                },
-                datasets: dateSets,
-              ),
+            child: HeatMap(
+              startDate: DateTime.now().subtract(const Duration(days: 30)),
+              endDate: DateTime.now(),
+              colorMode: ColorMode.color,
+              scrollable: true,
+              showColorTip: false,
+              showText: true,
+              textColor: Colors.black,
+              defaultColor: const Color(0xFFd9c3ac),
+              size: cellSize,
+              borderRadius: 5,
+              margin: const EdgeInsets.all(margin),
+              colorsets: const {
+                1: Color(0xFF85977F),
+              },
+              datasets: dateSets,
             ),
           );
         },

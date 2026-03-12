@@ -61,10 +61,15 @@ dependencies:
   provider: ^6.1.5
   flutter_soloud: ^3.3.8
   flutter_launcher_icons: ^0.14.4
+  firebase_core: ^4.4.0
+  firebase_auth: ^6.1.4
+  google_sign_in: ^7.2.0
+  flutter_svg: ^2.2.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.4
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
@@ -122,6 +127,7 @@ flutter:
     - assets/icons/announce_word_activated.png
     - assets/icons/announce_word_not_activated.png
     - assets/icons/launcher_icon.png
+    - assets/icons/profile.svg
     - assets/sounds/correct.mp3
     - assets/sounds/wrong.mp3
     - assets/sounds/neutral.mp3

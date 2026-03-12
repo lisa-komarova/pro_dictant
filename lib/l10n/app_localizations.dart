@@ -835,6 +835,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'words'**
   String words(num count);
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'login with email'**
+  String get login;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'login with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @continueWithoutAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'continue without account'**
+  String get continueWithoutAccount;
+
+  /// No description provided for @logoutButton.
+  ///
+  /// In en, this message translates to:
+  /// **'logout'**
+  String get logoutButton;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'login'**
+  String get loginButton;
+
+  /// No description provided for @chooseOtherLoginOption.
+  ///
+  /// In en, this message translates to:
+  /// **'choose other login option'**
+  String get chooseOtherLoginOption;
+
+  /// No description provided for @enterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'enter email'**
+  String get enterEmail;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'enter password'**
+  String get enterPassword;
+
+  /// No description provided for @emailIsTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'email is too short'**
+  String get emailIsTooShort;
+
+  /// No description provided for @emailIsNotValid.
+  ///
+  /// In en, this message translates to:
+  /// **'invalid email format'**
+  String get emailIsNotValid;
+
+  /// No description provided for @passwordIsTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'password must be at least 6 characters long'**
+  String get passwordIsTooShort;
+
+  /// No description provided for @atLeastOneDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'password must contain at least one digit'**
+  String get atLeastOneDigit;
+
+  /// No description provided for @signUpButton.
+  ///
+  /// In en, this message translates to:
+  /// **'sign up'**
+  String get signUpButton;
+
+  /// No description provided for @createAnAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'create an account'**
+  String get createAnAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'password reset'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'a password reset link will be sent to this email address.'**
+  String get resetPasswordDescription;
+
+  /// No description provided for @sendButton.
+  ///
+  /// In en, this message translates to:
+  /// **'send'**
+  String get sendButton;
+
+  /// No description provided for @resetPasswordSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'if this email exists, a reset link was sent.'**
+  String get resetPasswordSentMessage;
+
+  /// No description provided for @errorUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found with this email.'**
+  String get errorUserNotFound;
+
+  /// No description provided for @errorWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect password. Please try again.'**
+  String get errorWrongPassword;
+
+  /// No description provided for @errorEmailAlreadyInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This email address is already in use by another account.'**
+  String get errorEmailAlreadyInUse;
+
+  /// No description provided for @errorInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'The email address is badly formatted.'**
+  String get errorInvalidEmail;
+
+  /// No description provided for @errorWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The password is too weak. Use at least 6 characters.'**
+  String get errorWeakPassword;
+
+  /// No description provided for @errorUserDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been disabled. Contact support.'**
+  String get errorUserDisabled;
+
+  /// No description provided for @errorTooManyRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many failed attempts. Try again later.'**
+  String get errorTooManyRequests;
+
+  /// No description provided for @errorOperationNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in method is currently disabled.'**
+  String get errorOperationNotAllowed;
+
+  /// No description provided for @errorGoogleCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in was cancelled'**
+  String get errorGoogleCancelled;
+
+  /// No description provided for @errorNetworkRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your internet connection.'**
+  String get errorNetworkRequestFailed;
+
+  /// No description provided for @errorInternalAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal authentication error. Please try again.'**
+  String get errorInternalAuth;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Server-side error. Please try again later.'**
+  String get errorServer;
+
+  /// No description provided for @errorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get errorUnknown;
 }
 
 class _AppLocalizationsDelegate

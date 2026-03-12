@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.20.2
+  pro_dictant:
+    path: ../../
 
 dev_dependencies:
   flutter_test:

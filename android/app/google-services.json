@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "379345641064",
+    "project_id": "prodictant-d228a",
+    "storage_bucket": "prodictant-d228a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379345641064:android:51737daf5f4a9755ed65dd",
+        "android_client_info": {
+          "package_name": "com.lvcorporation.pro_dictant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "379345641064-lic4rfuu9bnb1ccdq7ofkqbn7j66hq04.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lvcorporation.pro_dictant",
+            "certificate_hash": "179e739e3869b6ac48565bad1128ec4f4490cb2c"
+          }
+        },
+        {
+          "client_id": "379345641064-vkfnk5rp7dm9bnr7c50ka1v11mdca38j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lvcorporation.pro_dictant",
+            "certificate_hash": "71738afd8fee7c9e3d09213669b751f0a8e54b8e"
+          }
+        },
+        {
+          "client_id": "379345641064-so7j0fjntk1gieubhbg1sqblcnd3spsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQwGxbKpdkovQwCjuTeXgJ_1ycbt0iSSs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "379345641064-so7j0fjntk1gieubhbg1sqblcnd3spsc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "379345641064-40kmjsmevevs8a8ckc85k9l404gct70e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lvcorporation.proDictant"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

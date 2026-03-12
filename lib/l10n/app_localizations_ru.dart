@@ -451,4 +451,113 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get login => 'войти по email';
+
+  @override
+  String get continueWithGoogle => 'войти через Google';
+
+  @override
+  String get continueWithoutAccount => 'продолжить без аккаунта';
+
+  @override
+  String get logoutButton => 'выйти';
+
+  @override
+  String get loginButton => 'войти';
+
+  @override
+  String get chooseOtherLoginOption => 'выбрать другой способ входа';
+
+  @override
+  String get enterEmail => 'введите email';
+
+  @override
+  String get enterPassword => 'введите пароль';
+
+  @override
+  String get emailIsTooShort => 'email слишком короткий';
+
+  @override
+  String get emailIsNotValid => 'некорректный формат email';
+
+  @override
+  String get passwordIsTooShort => 'пароль должен содержать минимум 6 символов';
+
+  @override
+  String get atLeastOneDigit => 'добавьте хотя бы одну цифру';
+
+  @override
+  String get signUpButton => 'создать аккаунт';
+
+  @override
+  String get createAnAccount => 'создать новый аккаунт';
+
+  @override
+  String get alreadyHaveAccount => 'уже есть аккаунт?';
+
+  @override
+  String get forgotPassword => 'забыли пароль?';
+
+  @override
+  String get resetPasswordTitle => 'сброс пароля';
+
+  @override
+  String get resetPasswordDescription =>
+      'ссылка для сброса пароля будет отправлена на этот адрес электронной почты.';
+
+  @override
+  String get sendButton => 'отправить';
+
+  @override
+  String get resetPasswordSentMessage =>
+      'если аккаунт с этим email существует, ссылка для сброса пароля была отправлена.';
+
+  @override
+  String get errorUserNotFound => 'Пользователь с таким email не найден.';
+
+  @override
+  String get errorWrongPassword => 'Неверный пароль. Попробуйте еще раз.';
+
+  @override
+  String get errorEmailAlreadyInUse =>
+      'Этот адрес электронной почты уже используется другим аккаунтом.';
+
+  @override
+  String get errorInvalidEmail =>
+      'Некорректный формат адреса электронной почты.';
+
+  @override
+  String get errorWeakPassword =>
+      'Пароль слишком простой. Используйте минимум 6 символов.';
+
+  @override
+  String get errorUserDisabled =>
+      'Ваш аккаунт был заблокирован. Свяжитесь с поддержкой.';
+
+  @override
+  String get errorTooManyRequests =>
+      'Слишком много неудачных попыток. Повторите позже.';
+
+  @override
+  String get errorOperationNotAllowed =>
+      'Данный способ входа временно недоступен.';
+
+  @override
+  String get errorGoogleCancelled => 'Вход через Google был отменен';
+
+  @override
+  String get errorNetworkRequestFailed =>
+      'Ошибка сети. Проверьте интернет-соединение.';
+
+  @override
+  String get errorInternalAuth =>
+      'Внутренняя ошибка авторизации. Попробуйте еще раз.';
+
+  @override
+  String get errorServer => 'Ошибка на стороне сервера. Повторите позже.';
+
+  @override
+  String get errorUnknown => 'Произошла непредвиденная ошибка.';
 }

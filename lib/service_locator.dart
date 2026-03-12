@@ -1,7 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pro_dictant/core/platform/network_info.dart';
+import 'package:pro_dictant/features/authentification/domain/repositories/auth_repository.dart';
+import 'package:pro_dictant/features/authentification/domain/usecases/login.dart';
+import 'package:pro_dictant/features/authentification/domain/usecases/reset_password.dart';
+import 'package:pro_dictant/features/authentification/domain/usecases/signup_with_email_and_password.dart';
 import 'package:pro_dictant/features/dictionary/data/datasources/word_local_datasource.dart';
 import 'package:pro_dictant/features/dictionary/data/datasources/word_remote_datasource.dart';
 import 'package:pro_dictant/features/dictionary/data/repositories/set_repository_impl.dart';
@@ -43,6 +48,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/platform/auto_speak_prefs.dart';
 import 'core/platform/sound_service.dart';
+import 'features/authentification/data/datasources/auth_remote_data_source.dart';
+import 'features/authentification/data/repositories/auth_repository_impl.dart';
+import 'features/authentification/domain/usecases/sign_in_with_google.dart';
+import 'features/authentification/presentation/manager/login_bloc/login_bloc.dart';
 import 'features/dictionary/domain/usecases/add_word.dart';
 import 'features/dictionary/domain/usecases/delete_set.dart';
 import 'features/dictionary/domain/usecases/delete_word.dart';
@@ -70,9 +79,21 @@ import 'features/trainings/domain/use_cases/update_words_for_matching_training.d
 import 'features/trainings/domain/use_cases/update_words_for_repeating_trainings.dart';
 import 'features/trainings/presentation/manager/provider/combo_training_session.dart';
 import 'features/trainings/presentation/manager/trainings_bloc/trainings_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 final sl = GetIt.instance;
 Future<void> init() async {
+  // External
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton<SoundService>(() => SoundService());
+  await sl<SoundService>().init();
+  sl.registerLazySingleton(() => AutoSpeakPrefs());
+  sl.registerLazySingleton(() => InternetConnectionChecker.instance);
+  sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerLazySingleton(() => GoogleSignIn.instance);
+
   // BLoC
   sl.registerFactory(
     () => WordsBloc(
@@ -130,6 +151,14 @@ Future<void> init() async {
         updateDayStatistics: sl(),
         updateGoal: sl(),
       ));
+  sl.registerFactory(
+    () => LoginBloc(
+      login: sl(),
+      googleSignIn: sl(),
+      signUpWithEmailAndPassword: sl(),
+      resetPassword: sl(),
+    ),
+  );
   //provider
   sl.registerFactory<ComboTrainingSession>(() => ComboTrainingSession());
   // UseCases
@@ -275,6 +304,26 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateGoal(
         profileRepository: sl(),
       ));
+  sl.registerLazySingleton(
+    () => Login(
+      authRepository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => SignupWithEmailAndPassword(
+      authRepository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => SignInWithGoogle(
+      authRepository: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+        () => ResetPassword(
+      authRepository: sl(),
+    ),
+  );
   // Repository
   sl.registerLazySingleton<WordRepository>(
     () => WordRepositoryImpl(
@@ -297,7 +346,13 @@ Future<void> init() async {
       profileDatasource: sl(),
     ),
   );
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
+  );
 
+  //datasources
   sl.registerLazySingleton<WordRemoteDatasource>(
     () => WordRemoteDatasourceImpl(
       client: sl(),
@@ -313,17 +368,15 @@ Future<void> init() async {
   sl.registerLazySingleton<ProfileDatasource>(
     () => ProfileDatasourceImpl(),
   );
+
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(
+      firebaseAuth: sl(),
+      googleSignIn: sl(),
+    ),
+  );
   // Core
   sl.registerLazySingleton<NetworkInfo>(
     () => NetworkInfoImp(sl()),
   );
-
-  // External
-  final sharedPreferences = await SharedPreferences.getInstance();
-  sl.registerLazySingleton(() => sharedPreferences);
-  sl.registerLazySingleton(() => http.Client());
-  sl.registerLazySingleton<SoundService>(() => SoundService());
-  await sl<SoundService>().init();
-  sl.registerLazySingleton(() => AutoSpeakPrefs());
-  sl.registerLazySingleton(() => InternetConnectionChecker.instance);
 }
