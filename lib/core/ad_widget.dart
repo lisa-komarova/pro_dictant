@@ -16,50 +16,38 @@ class _BannerAdvertisementState extends State<BannerAdvertisement> {
   var isBannerAlreadyCreated = false;
 
   _loadAd() async {
-    _bannerAd = _createBanner();
+    _createBanner();
     setState(() {
       isBannerAlreadyCreated = true;
     });
   }
 
-  BannerAdSize _getAdSize() {
-    return BannerAdSize.sticky(width: widget.screenWidth);
-  }
+  void _createBanner() {
+    final banner = BannerAd(adSize: BannerAdSize.sticky(width: widget.screenWidth));
 
-  _createBanner() {
-    return BannerAd(
-        adUnitId: 'R-M-13553505-1',
-        // or 'demo-banner-yandex'
-        adSize: _getAdSize(),
-        adRequest: const AdRequest(),
-        onAdLoaded: () {
-          if (!mounted) {
-            _bannerAd!.destroy();
-            return;
-          }
-        },
-        onAdFailedToLoad: (error) {
-          // Ad failed to load with AdRequestError.
-          // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-        },
-        onAdClicked: () {
-          // Called when a click is recorded for an ad.
-        },
-        onLeftApplication: () {
-          // Called when user is about to leave application (e.g., to go to the browser), as a result of clicking on the ad.
-        },
-        onReturnedToApplication: () {
-          // Called when user returned to application after click.
-        },
-        onImpression: (impressionData) {
-          // Called when an impression is recorded for an ad.
-        });
+    banner.loadStateStream.listen((state) {
+      if (state is BannerAdLoadStateLoaded) {
+        // Ad loaded
+      } else if (state is BannerAdLoadStateError) {
+        // Ad failed to load
+      }
+    });
+
+    banner.events.listen((event) {
+      if (event is BannerAdClickedEvent) {
+        // Ad clicked
+      } else if (event is BannerAdImpressionEvent) {
+        // Impression
+      }
+    });
+
+    banner.load(AdRequest(adUnitId: 'R-M-13553505-1'));
+    _bannerAd = banner;
   }
 
   @override
   void initState() {
     super.initState();
-    MobileAds.initialize();
     _loadAd();
   }
 

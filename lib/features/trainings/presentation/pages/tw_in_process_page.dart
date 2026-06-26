@@ -53,7 +53,6 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   @override
   void initState() {
     getNumberOfAdsShown();
-    MobileAds.initialize();
     translationFocusNode = FocusNode();
     _loadAutoSpeak();
     WidgetsBinding.instance.addPostFrameCallback((_) {

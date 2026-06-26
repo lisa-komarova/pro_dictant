@@ -997,10 +997,10 @@ packages:
     dependency: "direct main"
     description:
       name: yandex_mobileads
-      sha256: "8591e30d6ec2cd71861f812426952bd8caf2137a8061c1beb2921a80b3e444c4"
+      sha256: "3fc19d47f63190121e695e683e22c84253c2807fd2c44c37ef2d66db41b6155f"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "7.16.0"
+    version: "8.0.0"
 sdks:
   dart: ">=3.9.0 <4.0.0"
   flutter: ">=3.35.0"

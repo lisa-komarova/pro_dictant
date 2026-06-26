@@ -20,15 +20,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentPageIndex = 1;
   InterstitialAd? _interstitialAd;
-  late final Future<InterstitialAdLoader> _adLoader;
+  final _adLoader = InterstitialAdLoader();
   int numberOfAdsShown = 0;
 
   @override
   void initState() {
     BlocProvider.of<ProfileBloc>(context).add(const LoadStatistics());
     getNumberOfAdsShown();
-    MobileAds.initialize();
-    _adLoader = _createInterstitialAdLoader();
     _loadInterstitialAd();
     super.initState();
   }
@@ -139,26 +137,15 @@ class _HomePageState extends State<HomePage> {
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
   }
 
-  ///creates an ad
-  Future<InterstitialAdLoader> _createInterstitialAdLoader() {
-    return InterstitialAdLoader.create(
-      onAdLoaded: (InterstitialAd interstitialAd) {
-        // The ad was loaded successfully. Now you can show loaded ad
-        _interstitialAd = interstitialAd;
-      },
-      onAdFailedToLoad: (error) {
-        // Ad failed to load with AdRequestError.
-        // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-      },
-    );
-  }
-
   ///loads an ad
   Future<void> _loadInterstitialAd() async {
-    final adLoader = await _adLoader;
-    await adLoader.loadAd(
-        adRequestConfiguration: const AdRequestConfiguration(
-            adUnitId:
-                'R-M-13553505-2')); // for debug you can use 'demo-interstitial-yandex'
+    try {
+      _interstitialAd = await _adLoader.loadAd(
+        adRequest: AdRequest(adUnitId: 'R-M-13553505-2'),
+      );
+    } on AdRequestError catch (error) {
+      // Ad failed to load with AdRequestError.
+      // Attempting to load a new ad from the error handler is strongly discouraged.
+    }
   }
 }

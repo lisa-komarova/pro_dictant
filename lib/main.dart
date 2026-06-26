@@ -14,6 +14,7 @@ import 'package:pro_dictant/service_locator.dart' as di;
 import 'package:pro_dictant/service_locator.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
 import 'core/s.dart';
 import 'features/authentification/presentation/manager/login_bloc/login_bloc.dart';
 import 'features/dictionary/presentation/manager/words_bloc/words_bloc.dart';
@@ -26,6 +27,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await YandexAds.initialize();
   await di.init();
   await sl<GoogleSignIn>().initialize();
   SystemChrome.setPreferredOrientations([
