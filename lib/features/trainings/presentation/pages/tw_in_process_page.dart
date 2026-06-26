@@ -12,7 +12,6 @@ import 'package:pro_dictant/features/trainings/presentation/pages/wt_in_process_
 import 'package:pro_dictant/features/trainings/presentation/widgets/animated_ answer_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:yandex_mobileads/mobile_ads.dart';
 import '../../../../core/ad_widget.dart';
 import '../../../../core/platform/auto_speak_prefs.dart';
 import '../../../../core/platform/sound_service.dart';

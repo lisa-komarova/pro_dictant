@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
       _interstitialAd = await _adLoader.loadAd(
         adRequest: AdRequest(adUnitId: 'R-M-13553505-2'),
       );
-    } on AdRequestError catch (error) {
+    } on AdRequestError catch (_) {
       // Ad failed to load with AdRequestError.
       // Attempting to load a new ad from the error handler is strongly discouraged.
     }
