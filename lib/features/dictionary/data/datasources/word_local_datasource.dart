@@ -6,7 +6,6 @@ import 'package:pro_dictant/core/error/exception.dart';
 import 'package:pro_dictant/features/dictionary/data/models/set_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/translation_model.dart';
 import 'package:pro_dictant/features/dictionary/data/models/word_model.dart';
-import 'package:pro_dictant/features/dictionary/data/models/word_set_model.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_bm25/sqlite_bm25.dart';
@@ -154,31 +153,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     } on Exception catch (_) {
       throw ServerException();
     }
-  }
-
-  @override
-  Future<List<SetModel>> fetchWordsForSets(List<SetModel> sets) async {
-    final db = await instance.database;
-    final wordsInSetsMap = await db!.rawQuery(
-        '''SELECT word.id,  word.pos, word.source, word.transcription from words_translations INNER join word_set on words_translations.id == word_set.word_id INNER join word on words_translations.word_id
-               == word.id''');
-    final wordsInSets =
-        wordsInSetsMap.map((map) => WordModel.fromJson(map)).toList();
-    final wordSetMap = await db.rawQuery(
-        '''select words_translations.word_id, word_set.set_id from word_set join words_translations on word_set.word_id = words_translations.id''');
-    final wordSet = wordSetMap.map((e) => WordSetModel.fromJson(e)).toList();
-    for (int i = 0; i < sets.length; i++) {
-      final List<WordModel> wordsForSingleSet = [];
-      for (int y = 0; y < wordSet.length; y++) {
-        if (sets[i].id == wordSet[y].set_id) {
-          wordsForSingleSet.add(wordsInSets
-              .where((element) => element.id == wordSet[y].word_id)
-              .first);
-        }
-      }
-      sets[i].wordsInSet.addAll(wordsForSingleSet);
-    }
-    return sets;
   }
 
   @override
@@ -501,23 +475,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   }
 
   @override
-  Future<List<WordModel>> fetchTranslationsForWordsInSet(
-      List<WordModel> words, String setId) async {
-    final db = await database;
-    List<TranslationModel> translations = [];
-    final translationsMap = await db!.rawQuery(
-        '''SELECT words_translations.id,  words_translations.word_id, translation, notes, isInDictionary, isTW, isWT,
-               isMatching, isCards, isDictant, isRepeated, dateAddedToDictionary from words_translations INNER join word_set on words_translations.id 
-               == word_set.word_id WHERE word_set.set_id =  "$setId"''');
-    translations =
-        translationsMap.map((map) => TranslationModel.fromJson(map)).toList();
-    for (int i = 0; i < words.length; i++) {
-      words[i].translationList.add(translations[i]);
-    }
-    return words;
-  }
-
-  @override
   Future<List<WordModel>> fetchTranslationsForSearchedWordsInSet(
       List<WordModel> words) async {
     final db = await database;
@@ -650,9 +607,6 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
       wordsInSet: finalWordsList,
     );
 
-
     return setModel;
   }
-
-
 }
