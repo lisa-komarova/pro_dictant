@@ -869,7 +869,7 @@ abstract class AppLocalizations {
   /// No description provided for @chooseOtherLoginOption.
   ///
   /// In en, this message translates to:
-  /// **'choose other login option'**
+  /// **'choose another login option'**
   String get chooseOtherLoginOption;
 
   /// No description provided for @enterEmail.

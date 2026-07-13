@@ -442,7 +442,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginButton => 'login';
 
   @override
-  String get chooseOtherLoginOption => 'choose other login option';
+  String get chooseOtherLoginOption => 'choose another login option';
 
   @override
   String get enterEmail => 'enter email';

@@ -36,7 +36,8 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
 
   @override
   Widget build(BuildContext context) {
-    SetEntity setEntity = SetEntity(id: '', name: '', isAddedToDictionary: 0);
+    SetEntity setEntity =
+        SetEntity(id: '', name: '', isAddedToDictionary: 0, wordsInSet: []);
     return BlocBuilder<SetBloc, SetsState>(builder: (context, state) {
       if (state is SetLoading) {
         return _loadingIndicator();
@@ -123,34 +124,63 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
       BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
-              if (state is ProfileLoaded) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onTap: selectedWords.isNotEmpty
-                          ? null
-                          : () {
-                              Navigator.of(context)
-                                ..pop()
-                                ..pushReplacement(MaterialPageRoute(
-                                    builder: (ctx) => TrainingsPage(
-                                          goal: state.statistics.goal,
-                                          setId: setEntity.id,
-                                          setName: setEntity.name,
-                                          isTodayCompleted:
-                                              state.statistics.isTodayCompleted,
-                                        )));
-                            },
+        Container(
+          color: Theme.of(context).canvasColor,
+          child: Row(
+            children: [
+              BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
+                if (state is ProfileLoaded) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: selectedWords.isNotEmpty
+                            ? null
+                            : () {
+                                Navigator.of(context)
+                                  ..pop()
+                                  ..pushReplacement(MaterialPageRoute(
+                                      builder: (ctx) => TrainingsPage(
+                                            goal: state.statistics.goal,
+                                            setId: setEntity.id,
+                                            setName: setEntity.name,
+                                            isTodayCompleted:
+                                                state.statistics.isTodayCompleted,
+                                          )));
+                              },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: selectedWords.isNotEmpty
+                                ? const Color(0x6bd9c3ac)
+                                : const Color(0xFF85977f),
+                          ),
+                          height: 50,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: FittedBox(
+                                child: Text(
+                                  S.of(context).sendSetToTrainings,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.hachiMaruPop(
+                                      color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: selectedWords.isNotEmpty
-                              ? const Color(0x6bd9c3ac)
-                              : const Color(0xFF85977f),
+                          color: const Color(0x6bd9c3ac),
                         ),
                         height: 50,
                         child: Center(
@@ -160,24 +190,140 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                               child: Text(
                                 S.of(context).sendSetToTrainings,
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.hachiMaruPop(
-                                    color: Colors.white),
+                                style:
+                                    GoogleFonts.hachiMaruPop(color: Colors.white),
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
+                  );
+                }
+              }),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: 50,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: FittedBox(
+                          child: AutoSizeText(
+                            S.of(context).learntPercentage(learntPercentage),
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.hachiMaruPop(
+                                color: const Color(0xff5e6b5a)),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                );
-              } else {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          color: Theme.of(context).canvasColor,
+          child: Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () async {
+                      if (setEntity.isAddedToDictionary == 1) {
+                        if (selectedWords.isNotEmpty) {
+                          List<TranslationEntity> selectedTranslations = [];
+                          for (int i = 0; i < selectedWords.length; i++) {
+                            selectedTranslations
+                                .add(selectedWords[i].translationList.first);
+                          }
+                          BlocProvider.of<WordsBloc>(context).add(
+                              RemoveWordsInSetFromDictionary(
+                                  words: selectedTranslations));
+                          setState(() {
+                            setEntity = setEntity.copy(isAddedToDictionary: 0);
+                          });
+                          BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                              set: setEntity,
+                              toAdd: const [],
+                              toDelete: const []));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(S.of(context).wordsREmeovedFromDictionary),
+                            ),
+                          );
+                          selectedWords.clear();
+                        } else {
+                          BlocProvider.of<WordsBloc>(context).add(
+                              RemoveWordsInSetFromDictionary(
+                                  words: translations));
+                          setState(() {
+                            setEntity = setEntity.copy(isAddedToDictionary: 0);
+                          });
+                          BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                              set: setEntity,
+                              toAdd: const [],
+                              toDelete: const []));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text(S.of(context).wordsREmeovedFromDictionary),
+                            ),
+                          );
+                        }
+                      } else {
+                        if (selectedWords.isNotEmpty) {
+                          List<TranslationEntity> selectedTranslations = [];
+                          for (int i = 0; i < selectedWords.length; i++) {
+                            selectedTranslations
+                                .add(selectedWords[i].translationList.first);
+                          }
+                          BlocProvider.of<WordsBloc>(context).add(
+                              AddWordsFromSetToDictionary(
+                                  words: selectedTranslations));
+
+                          BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                              set: setEntity,
+                              toAdd: const [],
+                              toDelete: const []));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(S.of(context).wordsAddedToDictionary),
+                            ),
+                          );
+                          selectedWords.clear();
+                        } else {
+                          BlocProvider.of<WordsBloc>(context).add(
+                              AddWordsFromSetToDictionary(words: translations));
+                          BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                              set: setEntity,
+                              toAdd: const [],
+                              toDelete: const []));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(S.of(context).wordsAddedToDictionary),
+                            ),
+                          );
+                        }
+                        setState(() {
+                          setEntity = setEntity.copy(isAddedToDictionary: 0);
+                        });
+                      }
+                      await Future.delayed(Duration(seconds: 10));
+                      BlocProvider.of<ProfileBloc>(context)
+                          .add(const LoadStatistics());
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: const Color(0x6bd9c3ac),
+                        color: setEntity.isAddedToDictionary == 1
+                            ? const Color(0xFFB70E0E)
+                            : const Color(0xFF85977f),
                       ),
                       height: 50,
                       child: Center(
@@ -185,7 +331,9 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                           padding: const EdgeInsets.all(5.0),
                           child: FittedBox(
                             child: Text(
-                              S.of(context).sendSetToTrainings,
+                              setEntity.isAddedToDictionary == 0
+                                  ? S.of(context).addToDictionary
+                                  : S.of(context).removeFromDictionary,
                               textAlign: TextAlign.center,
                               style:
                                   GoogleFonts.hachiMaruPop(color: Colors.white),
@@ -195,185 +343,44 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                       ),
                     ),
                   ),
-                );
-              }
-            }),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  height: 50,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FittedBox(
-                        child: AutoSizeText(
-                          S.of(context).learntPercentage(learntPercentage),
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.hachiMaruPop(
-                              color: const Color(0xff5e6b5a)),
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: Padding(
+              Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
-                  onTap: () async {
-                    if (setEntity.isAddedToDictionary == 1) {
-                      if (selectedWords.isNotEmpty) {
-                        List<TranslationEntity> selectedTranslations = [];
-                        for (int i = 0; i < selectedWords.length; i++) {
-                          selectedTranslations
-                              .add(selectedWords[i].translationList.first);
-                        }
-                        BlocProvider.of<WordsBloc>(context).add(
-                            RemoveWordsInSetFromDictionary(
-                                words: selectedTranslations));
-                        setState(() {
-                          setEntity.isAddedToDictionary = 0;
-                        });
-                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                            set: setEntity,
-                            toAdd: const [],
-                            toDelete: const []));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                Text(S.of(context).wordsREmeovedFromDictionary),
-                          ),
-                        );
-                        selectedWords.clear();
-                      } else {
-                        BlocProvider.of<WordsBloc>(context).add(
-                            RemoveWordsInSetFromDictionary(
-                                words: translations));
-                        setState(() {
-                          setEntity.isAddedToDictionary = 0;
-                        });
-                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                            set: setEntity,
-                            toAdd: const [],
-                            toDelete: const []));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                Text(S.of(context).wordsREmeovedFromDictionary),
-                          ),
-                        );
-                      }
-                    } else {
-                      if (selectedWords.isNotEmpty) {
-                        List<TranslationEntity> selectedTranslations = [];
-                        for (int i = 0; i < selectedWords.length; i++) {
-                          selectedTranslations
-                              .add(selectedWords[i].translationList.first);
-                        }
-                        BlocProvider.of<WordsBloc>(context).add(
-                            AddWordsFromSetToDictionary(
-                                words: selectedTranslations));
-
-                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                            set: setEntity,
-                            toAdd: const [],
-                            toDelete: const []));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(S.of(context).wordsAddedToDictionary),
-                          ),
-                        );
-                        selectedWords.clear();
-                      } else {
-                        BlocProvider.of<WordsBloc>(context).add(
-                            AddWordsFromSetToDictionary(words: translations));
-                        BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                            set: setEntity,
-                            toAdd: const [],
-                            toDelete: const []));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(S.of(context).wordsAddedToDictionary),
-                          ),
-                        );
-                      }
-                      setState(() {
-                        setEntity.isAddedToDictionary = 1;
-                      });
-                    }
-                    await Future.delayed(Duration(seconds: 10));
-                    BlocProvider.of<ProfileBloc>(context)
-                        .add(const LoadStatistics());
-                  },
+                  onTap: selectedWords.isNotEmpty
+                      ? null
+                      : () {
+                          if (setEntity.id.isNotEmpty) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => NewSetPage(
+                                      set: setEntity,
+                                    )));
+                          }
+                        },
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: setEntity.isAddedToDictionary == 1
-                          ? const Color(0xFFB70E0E)
+                      color: selectedWords.isNotEmpty
+                          ? const Color(0x6bd9c3ac)
                           : const Color(0xFF85977f),
                     ),
                     height: 50,
+                    width: 60,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: FittedBox(
-                          child: Text(
-                            setEntity.isAddedToDictionary == 0
-                                ? S.of(context).addToDictionary
-                                : S.of(context).removeFromDictionary,
-                            textAlign: TextAlign.center,
-                            style:
-                                GoogleFonts.hachiMaruPop(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: selectedWords.isNotEmpty
-                    ? null
-                    : () {
-                        if (setEntity.id.isNotEmpty) {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => NewSetPage(
-                                    set: setEntity,
-                                  )));
-                        }
-                      },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: selectedWords.isNotEmpty
-                        ? const Color(0x6bd9c3ac)
-                        : const Color(0xFF85977f),
-                  ),
-                  height: 50,
-                  width: 60,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: FittedBox(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Semantics(
-                            label: S.of(context).editSet,
-                            child: Image.asset(
-                              'assets/icons/dictant.png',
-                              width: 35,
-                              height: 35,
-                              color: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Semantics(
+                              label: S.of(context).editSet,
+                              child: Image.asset(
+                                'assets/icons/dictant.png',
+                                width: 35,
+                                height: 35,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -382,8 +389,8 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Expanded(
           child: ListView.builder(

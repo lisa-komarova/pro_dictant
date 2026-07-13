@@ -4,13 +4,15 @@ import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart
 class SetEntity extends Equatable {
   final String id;
   final String name;
-  int isAddedToDictionary;
-  late final List<WordEntity> wordsInSet = [];
+  final int isAddedToDictionary;
+  final List<WordEntity> wordsInSet;
 
-  SetEntity(
-      {required this.id,
-      required this.name,
-      required this.isAddedToDictionary});
+  const SetEntity({
+    required this.id,
+    required this.name,
+    required this.isAddedToDictionary,
+    required this.wordsInSet,
+  });
 
   SetEntity copy({
     String? id,
@@ -22,7 +24,8 @@ class SetEntity extends Equatable {
         id: id ?? this.id,
         name: name ?? this.name,
         isAddedToDictionary: isAddedToDictionary ?? this.isAddedToDictionary,
-      )..wordsInSet.addAll(this.wordsInSet);
+        wordsInSet: wordsInSet ?? this.wordsInSet,
+      );
 
   @override
   List<Object?> get props => [id, name, wordsInSet, isAddedToDictionary];

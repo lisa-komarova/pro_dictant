@@ -11,12 +11,14 @@ import 'package:pro_dictant/features/dictionary/domain/entities/word_entity.dart
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_bm25/sqlite_bm25.dart';
 
+import '../../domain/entities/translation_entity.dart';
+
 abstract class WordLocalDatasource {
   Future<List<WordModel>> fetchWordBySource(String query);
 
   Future<List<WordModel>> fetchWordsInDict();
 
-  Future<List<SetModel>> fetchSets();
+  Future<List<(String id, String name, int numberOfWords)>> fetchSets();
 
   Future<void> updateWord(WordModel word);
 
@@ -39,12 +41,9 @@ abstract class WordLocalDatasource {
 
   Future<List<WordModel>> searchWordsInTranslation(String query);
 
-  Future<List<SetModel>> fetchWordsForSets(List<SetModel> sets);
+  Future<SetModel> fetchSetWithWords(setId);
 
   Future<List<WordModel>> fetchTranslationsForWords(List<WordModel> words);
-
-  Future<List<WordModel>> fetchTranslationsForWordsInSet(
-      List<WordModel> words, String setId);
 
   Future<List<WordModel>> fetchTranslationsForSearchedWordsInSet(
       List<WordModel> words);
@@ -131,17 +130,24 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
   }
 
   @override
-  Future<List<SetModel>> fetchSets() async {
+  Future<List<(String id, String name, int numberOfWords)>> fetchSets() async {
     final db = await instance.database;
-    List<SetModel> sets = [];
+    List<(String id, String name, int numberOfWords)> sets = [];
     try {
-      final maps = await db!.query(
-        tableSets,
-        columns: SetFields.values,
-      );
+      final maps =
+          await db!.rawQuery('''SELECT s.id, s.name, count(*) as numberOfWords 
+          FROM [set] as s
+      JOIN [word_set] ON s.id = [word_set].set_id
+      GROUP BY s.id, s.name
+          ''');
       if (maps.isNotEmpty) {
-        sets = maps.map((map) => SetModel.fromJson(map)).toList();
-        return sets;
+        return maps
+            .map((map) => (
+                  map['id'] as String,
+                  map['name'] as String,
+                  map['numberOfWords'] as int
+                ))
+            .toList();
       } else {
         return sets;
       }
@@ -568,4 +574,85 @@ class WordsLocalDatasourceImpl extends WordLocalDatasource {
     await addWordsInASet(toAdd, set.id);
     await deleteWordsInASet(toDelete);
   }
+
+  @override
+  Future<SetModel> fetchSetWithWords(dynamic setId) async {
+    final db = await database;
+    final List<Map<String, Object?>> maps = await db!.rawQuery('''
+    SELECT 
+      s.id AS set_id,
+      s.name AS set_name,
+      s.isAddedToDictionary AS set_is_added,
+      w.id AS word_id,
+      w.source AS word_source,
+      w.transcription AS word_transcription,
+      w.pos AS word_pos,
+      wt.id AS wt_id,
+      wt.translation AS wt_translation,
+      wt.notes AS wt_notes,
+      wt.isInDictionary AS wt_is_in_dictionary,
+      wt.isTW AS wt_is_tw,
+      wt.isWT AS wt_is_wt,
+      wt.isMatching AS wt_is_matching,
+      wt.isCards AS wt_is_cards,
+      wt.isDictant AS wt_is_dictant,
+      wt.isRepeated AS wt_is_repeated,
+      wt.dateAddedToDictionary AS wt_date_added
+    FROM "set" s
+    JOIN "word_set" ws ON s.id = ws.set_id
+    JOIN "words_translations" wt ON ws.word_id = wt.id
+    JOIN "word" w ON wt.word_id = w.id
+    WHERE s.id = ?
+  ''', [setId.toString()]);
+
+    if (maps.isEmpty) {
+      throw Exception('Set with id $setId not found or has no words');
+    }
+
+    final Map<String, WordEntity> wordsMap = {};
+
+    for (final row in maps) {
+      final wordId = row['word_id'] as String;
+
+      if (!wordsMap.containsKey(wordId)) {
+        wordsMap[wordId] = WordEntity(
+          id: wordId,
+          source: row['word_source'] as String,
+          pos: (row['word_pos'] ?? '') as String,
+          transcription: (row['word_transcription'] ?? '') as String,
+        );
+      }
+
+      final translation = TranslationEntity(
+        id: row['wt_id'] as String,
+        wordId: wordId,
+        translation: row['wt_translation'] as String,
+        notes: (row['wt_notes'] ?? '') as String,
+        isInDictionary: (row['wt_is_in_dictionary'] ?? 0) as int,
+        isTW: (row['wt_is_tw'] ?? 0) as int,
+        isWT: (row['wt_is_wt'] ?? 0) as int,
+        isMatching: (row['wt_is_matching'] ?? 0) as int,
+        isCards: (row['wt_is_cards'] ?? 0) as int,
+        isDictant: (row['wt_is_dictant'] ?? 0) as int,
+        isRepeated: (row['wt_is_repeated'] ?? 0) as int,
+        dateAddedToDictionary: (row['wt_date_added'] ?? '') as String,
+      );
+
+      wordsMap[wordId]!.translationList.add(translation);
+    }
+
+    final firstRow = maps.first;
+    final List<WordEntity> finalWordsList = wordsMap.values.toList();
+    final setModel = SetModel(
+      id: firstRow['set_id'] as String,
+      name: firstRow['set_name'] as String,
+      isAddedToDictionary: firstRow['set_is_added'] as int,
+      wordsInSet: finalWordsList,
+    );
+
+
+    return setModel;
+  }
+
+
 }

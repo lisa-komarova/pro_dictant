@@ -138,7 +138,7 @@
     "continueWithoutAccount": "continue without account",
     "logoutButton" : "logout",
     "loginButton" : "login",
-    "chooseOtherLoginOption" : "choose other login option",
+    "chooseOtherLoginOption" : "choose another login option",
     "enterEmail" : "enter email",
     "enterPassword" : "enter password",
     "emailIsTooShort": "email is too short",

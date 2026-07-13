@@ -34,16 +34,10 @@ class DeleteSet extends SetsEvent {
   const DeleteSet({required this.setId});
 }
 
-class FetchWordsForSets extends SetsEvent {
-  final List<SetEntity> sets;
+class FetchSetWithWords extends SetsEvent {
+  final String setId;
 
-  const FetchWordsForSets({required this.sets});
-}
-
-class FetchTranslationsForWordsInSets extends SetsEvent {
-  final SetEntity set;
-
-  const FetchTranslationsForWordsInSets({required this.set});
+  const FetchSetWithWords({required this.setId});
 }
 
 class FetchTranslationsForSearchedWordsInSets extends SetsEvent {

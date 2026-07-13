@@ -294,61 +294,46 @@ class _NewSetPageState extends State<NewSetPage> {
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  if (_nameController.text == '') {
+                  if (_nameController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(S.of(context).enterSetName)));
-                  } else {
-                    if (widget.set != null) {
-                      SetEntity set = SetEntity(
-                        id: widget.set!.id,
-                        name: _nameController.text,
-                        isAddedToDictionary: widget.set!.isAddedToDictionary,
-                      );
-                      final List<WordEntity> wordsInSetToAdd = [];
-                      final List<WordEntity> wordsInSetToDelete = [];
-                      if (wordsInSet.length > widget.set!.wordsInSet.length) {
-                        for (int i = 0; i < wordsInSet.length; i++) {
-                          if (widget.set!.wordsInSet.contains(wordsInSet[i]) &&
-                              !wordsInSet.contains(wordsInSet[i])) {
-                            wordsInSetToDelete.add(wordsInSet[i]);
-                          }
-                          if (!widget.set!.wordsInSet.contains(wordsInSet[i]) &&
-                              wordsInSet.contains(wordsInSet[i])) {
-                            wordsInSetToAdd.add(wordsInSet[i]);
-                          }
-                        }
-                      } else {
-                        for (int i = 0;
-                            i < widget.set!.wordsInSet.length;
-                            i++) {
-                          if (widget.set!.wordsInSet
-                                  .contains(widget.set!.wordsInSet[i]) &&
-                              !wordsInSet.contains(widget.set!.wordsInSet[i])) {
-                            wordsInSetToDelete.add(widget.set!.wordsInSet[i]);
-                          }
-                          if (!widget.set!.wordsInSet
-                                  .contains(widget.set!.wordsInSet[i]) &&
-                              wordsInSet.contains(widget.set!.wordsInSet[i])) {
-                            wordsInSetToAdd.add(widget.set!.wordsInSet[i]);
-                          }
-                        }
-                      }
-                      set.wordsInSet.addAll(wordsInSet);
-                      BlocProvider.of<SetBloc>(context).add(UpdateSet(
-                          set: set,
-                          toAdd: wordsInSetToAdd,
-                          toDelete: wordsInSetToDelete));
-                      Navigator.of(context).pop();
-                    } else {
-                      SetEntity set = SetEntity(
-                          id: const Uuid().v4(),
-                          name: _nameController.text,
-                          isAddedToDictionary: 0);
-                      set.wordsInSet.addAll(wordsInSet);
-                      BlocProvider.of<SetBloc>(context).add(AddSet(set: set));
-                      Navigator.of(context).pop();
-                    }
+                      SnackBar(content: Text(S.of(context).enterSetName)),
+                    );
+                    return;
                   }
+
+                  if (widget.set != null) {
+                    final oldWords = widget.set!.wordsInSet.toSet();
+                    final newWords = wordsInSet.toSet();
+
+                    final List<WordEntity> wordsInSetToAdd =
+                        newWords.difference(oldWords).toList();
+                    final List<WordEntity> wordsInSetToDelete =
+                        oldWords.difference(newWords).toList();
+
+                    final updatedSet = SetEntity(
+                      id: widget.set!.id,
+                      name: _nameController.text.trim(),
+                      isAddedToDictionary: widget.set!.isAddedToDictionary,
+                      wordsInSet: wordsInSet, // Сразу передаем итоговый список
+                    );
+
+                    BlocProvider.of<SetBloc>(context).add(UpdateSet(
+                      set: updatedSet,
+                      toAdd: wordsInSetToAdd,
+                      toDelete: wordsInSetToDelete,
+                    ));
+                  } else {
+                    final newSet = SetEntity(
+                      id: const Uuid().v4(),
+                      name: _nameController.text.trim(),
+                      isAddedToDictionary: 0,
+                      wordsInSet: wordsInSet,
+                    );
+
+                    BlocProvider.of<SetBloc>(context).add(AddSet(set: newSet));
+                  }
+
+                  Navigator.of(context).pop();
                 },
                 child: Container(
                   decoration: BoxDecoration(

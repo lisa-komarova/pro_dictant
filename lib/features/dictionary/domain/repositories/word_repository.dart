@@ -11,9 +11,6 @@ abstract class WordRepository {
   Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWords(
       List<WordEntity> words, bool shouldSort);
 
-  Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWordsInSet(
-      List<WordEntity> words, String setId);
-
   Future<Either<Failure, List<WordEntity>>>
       fetchTranslationsForSearchedWordsInSet(List<WordEntity> words);
 

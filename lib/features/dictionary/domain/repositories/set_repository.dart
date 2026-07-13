@@ -2,10 +2,11 @@ import 'package:dartz/dartz.dart';
 import 'package:pro_dictant/core/error/failure.dart';
 import 'package:pro_dictant/features/dictionary/domain/entities/set_entity.dart';
 
+import '../entities/set_card_info_entity.dart';
 import '../entities/word_entity.dart';
 
 abstract class SetRepository {
-  Future<Either<Failure, List<SetEntity>>> loadSets();
+  Future<Either<Failure, List<SetCardInfoEntity>>> loadSets();
 
   Future<Either<Failure, void>> addSet(SetEntity set);
 
@@ -14,6 +15,6 @@ abstract class SetRepository {
 
   Future<Either<Failure, void>> deleteSet(String setId);
 
-  Future<Either<Failure, List<SetEntity>>> fetchWordsForSets(
-      List<SetEntity> sets);
+  Future<Either<Failure, SetEntity>> fetchSetWithWords(
+      String setId);
 }

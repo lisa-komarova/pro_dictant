@@ -21,9 +21,8 @@ import 'package:pro_dictant/features/dictionary/domain/usecases/delete_word_from
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_all_words_in_dict.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_sets.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_translations_for_searched_words_in_set.dart';
-import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_translations_for_words_in_set.dart';
+import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_set_with_words.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_word_by_source.dart';
-import 'package:pro_dictant/features/dictionary/domain/usecases/fetch_words_for_sets.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/remove_words_in_set_from_dictionary.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/search_translation_online.dart';
 import 'package:pro_dictant/features/dictionary/domain/usecases/search_words_for_a_set.dart';
@@ -117,8 +116,7 @@ Future<void> init() async {
   sl.registerFactory(() => SetBloc(
         loadSets: sl(),
         addSet: sl(),
-        fetchWordsForSets: sl(),
-        fetchTranslationsForWordsInSet: sl(),
+        fetchSetWithWords: sl(),
         deleteSet: sl(),
         updateSet: sl(),
       ));
@@ -217,9 +215,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddSuggestedTranslationsToWordsInWT(
         trainingsRepository: sl(),
       ));
-  sl.registerLazySingleton(() => FetchWordsForSets(
-        setRepository: sl(),
-      ));
   sl.registerLazySingleton(() => FetchTranslationsForWords(
         wordRepository: sl(),
       ));
@@ -286,8 +281,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateWordsForComboTraining(
         trainingsRepository: sl(),
       ));
-  sl.registerLazySingleton(() => FetchTranslationsForWordsInSet(
-        wordRepository: sl(),
+  sl.registerLazySingleton(() => FetchSetWithWords(
+        setRepository: sl(),
       ));
   sl.registerLazySingleton(() => FetchTranslationsForSearchedWordsInSet(
         wordRepository: sl(),

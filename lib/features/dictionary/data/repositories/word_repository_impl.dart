@@ -186,25 +186,7 @@ class WordRepositoryImpl extends WordRepository {
     }
   }
 
-  @override
-  Future<Either<Failure, List<WordEntity>>> fetchTranslationsForWordsInSet(
-      List<WordEntity> words, String setId) async {
-    try {
-      List<WordModel> wordsModels = [];
-      for (var element in words) {
-        wordsModels.add(WordModel(
-            id: element.id,
-            source: element.source,
-            pos: element.pos,
-            transcription: element.transcription));
-      }
-      final wordsWithTranslations = await localDataSource
-          .fetchTranslationsForWordsInSet(wordsModels, setId);
-      return Right(wordsWithTranslations);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
-  }
+
 
   @override
   Future<Either<Failure, List<WordEntity>>>
