@@ -230,7 +230,7 @@ class _WordsListState extends State<WordsList> {
               padding: const EdgeInsets.only(right: 8.0),
               child: ListView.builder(
                   controller: _scrollController,
-                  physics: const BouncingScrollPhysics(),
+                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                   scrollDirection: Axis.vertical,
                   itemCount: wordsToBuild.length,
                   itemBuilder: (context, index) {

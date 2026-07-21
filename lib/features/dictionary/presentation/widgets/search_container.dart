@@ -29,7 +29,6 @@ class _SearchContainerState extends State<SearchContainer> {
 
   @override
   void dispose() {
-    // Clean up the focus node when the Form is disposed.
     myFocusNode.dispose();
     super.dispose();
   }
