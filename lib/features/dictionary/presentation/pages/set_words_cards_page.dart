@@ -214,7 +214,7 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Expanded(
+                          Flexible(
                             child: Padding(
                               padding: const EdgeInsets.only(right: 2),
                               child: Scrollbar(
