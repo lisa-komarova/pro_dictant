@@ -192,6 +192,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get endTrainings => 'завершить тренировку';
 
   @override
+  String get showTranslation => 'показать перевод';
+
+  @override
   String get iKnowWontForget => 'знаю, не забуду';
 
   @override

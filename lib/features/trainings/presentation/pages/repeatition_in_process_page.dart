@@ -37,7 +37,8 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
   List<RepeatingTrainingEntity> correctAnswers = [];
   List<RepeatingTrainingEntity> stillLearning = [];
   final FlutterTts flutterTts = FlutterTts();
-  var isPronounceSelected = false;
+  bool isPronounceSelected = false;
+  bool hideTranslation = true;
   final Color _color = const Color(0xFF85977f);
   int numberOfAdsShown = 0;
   final soundService = sl.get<SoundService>();
@@ -149,194 +150,196 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
 
   Widget _buildWordCard(List<RepeatingTrainingEntity> words) {
     if (currentWordIndex >= words.length) return SizedBox();
-    if (isAutoSpeakEnabled) speak(words[currentWordIndex].source);
+    if (isAutoSpeakEnabled && hideTranslation) speak(words[currentWordIndex].source);
     return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 100,
-                    child: numberOfAdsShown < 3
-                        ? BannerAdvertisement(
-                            screenWidth:
-                                MediaQuery.of(context).size.width.round(),
-                          )
-                        : null,
+      return SizedBox(
+        height: constraints.maxHeight,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: 100,
+                  child: numberOfAdsShown < 3
+                      ? BannerAdvertisement(
+                          screenWidth:
+                              MediaQuery.of(context).size.width.round(),
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            Flexible(
+              flex: 2,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${currentWordIndex + 1}/${words.length}',
+                    semanticsLabel: S.of(context).wordsRemaining(
+                        words.length - (currentWordIndex + 1)),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      wordsOnTraining.addAll(words.sublist(0, currentWordIndex));
+                      wordsOnTraining.removeWhere((element) =>
+                          correctAnswers.contains(element) ||
+                          mistakes.contains(element));
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (ctx) => RepeatitionResultPage(
+                                mistakes: mistakes,
+                                learnt: correctAnswers,
+                                learning: wordsOnTraining,
+                                setId: widget.setId,
+                              )));
+                      BlocProvider.of<TrainingsBloc>(context).add(
+                          UpdateWordsForRepeatingTRainings(
+                              mistakes, correctAnswers));
+                    },
+                    child: Text(
+                      S.of(context).endTrainings,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: const Color(0xFF85977f)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(),
+            Flexible(
+              flex: 2,
+              child: ExcludeSemantics(
+                child: GestureDetector(
+                  onTap: () {
+                    speak(words[currentWordIndex].source);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.fastOutSlowIn,
+                    child: Image.asset(
+                      'assets/icons/pronounce.png',
+                      width: 80,
+                      height: 80,
+                      color: _color,
+                    ),
                   ),
                 ),
               ),
-              Flexible(
-                flex: 2,
+            ),
+            const Spacer(),
+            Flexible(
+              flex: 4,
+              fit: FlexFit.loose,
+              child: Center(
                 child: Column(
                   children: [
-                    Text(
-                      '${currentWordIndex + 1}/${words.length}',
-                      semanticsLabel: S.of(context).wordsRemaining(
-                          words.length - (currentWordIndex + 1)),
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Focus(
+                      focusNode: sourceFocusNode,
+                      child: Semantics(
+                        focused: sourceFocusNode.hasFocus,
+                        child: Text(
+                          words[currentWordIndex].source,
+                          locale: const Locale('en', 'GB'),
+                          style: Theme.of(context).textTheme.titleLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        wordsOnTraining.addAll(words);
-                        wordsOnTraining.removeWhere((element) =>
-                            correctAnswers.contains(element) ||
-                            mistakes.contains(element));
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (ctx) => RepeatitionResultPage(
-                                  mistakes: mistakes,
-                                  learnt: correctAnswers,
-                                  learning: wordsOnTraining,
-                                  setId: widget.setId,
-                                )));
-                        BlocProvider.of<TrainingsBloc>(context).add(
-                            UpdateWordsForRepeatingTRainings(
-                                mistakes, correctAnswers));
-                      },
-                      child: Text(
-                        S.of(context).endTrainings,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: const Color(0xFF85977f)),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Semantics(
+                        child: hideTranslation ? GestureDetector(
+                          onTap: (){
+                            setState(() {
+                              hideTranslation = false;
+                            });
+                          },
+                          child: Text(
+                            S.of(context).showTranslation,
+                            locale: const Locale('ru'),
+                            style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: const Color(0xFF85977f)),
+                            textAlign: TextAlign.center,
+                          ) ,
+                        ): Text(
+                          words[currentWordIndex].translation,
+                          locale: const Locale('ru'),
+                          style: Theme.of(context).textTheme.titleLarge,
+                          textAlign: TextAlign.center,
+                        ) ,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Flexible(
-                flex: 1,
-                child: SizedBox(
-                  height: 100,
-                ),
-              ),
-              Flexible(
-                flex: 2,
-                child: ExcludeSemantics(
-                  child: GestureDetector(
-                    onTap: () {
-                      speak(words[currentWordIndex].source);
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.fastOutSlowIn,
-                      child: Image.asset(
-                        'assets/icons/pronounce.png',
-                        width: 80,
-                        height: 80,
-                        color: _color,
-                      ),
+            ),
+            const Spacer(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: AnimatedAnswerButton(
+                      text: S.of(context).iKnowWontForget,
+                      locale: Localizations.localeOf(context),
+                      onTap: () {
+                        soundService.playCorrect();
+                        correctAnswers.add(words[currentWordIndex]);
+                        goToNextOrFinish(words);
+                      },
+                      color: const Color(0xFF85977f),
                     ),
                   ),
                 ),
-              ),
-              Flexible(
-                flex: 2,
-                child: Center(
-                  child: Focus(
-                    focusNode: sourceFocusNode,
-                    child: Semantics(
-                      focused: sourceFocusNode.hasFocus,
-                      child: Text(
-                        words[currentWordIndex].source,
-                        locale: const Locale('en', 'GB'),
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: AnimatedAnswerButton(
+                      text: S.of(context).iKnowMightForget,
+                      locale: Localizations.localeOf(context),
+                      onTap: () {
+                        soundService.playNeutral();
+                        goToNextOrFinish(words);
+                      },
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ),
-              const Flexible(
-                flex: 1,
-                child: SizedBox(
-                  height: 100,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: AnimatedAnswerButton(
+                      text: S.of(context).iDontRemember,
+                      locale: Localizations.localeOf(context),
+                      onTap: () {
+                        soundService.playWrong();
+                        mistakes.add(words[currentWordIndex]);
+                        goToNextOrFinish(words);
+                      },
+                      color: const Color(0xFFB70E0E),
+                    ),
+                  ),
                 ),
-              ),
-              Flexible(
-                  flex: 4,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          child: AnimatedAnswerButton(
-                            text: S.of(context).iKnowWontForget,
-                            locale: Localizations.localeOf(context),
-                            onTap: () {
-                              soundService.playCorrect();
-                              correctAnswers.add(words[currentWordIndex]);
-                              goToNextOrFinish(words);
-                            },
-                            color: const Color(0xFF85977f),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          child: AnimatedAnswerButton(
-                            text: S.of(context).iKnowMightForget,
-                            locale: Localizations.localeOf(context),
-                            onTap: () {
-                              soundService.playNeutral();
-                              goToNextOrFinish(words);
-                            },
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          child: AnimatedAnswerButton(
-                            text: S.of(context).iDontRemember,
-                            locale: Localizations.localeOf(context),
-                            onTap: () {
-                              soundService.playWrong();
-                              mistakes.add(words[currentWordIndex]);
-                              goToNextOrFinish(words);
-                            },
-                            color: const Color(0xFFB70E0E),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
-              // Expanded(
-              //   flex: 4,
-              //   child: RepetitionAnswerButtons(
-              //     onTap: (positive, neutral, negative) {
-              //       if (positive) {
-              //         soundService.playCorrect();
-              //         correctAnswers.add(words[currentWordIndex]);
-              //       } else if (neutral) {
-              //         soundService.playNeutral();
-              //       } else if (negative) {
-              //         soundService.playWrong();
-              //         mistakes.add(words[currentWordIndex]);
-              //       }
-              //       goToNextOrFinish(words);
-              //     },
-              //   ),
-              // ),
-              const SizedBox(height: 20),
-            ],
-          ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       );
     });
@@ -379,6 +382,7 @@ class _CardsInProcessPageState extends State<RepeatitionInProcessPage> {
 
     setState(() {
       currentWordIndex++;
+      hideTranslation = true;
     });
   }
 }

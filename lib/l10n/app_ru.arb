@@ -57,6 +57,7 @@
   "mistakesCount": "ошибок: {mistakes}",
   "correctAnswersCount": "ответов: {correctAnswersCount}",
   "endTrainings": "завершить тренировку",
+  "showTranslation" : "показать перевод",
   "iKnowWontForget": "знаю, не забуду",
   "iKnowMightForget": "знаю, могу забыть",
   "iDontRemember": "не помню",

@@ -66,6 +66,7 @@
     "mistakesCount": "mistakes: {mistakes}",
     "correctAnswersCount": "right answers: {correctAnswersCount}",
     "endTrainings": "end training",
+    "showTranslation" : "show translation",
     "iKnowWontForget": "i know, won't forget",
     "iKnowMightForget": "i know, might forget",
     "iDontRemember": "i don't remember",

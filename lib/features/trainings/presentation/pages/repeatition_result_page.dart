@@ -106,7 +106,7 @@ class _RepeatitionResultPageState extends State<RepeatitionResultPage>
           ),
         ),
       ));
-      tabViews.add(_buildAnswerList(widget.learning, const Color(0xFFC0A183)));
+      tabViews.add(_buildAnswerList(widget.learning,  const Color(0xFF85705B)));
     }
     return SafeArea(
       top: false,
@@ -180,7 +180,7 @@ class _RepeatitionResultPageState extends State<RepeatitionResultPage>
                                   topRight: Radius.circular(25)),
                             ),
                             labelColor: Colors.black,
-                            unselectedLabelColor: const Color(0xFFD9C3AC),
+                            unselectedLabelColor: const Color(0xFF85705B),
                             labelStyle: Theme.of(context).textTheme.titleMedium,
                             tabs: tabs,
                           ),

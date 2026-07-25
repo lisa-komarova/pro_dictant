@@ -194,6 +194,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endTrainings => 'end training';
 
   @override
+  String get showTranslation => 'show translation';
+
+  @override
   String get iKnowWontForget => 'i know, won\'t forget';
 
   @override

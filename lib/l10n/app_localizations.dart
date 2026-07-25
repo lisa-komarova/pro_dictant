@@ -440,6 +440,12 @@ abstract class AppLocalizations {
   /// **'end training'**
   String get endTrainings;
 
+  /// No description provided for @showTranslation.
+  ///
+  /// In en, this message translates to:
+  /// **'show translation'**
+  String get showTranslation;
+
   /// No description provided for @iKnowWontForget.
   ///
   /// In en, this message translates to:
