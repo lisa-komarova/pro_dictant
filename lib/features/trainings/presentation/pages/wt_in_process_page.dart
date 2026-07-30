@@ -10,7 +10,7 @@ import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bl
 import 'package:pro_dictant/features/trainings/presentation/manager/trainings_bloc/trainings_state.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/training_result_list_page.dart';
 import 'package:pro_dictant/features/trainings/presentation/pages/tw_in_process_page.dart';
-import 'package:pro_dictant/features/trainings/presentation/widgets/animated_ answer_button.dart';
+import 'package:pro_dictant/features/trainings/presentation/widgets/animated_answer_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/ad_widget.dart';
@@ -77,7 +77,6 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
 
   @override
   Widget build(BuildContext context) {
-    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, _) async {

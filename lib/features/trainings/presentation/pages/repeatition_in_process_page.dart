@@ -13,7 +13,7 @@ import '../../domain/entities/repeating_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
-import '../widgets/animated_ answer_button.dart';
+import '../widgets/animated_answer_button.dart';
 
 class RepeatitionInProcessPage extends StatefulWidget {
   final String setId;

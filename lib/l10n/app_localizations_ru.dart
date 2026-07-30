@@ -63,7 +63,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get newWords => 'новые';
 
   @override
-  String get resetProgress => 'сброшен прогресс';
+  String get resetProgress => 'прогресс сброшен';
 
   @override
   String get learning => 'на\nизучении';

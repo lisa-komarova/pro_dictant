@@ -13,7 +13,7 @@ import '../../../../service_locator.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
 import '../manager/trainings_bloc/trainings_event.dart';
 import '../manager/trainings_bloc/trainings_state.dart';
-import '../widgets/animated_ answer_button.dart';
+import '../widgets/animated_answer_button.dart';
 import 'cards_result_page.dart';
 
 class CardsInProcessPage extends StatefulWidget {

@@ -7,6 +7,7 @@ import 'package:pro_dictant/features/trainings/presentation/widgets/continue_tra
 
 import '../../domain/entities/repeating_entity.dart';
 import '../manager/trainings_bloc/trainings_bloc.dart';
+import '../widgets/results_tabbar.dart';
 
 class RepeatitionResultPage extends StatefulWidget {
   final String setId;
@@ -28,28 +29,19 @@ class RepeatitionResultPage extends StatefulWidget {
 
 class _RepeatitionResultPageState extends State<RepeatitionResultPage>
     with SingleTickerProviderStateMixin {
-  late TabController tabController;
+  late PageController _pageController;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
 
-    int tabCount = 0;
-    if (widget.mistakes.isNotEmpty) tabCount++;
-    if (widget.learnt.isNotEmpty) tabCount++;
-    if (widget.learning.isNotEmpty) tabCount++;
-
-    tabController = TabController(
-      animationDuration: Duration.zero,
-      length: tabCount,
-      vsync: this,
-      initialIndex: 0,
-    );
+    _pageController = PageController(initialPage: _selectedIndex);
   }
 
   @override
   void dispose() {
-    tabController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -64,33 +56,15 @@ class _RepeatitionResultPageState extends State<RepeatitionResultPage>
         child: Tab(
           child: Text(
             S.of(context).resetProgress,
-            style: TextStyle(
-                fontSize: widget.learnt.isNotEmpty || widget.learning.isNotEmpty
-                    ? 10
-                    : 15),
+            //   style: TextStyle(
+            //       fontSize: widget.learnt.isNotEmpty || widget.learning.isNotEmpty
+            //           ? 10
+            //           : 15),
           ),
         ),
       ));
       tabViews.add(_buildAnswerList(widget.mistakes, const Color(0xFFB70E0E)));
     }
-
-    if (widget.learnt.isNotEmpty) {
-      tabs.add(Padding(
-        padding: const EdgeInsets.only(bottom: 15.0),
-        child: Tab(
-          child: Text(
-            S.of(context).learnt,
-            style: TextStyle(
-                fontSize:
-                    widget.mistakes.isNotEmpty || widget.learning.isNotEmpty
-                        ? 10
-                        : 15),
-          ),
-        ),
-      ));
-      tabViews.add(_buildAnswerList(widget.learnt, const Color(0xFF85977f)));
-    }
-
     if (widget.learning.isNotEmpty) {
       tabs.add(Padding(
         padding: const EdgeInsets.only(bottom: 15.0),
@@ -106,108 +80,113 @@ class _RepeatitionResultPageState extends State<RepeatitionResultPage>
           ),
         ),
       ));
-      tabViews.add(_buildAnswerList(widget.learning,  const Color(0xFF85705B)));
+      tabViews.add(_buildAnswerList(widget.learning, const Color(0xFF85705B)));
     }
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Semantics(
-                  label: S.of(context).exitButton,
-                  child: Image.asset('assets/icons/cancel.png'))),
-          title: Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Text(
-              S.of(context).results,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+    if (widget.learnt.isNotEmpty) {
+      tabs.add(Padding(
+        padding: const EdgeInsets.only(bottom: 15.0),
+        child: Tab(
+          child: Text(
+            S.of(context).learnt,
+            /*style: TextStyle(
+                fontSize:
+                    widget.mistakes.isNotEmpty || widget.learning.isNotEmpty
+                        ? 10
+                        : 15),*/
           ),
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 55),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD9C3AC),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(25),
-                            bottomRight: Radius.circular(25),
-                            topRight: Radius.circular(10),
-                            topLeft: Radius.circular(10),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 20, bottom: 10),
-                          child: TabBarView(
-                              controller: tabController,
-                              physics: tabViews.length > 2
-                                  ? NeverScrollableScrollPhysics()
-                                  : null,
-                              children: tabViews),
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          height: 65,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TabBar(
-                            controller: tabController,
-                            splashFactory: NoSplash.splashFactory,
-                            overlayColor:
-                                WidgetStateProperty.all(Colors.transparent),
-                            dividerColor: Colors.transparent,
-                            isScrollable: false,
-                            indicatorSize: TabBarIndicatorSize.tab,
-                            indicator: BoxDecoration(
-                              color: const Color(0xFFD9C3AC),
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(25),
-                                  topRight: Radius.circular(25)),
-                            ),
-                            labelColor: Colors.black,
-                            unselectedLabelColor: const Color(0xFF85705B),
-                            labelStyle: Theme.of(context).textTheme.titleMedium,
-                            tabs: tabs,
-                          ),
-                        ),
-                      ),
+      ));
+      tabViews.add(_buildAnswerList(widget.learnt, const Color(0xFF85977f)));
+    }
+
+    return DefaultTabController(
+      length: [widget.mistakes, widget.learnt, widget.learning]
+          .where((l) => l.isNotEmpty)
+          .length,
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: Semantics(
+                    label: S.of(context).exitButton,
+                    child: Image.asset('assets/icons/cancel.png'))),
+            title: Padding(
+              padding: const EdgeInsets.only(left: 10.0),
+              child: Text(
+                S.of(context).results,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: ResultsTabBar(
+                    tabs: [
+                      if (widget.mistakes.isNotEmpty)
+                        S.of(context).resetProgress,
+                      if (widget.learning.isNotEmpty)
+                        S.of(context).leftLearning,
+                      if (widget.learnt.isNotEmpty) S.of(context).learnt,
+                    ],
+                    pageController: _pageController,
+                    selectedIndex: _selectedIndex,
+                    dotColors: [
+                      if (widget.mistakes.isNotEmpty) const Color(0xFFB70E0E),
+                      if (widget.learning.isNotEmpty) const Color(0xff9b856b),
+                      if (widget.learnt.isNotEmpty) const Color(0xFF85977f),
                     ],
                   ),
                 ),
-              ),
-              Center(child: ContinueTrainingButton(
-                onPressed: () {
-                  if (widget.setId.isNotEmpty) {
-                    BlocProvider.of<TrainingsBloc>(context)
-                        .add(FetchSetWordsForRepeatingTRainings(widget.setId));
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (ctx) =>
-                            RepeatitionInProcessPage(setId: widget.setId)));
-                  } else {
-                    BlocProvider.of<TrainingsBloc>(context)
-                        .add(const FetchWordsForRepeatingTRainings());
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (ctx) =>
-                            const RepeatitionInProcessPage(setId: "")));
-                  }
-                },
-              )),
-            ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFD9C3AC),
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: PageView(
+                          controller: _pageController,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _selectedIndex = index;
+                            });
+                          },
+                          children: tabViews,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: ContinueTrainingButton(
+                    onPressed: () {
+                      if (widget.setId.isNotEmpty) {
+                        BlocProvider.of<TrainingsBloc>(context).add(
+                            FetchSetWordsForRepeatingTRainings(widget.setId));
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (ctx) =>
+                                RepeatitionInProcessPage(setId: widget.setId)));
+                      } else {
+                        BlocProvider.of<TrainingsBloc>(context)
+                            .add(const FetchWordsForRepeatingTRainings());
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (ctx) =>
+                                const RepeatitionInProcessPage(setId: "")));
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
