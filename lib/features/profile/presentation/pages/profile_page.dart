@@ -38,6 +38,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         onRefresh: _refreshPage,
                         child: LayoutBuilder(builder: (c, constraints) {
                           return SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: ClampingScrollPhysics(),
+                            ),
                             child: ConstrainedBox(
                               constraints: BoxConstraints(
                                 minHeight: constraints.maxHeight,

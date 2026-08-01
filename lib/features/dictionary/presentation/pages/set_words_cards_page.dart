@@ -430,6 +430,7 @@ class _SetWordsCardsPageState extends State<SetWordsCardsPage>
               onPressed: () {
                 if (toDelete) {
                   setState(() {
+                    translation.isInDictionary = 0;
                     BlocProvider.of<WordsBloc>(context)
                         .add(DeleteWordFromDictionary(translation));
                     Navigator.of(context).pop();

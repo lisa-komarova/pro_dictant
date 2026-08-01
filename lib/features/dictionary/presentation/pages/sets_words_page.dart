@@ -286,7 +286,9 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                           BlocProvider.of<WordsBloc>(context).add(
                               AddWordsFromSetToDictionary(
                                   words: selectedTranslations));
-
+                          setState(() {
+                            setEntity = setEntity.copy(isAddedToDictionary: 1);
+                          });
                           BlocProvider.of<SetBloc>(context).add(UpdateSet(
                               set: setEntity,
                               toAdd: const [],
@@ -300,6 +302,9 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                         } else {
                           BlocProvider.of<WordsBloc>(context).add(
                               AddWordsFromSetToDictionary(words: translations));
+                          setState(() {
+                            setEntity = setEntity.copy(isAddedToDictionary: 1);
+                          });
                           BlocProvider.of<SetBloc>(context).add(UpdateSet(
                               set: setEntity,
                               toAdd: const [],
@@ -314,7 +319,7 @@ class _SetsWordsPageState extends State<SetsWordsPage> {
                           setEntity = setEntity.copy(isAddedToDictionary: 0);
                         });
                       }
-                      await Future.delayed(Duration(seconds: 10));
+                      await Future.delayed(Duration(seconds: 5));
                       BlocProvider.of<ProfileBloc>(context)
                           .add(const LoadStatistics());
                     },

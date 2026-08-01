@@ -31,7 +31,20 @@ class WordModel extends WordEntity {
           pos: pos,
           transcription: transcription,
         );
+  factory WordModel.fromEntity(WordEntity entity) {
+    final word = WordModel(
+      id: entity.id,
+      source: entity.source,
+      pos: entity.pos,
+      transcription: entity.transcription,
+    );
+    final modelsList = entity.translationList.map((e) {
+      return e is TranslationModel ? e : TranslationModel.fromEntity(e);
+    }).toList();
 
+    word.translationList.addAll(modelsList);
+    return word;
+  }
   Map<String, Object?> toJson() => {
         WordsFields.id: id,
         WordsFields.source: source,

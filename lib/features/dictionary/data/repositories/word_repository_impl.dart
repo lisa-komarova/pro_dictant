@@ -48,10 +48,10 @@ class WordRepositoryImpl extends WordRepository {
 
   @override
   Future<Either<Failure, void>> deleteWordFromDictionary(
-      TranslationEntity translationModel) async {
+      TranslationEntity translationEntity) async {
     try {
       await localDataSource
-          .deleteWordFromDictionary(translationModel as TranslationModel);
+          .deleteWordFromDictionary(TranslationModel.fromEntity(translationEntity));
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -63,7 +63,7 @@ class WordRepositoryImpl extends WordRepository {
       TranslationEntity translationEntity) async {
     try {
       await localDataSource
-          .deleteTranslation(translationEntity as TranslationModel);
+          .deleteTranslation(TranslationModel.fromEntity(translationEntity));
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -71,9 +71,9 @@ class WordRepositoryImpl extends WordRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteWord(WordEntity wordEntity) async {
+  Future<Either<Failure, void>> deleteWord(WordEntity word) async {
     try {
-      await localDataSource.deleteWord(wordEntity as WordModel);
+      await localDataSource.deleteWord(WordModel.fromEntity(word));
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -83,7 +83,7 @@ class WordRepositoryImpl extends WordRepository {
   @override
   Future<Either<Failure, void>> updateWord(WordEntity word) async {
     try {
-      await localDataSource.updateWord(word as WordModel);
+      await localDataSource.updateWord(WordModel.fromEntity(word));
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -93,7 +93,7 @@ class WordRepositoryImpl extends WordRepository {
   @override
   Future<Either<Failure, void>> addWord(WordEntity word) async {
     try {
-      await localDataSource.addWord(word as WordModel);
+      await localDataSource.addWord(WordModel.fromEntity(word));
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -126,7 +126,7 @@ class WordRepositoryImpl extends WordRepository {
       TranslationEntity translationEntity) async {
     try {
       await localDataSource
-          .updateTranslation(translationEntity as TranslationModel);
+          .updateTranslation(TranslationModel.fromEntity(translationEntity));
       return const Right(Future<void>);
     } on ServerException {
       return Left(ServerFailure());
@@ -185,8 +185,6 @@ class WordRepositoryImpl extends WordRepository {
       return Left(ServerFailure());
     }
   }
-
-
 
   @override
   Future<Either<Failure, List<WordEntity>>>

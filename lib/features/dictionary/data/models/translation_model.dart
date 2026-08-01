@@ -113,6 +113,22 @@ class TranslationModel extends TranslationEntity {
         dateAddedToDictionary: '',
       );
 
+  factory TranslationModel.fromEntity(TranslationEntity entity) {
+    return TranslationModel(
+      id: entity.id,
+      wordId: entity.wordId,
+      translation: entity.translation,
+      notes: entity.notes,
+      isInDictionary: entity.isInDictionary,
+      isTW: entity.isTW,
+      isWT: entity.isWT,
+      isMatching: entity.isMatching,
+      isCards: entity.isCards,
+      isDictant: entity.isDictant,
+      isRepeated: entity.isRepeated,
+      dateAddedToDictionary: entity.dateAddedToDictionary,
+    );
+  }
   @override
   List<Object?> get props => [
         id,
