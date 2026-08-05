@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,6 +50,8 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   final FlutterTts flutterTts = FlutterTts();
   bool isAutoSpeakEnabled = false;
   final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
+  bool isAnswered = false;
+
 
   @override
   void initState() {
@@ -146,7 +150,6 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
 
   Widget _buildWordCard(List<TWTrainingEntity> words) {
     if (currentWordIndex >= words.length) return SizedBox();
-    if (isAutoSpeakEnabled) speak(words[currentWordIndex].translation);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -212,7 +215,8 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
     );
   }
 
-  void updateCurrentWord(List<TWTrainingEntity> words) {
+  void updateCurrentWord(List<TWTrainingEntity> words) async {
+    if (isAutoSpeakEnabled) await speak(words[currentWordIndex].source);
     if (currentWordIndex + 1 >= words.length) {
       if (widget.isCombo) {
         final session = context.read<ComboTrainingSession>();
@@ -373,6 +377,7 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
     }
     setState(() {
       currentWordIndex++;
+      isAnswered = false;
       answerOrder = List.generate(4, (i) => i)..shuffle();
     });
 
@@ -385,78 +390,76 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
 
   List<Widget> buildSuggestedAnswers(List<TWTrainingEntity> words) {
     if (currentWordIndex >= words.length) return [];
+
     List<Widget> answersContainers = [];
+
     if (answerOrder.isEmpty) {
       answerOrder = List.generate(4, (i) => i)..shuffle();
     }
+
     final order = answerOrder;
     final session = context.read<ComboTrainingSession>();
+    final currentWord = words[currentWordIndex];
 
     for (var element in order) {
-      element == 3
-          ? answersContainers.add(Flexible(
-              child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: AnimatedAnswerButton(
-                  text: words[currentWordIndex].source,
-                  locale: const Locale('en', 'GB'),
-                  color: const Color(0xFF85977f),
-                  onTap: () async {
-                    answers[words[currentWordIndex].id] =
-                        words[currentWordIndex].source;
+      final bool isCorrectButton = (element == 3);
+      final String buttonText = isCorrectButton
+          ? currentWord.source
+          : currentWord.suggestedSourcesList[element].source;
 
-                    if (widget.isCombo) {
+      final Color buttonColor = isCorrectButton
+          ? const Color(0xFF85977f)
+          : const Color(0xFFB70E0E);
+
+      answersContainers.add(
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              child: AnimatedAnswerButton(
+                text: buttonText,
+                locale: const Locale('en', 'GB'),
+                color: buttonColor,
+                onTap: isAnswered
+                    ? null
+                    : () async {
+                  setState(() {
+                    isAnswered = true;
+                  });
+
+                  answers[currentWord.id] = buttonText;
+
+                  if (widget.isCombo) {
+                    if (isCorrectButton) {
                       session.addCorrect(
                         "twTraining",
-                        (
-                          words[currentWordIndex].source,
-                          words[currentWordIndex].translation,
-                          words[currentWordIndex].id,
-                        ),
+                        (currentWord.source, currentWord.translation, currentWord.id),
                       );
-                      session.removeTwWrong(words[currentWordIndex]);
+                      session.removeTwWrong(currentWord);
+                    } else {
+                      session.addTwWrong(currentWord);
                     }
+                  }
 
+                  if (isCorrectButton) {
                     soundService.playCorrect();
-                    updateCurrentWord(words);
-                  },
-                ),
-              ),
-            )))
-          : answersContainers.add(Flexible(
-              child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: AnimatedAnswerButton(
-                  text: words[currentWordIndex]
-                      .suggestedSourcesList[element]
-                      .source,
-                  locale: const Locale('en', 'GB'),
-                  color: const Color(0xFFB70E0E),
-                  onTap: () async {
-                    answers[words[currentWordIndex].id] =
-                        words[currentWordIndex]
-                            .suggestedSourcesList[element]
-                            .source;
-
-                    if (widget.isCombo) {
-                      session.addTwWrong(words[currentWordIndex]);
-                    }
-
+                  } else {
                     soundService.playWrong();
-                    updateCurrentWord(words);
-                  },
-                ),
+                  }
+
+                  updateCurrentWord(words);
+                },
               ),
-            )));
+            ),
+          ),
+        ),
+      );
     }
     return answersContainers;
   }
+
 
   Widget _loadingIndicator() {
     return const Padding(
@@ -473,9 +476,22 @@ class _TWInProcessPageState extends State<TWInProcessPage> {
   }
 
   Future<void> speak(String text) async {
-    await flutterTts.setLanguage('ru');
+    await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
+
+    final completer = Completer<void>();
+
+    flutterTts.setCompletionHandler(() {
+      if (!completer.isCompleted) completer.complete();
+    });
+
+    flutterTts.setErrorHandler((msg) {
+      if (!completer.isCompleted) completer.complete();
+    });
+
     await flutterTts.speak(text, focus: false);
+
+    return completer.future;
   }
 }

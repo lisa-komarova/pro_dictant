@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:pro_dictant/core/s.dart';
@@ -176,14 +177,19 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: const EdgeInsets.all(8.0),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final width = constraints.maxWidth;
-          const margin = 5.0;
-          final cellSize = (width - margin * 7) / 8;
+          final width = constraints.maxWidth - 16;
+
+          const margin = 4.0;
+
+          const totalColumns = 6.8;
+
+          final cellSize = (width - (margin * 2 * totalColumns)) / totalColumns;
+
 
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 5),
             child: HeatMap(
-              startDate: DateTime.now().subtract(const Duration(days: 30)),
+              startDate: DateTime.now().subtract(const Duration(days: 31)),
               endDate: DateTime.now(),
               colorMode: ColorMode.color,
               scrollable: true,

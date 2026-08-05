@@ -35,43 +35,46 @@ class HeatMapMonthText extends StatelessWidget {
   /// The list of every month labels and fitted space.
   List<Widget> _labels() {
     List<Widget> items = [];
-
-    // Set true if previous week was the first day of the month.
     bool _write = false;
 
-    // Loop until check every given weeks.
     for (int label = 0; label < (firstDayInfos?.length ?? 0); label++) {
-      // If given week is first week of given datesets or
-      // first week of month, create labels
       if (label == 0 ||
           (label > 0 && firstDayInfos![label] != firstDayInfos![label - 1])) {
         _write = true;
 
-        // Add Text without width margin if first week is end of the month.
-        // Otherwise, add Text with width margin.
+        // Вычисляем, сколько недель осталось до конца календаря для этого месяца
+        int remainingWeeks = 1;
+        int scanLabel = label + 1;
+        while (scanLabel < firstDayInfos!.length && firstDayInfos![scanLabel] == firstDayInfos![label]) {
+          remainingWeeks++;
+          scanLabel++;
+        }
+
+        // Если это последний месяц и до конца календаря осталась всего 1 неделя,
+        // мы берем множитель 1, вместо стандартного 2. Это уберет лишний пустой хвост справа!
+        int widthMultiplier = remainingWeeks < 2 ? remainingWeeks : 2;
+
         items.add(
           firstDayInfos!.length == 1 ||
-                  (label == 0 &&
-                      firstDayInfos![label] != firstDayInfos![label + 1])
+              (label == 0 &&
+                  firstDayInfos![label] != firstDayInfos![label + 1])
               ? ExcludeSemantics(
-                  child: _renderText(DateUtil.SHORT_MONTH_LABEL[
-                      locale?.languageCode ?? 'en']![firstDayInfos![label]]))
+              child: _renderText(DateUtil.SHORT_MONTH_LABEL[
+              locale?.languageCode ?? 'en']![firstDayInfos![label]]))
               : Container(
-                  width: (((size ?? 20) + (margin?.right ?? 2)) * 2),
-                  margin: EdgeInsets.only(
-                      left: margin?.left ?? 2, right: margin?.right ?? 2),
-                  child: ExcludeSemantics(
-                    child: _renderText(DateUtil.SHORT_MONTH_LABEL[
-                        locale?.languageCode ?? 'en']![firstDayInfos![label]]),
-                  ),
-                ),
+            // ИСПОЛЬЗУЕМ ДИНАМИЧЕСКИЙ МНОЖИТЕЛЬ widthMultiplier ВМЕСТО ХАРДКОДНОГО * 2
+            width: (((size ?? 20) + (margin?.right ?? 2)) * widthMultiplier),
+            margin: EdgeInsets.only(
+                left: margin?.left ?? 2, right: margin?.right ?? 2),
+            child: ExcludeSemantics(
+              child: _renderText(DateUtil.SHORT_MONTH_LABEL[
+              locale?.languageCode ?? 'en']![firstDayInfos![label]]),
+            ),
+          ),
         );
       } else if (_write) {
-        // If given week is the next week of labeled week.
-        // do nothing.
         _write = false;
       } else {
-        // Else create empty box.
         items.add(Container(
           margin: EdgeInsets.only(
               left: margin?.left ?? 2, right: margin?.right ?? 2),
@@ -82,6 +85,7 @@ class HeatMapMonthText extends StatelessWidget {
 
     return items;
   }
+
 
   Widget _renderText(String text) {
     return Text(

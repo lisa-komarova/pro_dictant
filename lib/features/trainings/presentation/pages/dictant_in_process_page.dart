@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -52,7 +54,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   final wordController = TextEditingController();
   int numberOfAdsShown = 0;
   final soundService = sl.get<SoundService>();
-  late FocusNode translationFocusNode;
+  final FocusNode wordFocusNode = FocusNode();
   final FlutterTts flutterTts = FlutterTts();
   bool isAutoSpeakEnabled = false;
   final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
@@ -60,9 +62,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   @override
   void initState() {
     getNumberOfAdsShown();
-    translationFocusNode = FocusNode();
     _loadAutoSpeak();
-    requestTranslationFocus();
     super.initState();
   }
 
@@ -76,7 +76,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
 
   @override
   void dispose() {
-    translationFocusNode.dispose();
+    wordFocusNode.dispose();
     flutterTts.stop();
     super.dispose();
   }
@@ -142,9 +142,6 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
               } else if (state is DictantTrainingLoaded) {
                 if (words.isEmpty) {
                   words.addAll(state.words);
-                  if (isAutoSpeakEnabled) {
-                    speak(words[0].translation);
-                  }
                 }
                 return _buildWordCard(words, session);
               } else {
@@ -160,7 +157,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                       attempts = 0;
                       isHintSelected = true;
                     });
-                    requestTranslationFocus();
+                    wordFocusNode.unfocus();
                   },
                   elevation: 0,
                   hoverElevation: 0,
@@ -215,15 +212,11 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
         Flexible(
           flex: isHintSelected ? 1 : 3,
           child: Center(
-            child: Focus(
-              focusNode: translationFocusNode,
-              child: Semantics(
-                focused: translationFocusNode.hasFocus,
-                child: AutoSizeText(
-                  words[currentWordIndex].translation,
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
+            child: Semantics(
+              child: AutoSizeText(
+                words[currentWordIndex].translation,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -243,7 +236,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                             child: SizedBox(
                               height: 80,
                               child: TextFormField(
+                                key: const ValueKey('word_input'),
                                 controller: wordController,
+                                focusNode: wordFocusNode,
                                 textInputAction: TextInputAction.go,
                                 keyboardType: TextInputType.text,
                                 enableSuggestions: false,
@@ -327,6 +322,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                   }
                                   wordController.text = '';
                                 }
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  wordFocusNode.requestFocus();
+                                });
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -364,7 +362,10 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     );
   }
 
-  void updateCurrentWord() {
+  void updateCurrentWord() async {
+    if (mounted && isAutoSpeakEnabled) {
+      await speak(words[currentWordIndex].source);
+    }
     if (currentWordIndex == words.length - 1) {
       if (widget.isCombo) {
         final session = context.read<ComboTrainingSession>();
@@ -513,10 +514,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     setState(() {
       currentWordIndex++;
     });
-    if (mounted && isAutoSpeakEnabled) {
-      speak(words[currentWordIndex].translation);
-    }
-    requestTranslationFocus();
+   // wordFocusNode.requestFocus();
   }
 
   Widget _loadingIndicator() {
@@ -712,18 +710,23 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
     numberOfAdsShown = prefs.getInt('numberOfAdsShown') ?? 0;
   }
 
-  void requestTranslationFocus() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        FocusScope.of(context).requestFocus(translationFocusNode);
-      }
-    });
-  }
-
   Future<void> speak(String text) async {
-    await flutterTts.setLanguage('ru');
+    await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
+
+    final completer = Completer<void>();
+
+    flutterTts.setCompletionHandler(() {
+      if (!completer.isCompleted) completer.complete();
+    });
+
+    flutterTts.setErrorHandler((msg) {
+      if (!completer.isCompleted) completer.complete();
+    });
+
     await flutterTts.speak(text, focus: false);
+
+    return completer.future;
   }
 }

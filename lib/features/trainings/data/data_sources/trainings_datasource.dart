@@ -510,7 +510,7 @@ class TrainingsDatasourceImpl extends TrainingsDatasource {
     List<ComboTrainingModel> words = [];
     try {
       final maps = await db!.rawQuery(
-          '''select word.source, words_translations.translation, words_translations.id, 
+          '''select word.source, word.pos, words_translations.translation, words_translations.id, 
           word.id wordId from word join words_translations on word.id = 
           words_translations.word_id where words_translations.isInDictionary =1
            and words_translations.isWT =0 and words_translations.isTW =0 

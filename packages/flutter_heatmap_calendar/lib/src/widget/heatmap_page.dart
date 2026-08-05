@@ -102,8 +102,8 @@ class HeatMapPage extends StatelessWidget {
     // Set cursor(position) to first day of weeks
     // until cursor reaches the final week.
     for (int datePos = 0 - (startDate.weekday % 7);
-        datePos <= _dateDifferent;
-        datePos += 7) {
+    datePos <= _dateDifferent;
+    datePos += 7) {
       // Get first day of week by adding cursor's value to startDate.
       DateTime _firstDay = DateUtil.changeDay(startDate, datePos);
       int weekNumber = 0;
@@ -146,6 +146,7 @@ class HeatMapPage extends StatelessWidget {
       children: <Widget>[
         Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Show week labels to left side of heatmap.
             ExcludeSemantics(

@@ -68,7 +68,6 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
 
   @override
   Widget build(BuildContext context) {
-    //if(!soundService.isInitialized || !soundService.soundsAreInitialized ) return _loadingIndicator();
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, _) async {
@@ -96,7 +95,8 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                     setState(() {
                       isAutoSpeakEnabled = !isAutoSpeakEnabled;
                     });
-                    autoSpeakPrefs.setIsEnabled("ComboInit", isAutoSpeakEnabled);
+                    autoSpeakPrefs.setIsEnabled(
+                        "ComboInit", isAutoSpeakEnabled);
                   },
                   icon: Semantics(
                       label: isAutoSpeakEnabled
@@ -148,138 +148,150 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
     if (isAutoSpeakEnabled) {
       speak(
         words[currentWordIndex].source,
-        words[currentWordIndex].translation,
       );
     }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: 100,
-              child: numberOfAdsShown < 3
-                  ? BannerAdvertisement(
-                      screenWidth: MediaQuery.of(context).size.width.round(),
-                    )
-                  : null,
-            ),
-          ),
-        ),
-        Flexible(
-          flex: 2,
-          child: Text(
-            '${wordsToLearn.length + 1}/${words.length >= 5 ? 5 : words.length}',
-            semanticsLabel:
-                S.of(context).wordsRemaining(5 - wordsToLearn.length),
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ),
-        const Flexible(
-          flex: 1,
-          child: SizedBox(
-            height: 100,
-          ),
-        ),
-        Flexible(
-          child: ExcludeSemantics(
-            child: GestureDetector(
-              onTap: () {
-                speak(
-                  words[currentWordIndex].source,
-                  words[currentWordIndex].translation,
-                );
-              },
-              child: AnimatedContainer(
-                duration: const Duration(seconds: 1),
-                curve: Curves.fastOutSlowIn,
-                child: Image.asset(
-                  'assets/icons/pronounce.png',
-                  width: 80,
-                  height: 80,
-                  color: _color,
+    return LayoutBuilder(builder: (context, constraints) {
+      return SizedBox(
+        height: constraints.maxHeight,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: 100,
+                  child: numberOfAdsShown < 3
+                      ? BannerAdvertisement(
+                          screenWidth:
+                              MediaQuery.of(context).size.width.round(),
+                        )
+                      : null,
                 ),
               ),
             ),
-          ),
-        ),
-        Flexible(
-          flex: 3,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Focus(
-                    focusNode: sourceFocusNode,
-                    child: Semantics(
-                      focused: sourceFocusNode.hasFocus,
-                      child: Text(
-                        words[currentWordIndex].source,
-                        locale: const Locale('en', 'GB'),
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Text(
-                        words[currentWordIndex].translation,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
+            Flexible(
+              flex: 2,
+              child: Text(
+                '${wordsToLearn.length + 1}/${words.length >= 5 ? 5 : words.length}',
+                semanticsLabel:
+                    S.of(context).wordsRemaining(5 - wordsToLearn.length),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-          ),
-        ),
-        Flexible(
-          flex: 4,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
+            const Spacer(),
+            Flexible(
+              child: ExcludeSemantics(
+                child: GestureDetector(
+                  onTap: () {
+                    speak(
+                      words[currentWordIndex].source,
+                    );
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.fastOutSlowIn,
+                    child: Image.asset(
+                      'assets/icons/pronounce.png',
+                      width: 80,
+                      height: 80,
+                      color: _color,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const Spacer(),
+            Flexible(
+              flex: 4,
+              fit: FlexFit.loose,
+              child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 100,
-                    child: FilledButton(
-                      onPressed: () async {
-                        if (currentWordIndex + 1 >= words.length) {
-                          finishWorkout(wordsToLearn);
-                          return;
-                        }
-                        await soundService.playNeutral();
-                        setState(() {
-                          currentWordIndex++;
-                        });
-                        if (wordsToLearn.length >= 5) {
-                          finishWorkout(wordsToLearn);
-                          return;
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFd9c3ac),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+                  child: Column(
+                    children: [
+                      Focus(
+                        focusNode: sourceFocusNode,
+                        child: Semantics(
+                          focused: sourceFocusNode.hasFocus,
+                          child: Text(
+                            words[currentWordIndex].source,
+                            locale: const Locale('en', 'GB'),
+                            style: Theme.of(context).textTheme.titleLarge,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
-                      child: Center(
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Flexible(
                         child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: AutoSizeText(
-                              S.of(context).pass,
-                              textAlign: TextAlign.center,
+                          child: Text(
+                            words[currentWordIndex].partOfSpeech,
+                            style: Theme.of(context).textTheme.titleSmall,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Flexible(
+                        child: SingleChildScrollView(
+                          child: Text(
+                            words[currentWordIndex].translation,
+                            style: Theme.of(context).textTheme.titleLarge,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      height: 100,
+                      child: FilledButton(
+                        onPressed: () async {
+                          if (currentWordIndex + 1 >= words.length) {
+                            finishWorkout(wordsToLearn);
+                            return;
+                          }
+                          await soundService.playNeutral();
+                          setState(() {
+                            currentWordIndex++;
+                          });
+                          if (wordsToLearn.length >= 5) {
+                            finishWorkout(wordsToLearn);
+                            return;
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFd9c3ac),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: Center(
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: AutoSizeText(
+                                S.of(context).pass,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ),
@@ -287,43 +299,43 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                     ),
                   ),
                 ),
-              ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 100,
-                    child: FilledButton(
-                      onPressed: () async {
-                        wordsToLearn.add(words[currentWordIndex]);
-                        await soundService.playCorrect();
-                        Future.delayed(Duration(milliseconds: 100));
-                        if (currentWordIndex + 1 >= words.length) {
-                          finishWorkout(wordsToLearn);
-                          return;
-                        }
-                        setState(() {
-                          currentWordIndex++;
-                        });
-                        if (wordsToLearn.length >= 5) {
-                          finishWorkout(wordsToLearn);
-                          return;
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFd9c3ac),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      height: 100,
+                      child: FilledButton(
+                        onPressed: () async {
+                          wordsToLearn.add(words[currentWordIndex]);
+                          await soundService.playCorrect();
+                          Future.delayed(Duration(milliseconds: 100));
+                          if (currentWordIndex + 1 >= words.length) {
+                            finishWorkout(wordsToLearn);
+                            return;
+                          }
+                          setState(() {
+                            currentWordIndex++;
+                          });
+                          if (wordsToLearn.length >= 5) {
+                            finishWorkout(wordsToLearn);
+                            return;
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFd9c3ac),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
                         ),
-                      ),
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: AutoSizeText(
-                              S.of(context).learn,
-                              textAlign: TextAlign.center,
+                        child: Center(
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: AutoSizeText(
+                                S.of(context).learn,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ),
@@ -331,18 +343,13 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
-        const Flexible(
-          flex: 1,
-          child: SizedBox(
-            height: 100,
-          ),
-        ),
-      ],
-    );
+      );
+    });
   }
 
   void finishWorkout(List<ComboTrainingEntity> wordsToLearn) {
@@ -365,26 +372,11 @@ class _ComboInitialPageState extends State<ComboInitialPage> {
             )));
   }
 
-  Future<void> speak(String source, String translation) async {
+  Future<void> speak(String source) async {
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
     await flutterTts.speak(source, focus: false);
-    await _waitForTtsCompletion();
-    await flutterTts.setLanguage('ru');
-    await flutterTts.speak(translation, focus: false);
-  }
-
-  Future<void> _waitForTtsCompletion() async {
-    Completer<void> completer = Completer();
-
-    flutterTts.setCompletionHandler(() {
-      if (!completer.isCompleted) {
-        completer.complete();
-      }
-    });
-
-    return completer.future;
   }
 
   getNumberOfAdsShown() async {

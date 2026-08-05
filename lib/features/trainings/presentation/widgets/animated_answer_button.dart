@@ -4,14 +4,14 @@ class AnimatedAnswerButton extends StatefulWidget {
   final String text;
   final Color color;
   final Locale locale;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const AnimatedAnswerButton({
     super.key,
     required this.text,
     required this.onTap,
     required this.color,
-    required this.locale ,
+    required this.locale,
   });
 
   @override
@@ -31,16 +31,19 @@ class _AnimatedAnswerButtonState extends State<AnimatedAnswerButton> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () async {
-          setState(() => pressed = true);
-          await Future.delayed(const Duration(milliseconds: 150));
-          setState(() => pressed = false);
-          widget.onTap();
-        },
+        onTap: (pressed || widget.onTap == null)
+            ? null
+            : () async {
+                setState(() => pressed = true);
+                await Future.delayed(const Duration(milliseconds: 150));
+                if (!mounted) return;
+                setState(() => pressed = false);
+                widget.onTap?.call();
+              },
         child: Center(
           child: Text(
             widget.text,
-            locale: widget.locale ,
+            locale: widget.locale,
             textAlign: TextAlign.center,
           ),
         ),
