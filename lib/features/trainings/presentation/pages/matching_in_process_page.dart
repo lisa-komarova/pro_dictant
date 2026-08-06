@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -275,7 +277,6 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                           if (isAutoSpeakEnabled)
                             speak(
                               words[index].source,
-                              const Locale('en', 'GB'),
                             );
                           setState(() {
                             currentAnswer.clear();
@@ -438,8 +439,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                         });
                         SemanticsService.announce(
                             S.of(context).chosen, TextDirection.ltr);
-                        if (isAutoSpeakEnabled)
-                          speak(words[index].source, const Locale('en', 'GB'));
+                        if (isAutoSpeakEnabled) speak(words[index].source);
                       }
                     },
                     style: OutlinedButton.styleFrom(
@@ -469,7 +469,7 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
                                   : ""),
                           child: Text(
                             words[index].source,
-                            locale: const Locale('en', 'GB'),
+                            locale: const Locale('en-GB'),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
@@ -738,11 +738,24 @@ class _MatchingInProcessPageState extends State<MatchingInProcessPage> {
     });
   }
 
-  Future<void> speak(String text, Locale locale) async {
-    await flutterTts.setLanguage(locale.languageCode);
+  Future<void> speak(String text) async {
+    await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);
+
+    final completer = Completer<void>();
+
+    flutterTts.setCompletionHandler(() {
+      if (!completer.isCompleted) completer.complete();
+    });
+
+    flutterTts.setErrorHandler((msg) {
+      if (!completer.isCompleted) completer.complete();
+    });
+
     await flutterTts.speak(text, focus: false);
+
+    return completer.future;
   }
 }
 

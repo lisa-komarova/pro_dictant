@@ -47,6 +47,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
   bool isAutoSpeakEnabled = false;
   final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
   late FocusNode sourceFocusNode;
+  bool _firstWordSpoken = false;
 
   @override
   void initState() {
@@ -144,7 +145,14 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
 
   Widget _buildWordCard(List<WTTrainingEntity> words) {
     if (currentWordIndex >= words.length) return SizedBox();
-    if (isAutoSpeakEnabled) speak(words[currentWordIndex].source);
+
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_firstWordSpoken && isAutoSpeakEnabled) {
+        _firstWordSpoken = true;
+        speak(words.first.source);
+      }
+    });
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -226,7 +234,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     );
   }
 
-  void updateCurrentWord(List<WTTrainingEntity> words) {
+  void updateCurrentWord(List<WTTrainingEntity> words) async {
     if (currentWordIndex + 1 >= words.length) {
       if (widget.isCombo) {
         final session = context.read<ComboTrainingSession>();
@@ -385,8 +393,11 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
     setState(() {
       currentWordIndex++;
       answerOrder = List.generate(4, (i) => i)..shuffle();
-    });
 
+    });
+    if (isAutoSpeakEnabled) {
+      await speak(words[currentWordIndex].source);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         FocusScope.of(context).requestFocus(sourceFocusNode);
@@ -480,6 +491,7 @@ class _WTInProcessPageState extends State<WTInProcessPage> {
   }
 
   Future<void> speak(String text) async {
+    debugPrint(StackTrace.current.toString());
     await flutterTts.setLanguage('en-GB');
     await flutterTts.setPitch(1);
     await flutterTts.setSpeechRate(0.5);

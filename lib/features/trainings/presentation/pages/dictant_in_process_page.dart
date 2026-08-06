@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -58,6 +57,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
   final FlutterTts flutterTts = FlutterTts();
   bool isAutoSpeakEnabled = false;
   final autoSpeakPrefs = sl.get<AutoSpeakPrefs>();
+  bool isAnswered = false;
 
   @override
   void initState() {
@@ -268,7 +268,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
-                              onTap: () async {
+                              onTap: isAnswered
+                                  ? null
+                                  : () async {
                                 if (wordController.text
                                         .toLowerCase()
                                         .replaceAll(' ', '') ==
@@ -292,6 +294,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                     focusBorderColor = const Color(0xFF85977f);
                                   }
                                   wordController.text = '';
+                                  setState(() {
+                                    isAnswered = true;
+                                  });
                                   updateCurrentWord();
                                 } else {
                                   if (attempts + 1 < maxAttempts - 1) {
@@ -318,6 +323,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                                           .toLowerCase()
                                           .replaceAll(' ', '')
                                     ));
+                                    setState(() {
+                                      isAnswered = true;
+                                    });
                                     updateCurrentWord();
                                   }
                                   wordController.text = '';
@@ -329,7 +337,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: const Color(0xFF85977f),
+                                  color: isAnswered
+                                      ? Color(0xFF85977f).withAlpha(100)
+                                      : const Color(0xFF85977f) ,
                                 ),
                                 height: 50,
                                 child: Center(
@@ -367,10 +377,14 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
       await speak(words[currentWordIndex].source);
     }
     if (currentWordIndex == words.length - 1) {
+      if (!mounted) return;
       if (widget.isCombo) {
+
         final session = context.read<ComboTrainingSession>();
         final words;
         if (session.wtWrongAnswers.toList().isNotEmpty) {
+          await flutterTts.stop();
+          wordFocusNode.unfocus();
           words = session.wtWrongAnswers.toList();
           words.shuffle();
           BlocProvider.of<TrainingsBloc>(context)
@@ -383,6 +397,7 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                   )));
           return;
         } else if (session.twWrongAnswers.toList().isNotEmpty) {
+
           words = session.twWrongAnswers.toList();
           words.shuffle();
           BlocProvider.of<TrainingsBloc>(context)
@@ -504,17 +519,19 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
         return;
       }
     }
-    focusBorderColor = const Color(0xFF85977f);
-    isHintSelected = false;
-    correctAnswer = '';
-    suggestedLetters = [];
-    currentLetterIndex = 0;
-    attempts = 0;
-    colors = [];
-    setState(() {
-      currentWordIndex++;
-    });
-   // wordFocusNode.requestFocus();
+    if (mounted) {
+      setState(() {
+        isAnswered = false;
+        focusBorderColor = const Color(0xFF85977f);
+        isHintSelected = false;
+        correctAnswer = '';
+        suggestedLetters = [];
+        currentLetterIndex = 0;
+        attempts = 0;
+        colors = [];
+        currentWordIndex++;
+      });
+    }
   }
 
   Widget _loadingIndicator() {
@@ -639,6 +656,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                 }
               });
               if (currentLetterIndex == correctAnswer.length) {
+                setState(() {
+                  isAnswered = true;
+                });
                 updateCurrentWord();
                 if (!mistakes.any((e) => e.$1.id == word.id)) {
                   if (widget.isCombo) {
@@ -668,6 +688,9 @@ class _DictantInProcessPageState extends State<DictantInProcessPage> {
                   session.addDictantWrong(word);
                 }
                 soundService.playWrong();
+                setState(() {
+                  isAnswered = true;
+                });
                 updateCurrentWord();
               } else {
                 SemanticsService.announce(
